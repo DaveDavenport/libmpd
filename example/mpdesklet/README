@@ -1,0 +1,5 @@
+mpdesklet is a simple example using almost no functinality of libmpd.
+Make sure you installed libmpd and you have gtk+-2.0 installed (development libraries aswell)
+
+Then type ./build to build it.
+

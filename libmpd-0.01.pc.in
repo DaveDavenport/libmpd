@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: libmpd
+Description: libmpd
+Version: @VERSION@
+Libs: -L${libdir} -lmpd-0.01
+Cflags: -I${includedir}/libmpd-0.01 -I${libdir}/libmpd-0.01/include

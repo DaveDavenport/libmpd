@@ -1,0 +1,2 @@
+SUBDIRS=mpdesklet
+EXTRA_DIST=README
