@@ -6,6 +6,8 @@
 #include "strfsong.h"
 
 #define DEFAULT_TRAY_MARKUP "[<span size=\"small\">%name%</span>\n][<span size=\"large\">%title%</span>\n][%artist%][\n<span size=\"small\">%album% [(track %track%)]</span>]|%shortfile%|"
+
+
 EggBackgroundMonitor *egm = NULL;
 PangoLayout *tray_layout_tooltip = NULL;
 
@@ -80,13 +82,6 @@ int expose()
 		width2 = (mpd_ob_status_get_elapsed_song_time(mi)/(float)mpd_ob_status_get_total_song_time(mi))*PANGO_PIXELS(width);
 		gdk_draw_rectangle(window->window, window->style->mid_gc[GTK_STATE_NORMAL],TRUE,6,PANGO_PIXELS(height)+7, width2,7);
 	}
-
-
-
-
-
-
-
 	gdk_pixbuf_unref(bg);
 	return TRUE;
 }
@@ -94,6 +89,8 @@ int expose()
 
 int main(int argc, char **argv)
 {
+	gchar *fname = NULL;
+	int xpos=-1, ypos=-1;
 	/* make libmpd object */	
 	mi = mpd_ob_new_default();
 
@@ -108,6 +105,46 @@ int main(int argc, char **argv)
 		mpd_ob_set_hostname(mi,(char *)g_getenv("MPD_HOST"));
 	}
 
+	fname = g_strdup_printf("%s/.mpdesklet.conf", g_getenv("HOME"));
+	if(g_file_test(fname, G_FILE_TEST_EXISTS))
+	{
+		gchar *content = NULL;
+		int length = 0;
+		if(g_file_get_contents(fname,&content,&length,NULL))
+		{
+			gchar **tokens = NULL;
+			tokens = g_strsplit(content,"\n", -1);
+			if(tokens != NULL)
+			{
+				int i=0;
+				do{
+					if(!strncmp(tokens[i], "hostname=", 9))
+					{
+						g_print("hostname: %s\n", &tokens[i][9]);	
+						mpd_ob_set_hostname(mi, &tokens[i][9]);
+					}
+					else if(!strncmp(tokens[i], "port=", 5))
+					{
+						g_print("port: %s\n", &tokens[i][5]);	
+						mpd_ob_set_port(mi, atoi(&tokens[i][5]));
+					}
+					else if(!strncmp(tokens[i], "xpos=", 5))
+                                	{
+						g_print("xpos: %s\n", &tokens[i][5]);		
+						xpos =  atoi(&tokens[i][5]);	
+					}                                                	
+					else if(!strncmp(tokens[i], "ypos=", 5))
+					{
+						g_print("ypos: %s\n", &tokens[i][5]);		
+						ypos =  atoi(&tokens[i][5]);	
+					}                                                						
+					i++;
+				}while(tokens[i] != NULL);
+				g_strfreev(tokens);
+			}
+		}
+	}
+	g_free(fname);
 
 	/* connect */
 	mpd_ob_connect(mi);
@@ -128,6 +165,16 @@ int main(int argc, char **argv)
 	gtk_window_set_decorated(GTK_WINDOW(window), FALSE);
 	/* set it below */
 	gtk_window_set_keep_below(GTK_WINDOW(window), TRUE);
+	gtk_window_stick(GTK_WINDOW(window));
+	gtk_window_set_skip_pager_hint(GTK_WINDOW(window), TRUE);
+	gtk_window_set_skip_taskbar_hint(GTK_WINDOW(window), TRUE);
+
+	if(xpos > 0 && ypos > 0)
+	{
+		gtk_window_move(GTK_WINDOW(window), xpos,ypos);
+	}
+
+	
 	/* make it paintable */
 	gtk_widget_set_app_paintable(window, TRUE);
 
