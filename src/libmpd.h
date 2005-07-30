@@ -22,18 +22,11 @@
 extern "C" {
 #endif
 
-
-
-
-
-
-
-
-
 #ifndef __MPD_LIB__
 #define __MPD_LIB__
 #include "libmpdclient.h"
 #include <regex.h>
+
 #ifndef TRUE
 #define TRUE 1
 #endif
@@ -73,7 +66,8 @@ enum {
 	MPD_DATA_TYPE_OUTPUT_DEV
 } MpdDataType;
 
-/* there will be wrapper functions in the future to grab the internals.
+/* 
+ * there will be wrapper functions in the future to grab the internals.
  */
 typedef struct _MpdData
 {
@@ -109,7 +103,9 @@ int 		mpd_ob_check_error			(MpdObj *mi);
 void 		mpd_ob_free				(MpdObj *mi);
 
 
-/* signals */
+/* 
+ * signals 
+ */
 void 		mpd_ob_signal_set_playlist_changed	(MpdObj *mi, void *(* playlist_changed)(MpdObj *mi, int old_playlist_id, int new_playlist_id,void *pointer), void *pointer);
 void 		mpd_ob_signal_set_error			(MpdObj *mi, void *(* error_signal)(MpdObj *mi, int id, char *msg, void *pointer),void *pointer);
 void 		mpd_ob_signal_set_song_changed		(MpdObj *mi, void *(* song_changed)(MpdObj *mi, int old_song_id, int new_song_id,void *pointer), void *pointer);
@@ -120,7 +116,9 @@ void 		mpd_ob_signal_set_connect		(MpdObj *mi, void *(* connect)(MpdObj *mi, voi
 void 		mpd_ob_signal_set_database_changed	(MpdObj *mi, void *(* database_changed)(MpdObj *mi, void *pointer), void *pointer);
 void 		mpd_ob_signal_set_updating_changed	(MpdObj *mi, void *(* updating_changed)(MpdObj *mi,int updating, void *pointer), void *pointer);
 
-/* status commands */
+/* 
+ * status commands 
+ */
 /* To get the function to have the  most recent info you want to call mpd_ob_status_queue_update 
  * In a gui app. you want to call this every 0.x seconds. 
  * mpd_ob_status_queue_update only queue's an update
@@ -193,10 +191,11 @@ MpdData *	mpd_ob_playlist_token_find		(MpdObj *mi , char *string);
 int 		mpd_ob_data_is_last			(MpdData *data);
 void 		mpd_ob_free_data_ob			(MpdData *data);
 MpdData * 	mpd_ob_data_get_next			(MpdData *data);
+
 /* mpd ob data next will return NULL when there are no more items. it will also call free when called on the last item. */
-/* if you don't want this check with mpd_ob_data_is_last before calling get_next */
-/* this allows you to make this construction: */
-/*	MpdData * mpd_ob_playlist_get_artists(..);
+/* if you don't want this check with mpd_ob_data_is_last before calling get_next 
+ * this allows you to make this construction: 
+ *	MpdData * mpd_ob_playlist_get_artists(..);
  * 	while(data != NULL)
  * 	{
  *
