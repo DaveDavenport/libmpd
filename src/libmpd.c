@@ -693,7 +693,7 @@ int mpd_ob_stats_get_total_artists(MpdObj *mi)
 	}
 	if(!mpd_ob_stats_check(mi) || !mpd_ob_check_connected(mi))
 	{
-		printf("Failed to get status\n");
+		debug_printf(DEBUG_WARNING,"Failed to get status\n");
 		return MPD_O_FAILED_STATUS;
 	}
 	return mi->stats->numberOfArtists;
@@ -703,12 +703,12 @@ int mpd_ob_stats_get_total_albums(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		printf("failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING,"mpd_ob_stats_get_total_albums: failed to check mi == NULL\n");
 		return -2;
 	}
 	if(!mpd_ob_stats_check(mi) || !mpd_ob_check_connected(mi))
 	{
-		printf("Failed to get status\n");
+		debug_printf(DEBUG_WARNING,"mpd_ob_stats_get_total_albums: Failed to get status\n");
 		return MPD_O_FAILED_STATUS;
 	}
 	return mi->stats->numberOfAlbums;
@@ -719,12 +719,12 @@ int mpd_ob_stats_get_uptime(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		printf("failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING,"mpd_ob_stats_get_uptime: failed to check mi == NULL\n");
 		return -2;
 	}
 	if(!mpd_ob_stats_check(mi) || !mpd_ob_check_connected(mi))
 	{
-		printf("Failed to get status\n");
+		debug_printf(DEBUG_WARNING,"mpd_ob_stats_get_uptime: Failed to get status\n");
 		return MPD_O_FAILED_STATUS;
 	}
 	return mi->stats->uptime;
@@ -734,12 +734,12 @@ int mpd_ob_stats_get_playtime(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		printf("failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING, "mpd_ob_stats_get_playtime: failed to check mi == NULL\n");
 		return -2;
 	}
 	if(!mpd_ob_stats_check(mi) || !mpd_ob_check_connected(mi))
 	{
-		printf("Failed to get status\n");
+		debug_printf(DEBUG_WARNING,"mpd_ob_stats_get_playtime: Failed to get status\n");
 		return MPD_O_FAILED_STATUS;
 	}
 	return mi->stats->playTime;
@@ -748,12 +748,12 @@ int mpd_ob_status_get_volume(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		printf("failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING, "mpd_ob_status_get_volume: failed to check mi == NULL\n");
 		return -2;
 	}
 	if(!mpd_ob_status_check(mi) || !mpd_ob_check_connected(mi))
 	{
-		printf("Failed to get status\n");
+		debug_printf(DEBUG_WARNING, "mpd_ob_status_get_volume: Failed to get status\n");
 		return MPD_O_FAILED_STATUS;
 	}
 	return mi->status->volume;
@@ -764,21 +764,20 @@ int mpd_ob_status_get_bitrate(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		printf("failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING,"mpd_ob_status_get_bitrate: failed to check mi == NULL\n");
 		return -2;
 	}
 	if(!mpd_ob_status_check(mi) || !mpd_ob_check_connected(mi))
 	{
-		printf("Failed to get status\n");
+		debug_printf(DEBUG_WARNING, "Failed to get status\n");
 		return MPD_O_FAILED_STATUS;
 	}
 	return mi->status->bitRate;
 }
-
+/* TODO: error checking might be nice? */
 int mpd_ob_status_db_is_updating(MpdObj *mi)
 {
 	return mi->updatingDb;
-
 }
 
 
@@ -786,12 +785,12 @@ int mpd_ob_status_get_total_song_time(MpdObj *mi)
 {
 	if(!mpd_ob_check_connected(mi))
 	{
-		printf("failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING, "mpd_ob_status_get_total_song_time: failed to check mi == NULL\n");
 		return -2;
 	}
 	if(!mpd_ob_status_check(mi))
 	{
-		printf("Failed to get status\n");
+		debug_printf(DEBUG_WARNING, "mpd_ob_status_get_total_song_time: Failed to get status\n");
 		return MPD_O_FAILED_STATUS;
 	}
 	return mi->status->totalTime;
