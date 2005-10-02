@@ -1594,8 +1594,32 @@ MpdData *mpd_ob_new_data_struct()
 	data->value.album = NULL;
 	data->value.tag = NULL;
 	data->value.song = NULL;
-
+	data->value.directory = NULL;
+	data->value.playlist = NULL;
+	data->value.output_dev = NULL;
+	data->next = NULL;
+	data->prev = NULL;
+	data->first = NULL;
 	return data;	
+}
+
+MpdData *mpd_ob_new_data_struct_append(MpdData *data)
+{
+	if(data == NULL)
+	{
+		data = mpd_ob_new_data_struct();
+		data->first = data;
+	}
+	else
+	{
+		data->next = mpd_ob_new_data_struct(); 	
+		data->next->first = data->first;
+		data->next->prev = data;
+		data = data->next;
+		data->next = NULL;
+
+	}
+	return data;
 }
 
 /* prefered function */
@@ -1850,31 +1874,31 @@ void mpd_ob_free_data_ob(MpdData *data)
 	while(data != NULL)
 	{
 		temp = data->next;
-		if(data->type == MPD_DATA_TYPE_ARTIST)
+		if(data->value.artist)
 		{
 			free(data->value.artist);
 		}
-		else if (data->type == MPD_DATA_TYPE_TAG)
+		if (data->value.tag)
 		{
 			free(data->value.tag);
 		}
-		else if (data->type == MPD_DATA_TYPE_ALBUM)
+		if (data->value.album)
 		{
 			free(data->value.album);
 		}
-		else if (data->type == MPD_DATA_TYPE_DIRECTORY)
+		if (data->value.directory)
 		{
 			free(data->value.directory);
 		}
-		else if (data->type == MPD_DATA_TYPE_SONG)
+		if (data->value.song)
 		{
 			mpd_freeSong(data->value.song);
 		}
-		else if (data->type == MPD_DATA_TYPE_PLAYLIST)
+		if (data->value.playlist)
 		{
 			free(data->value.playlist);
 		}
-		else if (data->type == MPD_DATA_TYPE_OUTPUT_DEV)
+		if (data->value.output_dev)
 		{
 			mpd_freeOutputElement(data->value.output_dev);
 		}
@@ -2186,6 +2210,8 @@ MpdData *mpd_ob_playlist_find_adv(MpdObj *mi,int exact, ...)
 MpdData * mpd_ob_playlist_find(MpdObj *mi, int table, char *string, int exact)
 {
 	MpdData *data = NULL;
+	MpdData *artist = NULL;
+	MpdData *album = NULL;
 	mpd_InfoEntity *ent = NULL;
 	if(!mpd_ob_check_connected(mi))
 	{
@@ -2206,22 +2232,8 @@ MpdData * mpd_ob_playlist_find(MpdObj *mi, int table, char *string, int exact)
 		mpd_sendSearchCommand(mi->connection, table,string);
 	}
 	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
-	{	
-		if(data == NULL)
-		{
-			data = mpd_ob_new_data_struct();
-			data->first = data;
-			data->next = NULL;
-			data->prev = NULL;
-		}	
-		else
-		{
-			data->next = mpd_ob_new_data_struct();
-			data->next->first = data->first;
-			data->next->prev = data;
-			data = data->next;
-			data->next = NULL;
-		}
+	{
+		data = mpd_ob_new_data_struct_append(data);	
 		if(ent->type == MPD_INFO_ENTITY_TYPE_DIRECTORY)
 		{
 			data->type = MPD_DATA_TYPE_DIRECTORY;
@@ -2231,6 +2243,67 @@ MpdData * mpd_ob_playlist_find(MpdObj *mi, int table, char *string, int exact)
 		{
 			data->type = MPD_DATA_TYPE_SONG;
 			data->value.song = mpd_songDup(ent->info.song);
+			if(data->value.song->artist != NULL)
+			{
+				int found = FALSE;
+				if(artist != NULL)
+				{
+					MpdData *fartist = artist->first;
+					do{
+						if(fartist->type == MPD_DATA_TYPE_ARTIST)
+						{
+							if(fartist->value.artist == NULL)
+							{
+								printf("crap this should'nt be \n");
+							}
+							if(!strcmp(fartist->value.artist, data->value.song->artist))
+							{
+								found = TRUE;
+							}
+						}
+						fartist = fartist->next;
+					}while(fartist && !found);
+				}	
+				if(!found)
+				{
+					artist= mpd_ob_new_data_struct_append(artist);
+					artist->type = MPD_DATA_TYPE_ARTIST;
+					artist->value.artist = strdup(data->value.song->artist);
+				}
+			}
+			if(data->value.song->album != NULL)
+			{
+				int found = FALSE;
+				if(artist != NULL)
+				{
+					MpdData *fartist = artist->first;
+					do{
+						if(fartist->type == MPD_DATA_TYPE_ALBUM)
+						{
+							if(fartist->value.album == NULL)
+							{
+								printf("crap this should'nt be \n");
+							}
+							if(!strcmp(fartist->value.album, data->value.song->album))
+							{
+								found = TRUE;
+							}
+						}
+						fartist = fartist->next;
+					}while(fartist && !found);
+				}	
+				if(!found)
+				{
+					artist= mpd_ob_new_data_struct_append(artist);
+					artist->type = MPD_DATA_TYPE_ALBUM;
+					artist->value.album = strdup(data->value.song->album);
+					if(data->value.song->artist)
+					{
+						artist->value.artist = strdup(data->value.song->artist);
+					}
+				}
+			}
+
 		}
 		else if (ent->type == MPD_INFO_ENTITY_TYPE_PLAYLISTFILE)
 		{
@@ -2248,7 +2321,15 @@ MpdData * mpd_ob_playlist_find(MpdObj *mi, int table, char *string, int exact)
 	{
 		return NULL;
 	}
-	return data->first;
+	data = data->first;
+	/* prepend the album then artists*/
+	if(artist)
+	{
+		artist->next = data;
+		data->prev = artist;
+		data= artist->first;
+	}
+	return data;
 }
 
 

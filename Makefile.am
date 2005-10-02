@@ -1,6 +1,6 @@
 SUBDIRS = src doc example
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libmpd-0.01.pc
+pkgconfig_DATA = libmpd.pc
 
-EXTRA_DIST = libmpd-0.01.pc.in
+EXTRA_DIST = libmpd.pc.in

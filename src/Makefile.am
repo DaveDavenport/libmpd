@@ -2,7 +2,7 @@ INCLUDES = 				\
 	-I.				\
 	-I$(top_srcdir)			
 
-lib_LTLIBRARIES = libmpd-0.01.la
+lib_LTLIBRARIES = libmpd.la
 
 libmpd_0_01_la_SOURCES =		\
 		libmpd.c		\
@@ -15,4 +15,4 @@ libmpdinclude_HEADERS = 		\
 		debug_printf.h
 
 libmpd_0_01_la_LIBADD = 
-libmpdincludedir= $(includedir)/libmpd-0.01/libmpd/
+libmpdincludedir= $(includedir)/libmpd/

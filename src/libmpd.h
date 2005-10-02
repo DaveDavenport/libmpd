@@ -78,7 +78,7 @@ typedef struct _MpdData
 	/* MpdDataType */
 	int type;
 
-	union 
+	struct 
 	{
 		char *tag;
 		char *artist;
