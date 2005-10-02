@@ -4,7 +4,7 @@ INCLUDES = 				\
 
 lib_LTLIBRARIES = libmpd.la
 
-libmpd_0_01_la_SOURCES =		\
+libmpd_la_SOURCES =		\
 		libmpd.c		\
 		libmpdclient.c		\
 		debug_printf.c
@@ -14,5 +14,5 @@ libmpdinclude_HEADERS = 		\
 		libmpdclient.h		\
 		debug_printf.h
 
-libmpd_0_01_la_LIBADD = 
+libmpd_la_LIBADD = 
 libmpdincludedir= $(includedir)/libmpd/
