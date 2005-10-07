@@ -24,6 +24,11 @@ extern "C" {
 
 #ifndef __MPD_LIB__
 #define __MPD_LIB__
+#ifdef WIN32
+	#define __REGEX_IMPORT__ 1
+	#define __W32API_USE_DLLIMPORT__ 1
+#endif
+
 #include "libmpdclient.h"
 #include <regex.h>
 

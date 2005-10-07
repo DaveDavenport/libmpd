@@ -36,20 +36,28 @@
 
 #include <errno.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
 #include <stdio.h>
 #include <sys/param.h>
 
 
 #include <string.h>
 #include <strings.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <stdarg.h>
+
+
+#ifdef WIN32
+#include <ws2tcpip.h>
+#include <winsock.h>
+#else
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#endif
+
 
 #ifndef MPD_NO_IPV6
 #ifdef AF_INET6
@@ -162,6 +170,9 @@ mpd_Connection * mpd_newConnection(const char * host, int port, float timeout) {
 #ifdef MPD_HAVE_IPV6
 	struct sockaddr_in6 sin6;
 #endif
+#ifdef WIN32
+	WSADATA wsaData;
+#endif
 	strcpy(connection->buffer,"");
 	connection->buflen = 0;
 	connection->bufstart = 0;
@@ -172,6 +183,22 @@ mpd_Connection * mpd_newConnection(const char * host, int port, float timeout) {
 	connection->listOks = 0;
 	connection->doneListOk = 0;
 	connection->returnElement = NULL;
+
+#ifdef WIN32
+	if ((WSAStartup(MAKEWORD(2, 2), &wsaData)) != 0) {
+		snprintf(connection->errorStr,MPD_BUFFER_MAX_LENGTH,
+				"Could not find usable WinSock DLL.");
+		connection->error = MPD_ERROR_SYSTEM;
+		return connection;
+	}
+
+	if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 2) {
+		snprintf(connection->errorStr,MPD_BUFFER_MAX_LENGTH,
+				"Could not find usable WinSock DLL.");
+		connection->error = MPD_ERROR_SYSTEM;
+	return connection;
+	}
+#endif
 
 	if(!(he=gethostbyname(host))) {
 		snprintf(connection->errorStr,MPD_BUFFER_MAX_LENGTH,
@@ -228,11 +255,18 @@ mpd_Connection * mpd_newConnection(const char * host, int port, float timeout) {
 
 	/* connect stuff */
 	{
+#ifdef WIN32
+		int iMode = 1; // 0 = blocking, else non-blocking
+		ioctlsocket(connection->sock, FIONBIO, (u_long FAR*) &iMode);
+		if(connect(connection->sock,dest,destlen) == SOCKET_ERROR
+			       	&& WSAGetLastError() != WSAEWOULDBLOCK)
+#else
 		int flags = fcntl(connection->sock, F_GETFL, 0);
 		fcntl(connection->sock, F_SETFL, flags | O_NONBLOCK);
 
 		if(connect(connection->sock,dest,destlen)<0 && 
 				errno!=EINPROGRESS) 
+#endif
 		{
 			snprintf(connection->errorStr,MPD_BUFFER_MAX_LENGTH,
 					"problems connecting to \"%s\" on port"
@@ -303,16 +337,11 @@ mpd_Connection * mpd_newConnection(const char * host, int port, float timeout) {
 
 	{
 		char * test;
-		char * version[3];
 		char * tmp = &output[strlen(MPD_WELCOME_MESSAGE)];
-		char * search = ".";
 		int i;
 
 		for(i=0;i<3;i++) {
-			char * tok;
-			if(i==3) search = " ";
-			version[i] = strtok_r(tmp,search,&tok);
-			if(!version[i]) {
+			if (!tmp) {
 				free(output);
 				snprintf(connection->errorStr,
 					MPD_BUFFER_MAX_LENGTH,
@@ -322,8 +351,8 @@ mpd_Connection * mpd_newConnection(const char * host, int port, float timeout) {
 				connection->error = MPD_ERROR_NOTMPD;
 				return connection;
 			}
-			connection->version[i] = strtol(version[i],&test,10);
-			if(version[i]==test || *test!='\0') {
+			connection->version[i] = strtol(tmp,&test,10);
+			if (test[0] != '.' && test[0] != '\0') {
 				free(output);
 				snprintf(connection->errorStr,
 					MPD_BUFFER_MAX_LENGTH,
@@ -333,7 +362,7 @@ mpd_Connection * mpd_newConnection(const char * host, int port, float timeout) {
 				connection->error = MPD_ERROR_NOTMPD;
 				return connection;
 			}
-			tmp = NULL;
+			tmp = ++test;
 		}
 	}
 
@@ -350,9 +379,16 @@ void mpd_clearError(mpd_Connection * connection) {
 }
 
 void mpd_closeConnection(mpd_Connection * connection) {
+#ifdef WIN32
+	closesocket(connection->sock);
+#else
 	close(connection->sock);
+#endif
 	if(connection->returnElement) free(connection->returnElement);
 	free(connection);
+#ifdef WIN32
+	WSACleanup();
+#endif
 }
 
 void mpd_executeCommand(mpd_Connection * connection, char * command) {
@@ -379,10 +415,9 @@ void mpd_executeCommand(mpd_Connection * connection, char * command) {
 			(ret==-1 && errno==EINTR)) {
 		ret = send(connection->sock,commandPtr,commandLen,
 #ifdef WIN32
-			   ioctlsocket(connection->sock, commandLen, commandPtr));
-#endif
-#ifndef WIN32
-				MSG_DONTWAIT);
+			0);
+#else
+			MSG_DONTWAIT);
 #endif
 		if(ret<=0)
 		{
@@ -425,6 +460,7 @@ void mpd_getNextReturnElement(mpd_Connection * connection) {
 	int readed;
 	char * bufferCheck = NULL;
 	int err;
+	int pos;
 
 	if(connection->returnElement) mpd_freeReturnElement(connection->returnElement);
 	connection->returnElement = NULL;
@@ -466,11 +502,8 @@ void mpd_getNextReturnElement(mpd_Connection * connection) {
 				connection->buffer+connection->buflen,
 				MPD_BUFFER_MAX_LENGTH-connection->buflen,
 #ifdef WIN32
-				ioctlsocket(connection->sock, 
-					    commandLen, 
-					    commandPtr));
-#endif
-#ifndef WIN32
+				0);
+#else
 				MSG_DONTWAIT);
 #endif
 			if(readed<0 && (errno==EAGAIN || errno==EINTR)) {
@@ -548,8 +581,15 @@ void mpd_getNextReturnElement(mpd_Connection * connection) {
 		return;
 	}
 
-	name = strtok_r(output,":",&tok);
-	if(name && (value = strtok_r(NULL,"",&tok)) && value[0]==' ') {
+	tok = strchr(output, ':');
+	if (!tok) return;
+	pos = tok - output;
+	value = ++tok;
+	name = (char *)malloc(pos+1);
+	strncpy(name, output, pos);
+	name[pos] = '\0';
+	
+	if(name && value && value[0]==' ') {
 		connection->returnElement = mpd_newReturnElement(name,&(value[1]));
 	}
 	else {
@@ -670,16 +710,13 @@ mpd_Status * mpd_getStatus(mpd_Connection * connection) {
 			status->songid = atoi(re->value);
 		}
 		else if(strcmp(re->name,"time")==0) {
-			char * tok;
 			char * copy;
 			char * temp;
 			copy = strdup(re->value);
-			temp = strtok_r(copy,":",&tok);
-			if(temp) {
-				status->elapsedTime = atoi(temp);
-				temp = strtok_r(NULL,"",&tok);
-				if(temp) status->totalTime = atoi(temp);
-			}
+			status->elapsedTime = atoi(copy);
+			temp = strchr(copy, ':');
+			if (temp)
+				status->totalTime = atoi(++temp);
 			free(copy);
 		}
 		else if(strcmp(re->name,"error")==0) {
@@ -692,18 +729,16 @@ mpd_Status * mpd_getStatus(mpd_Connection * connection) {
 			status->updatingDb = atoi(re->value);
 		}
 		else if(strcmp(re->name,"audio")==0) {
-			char * tok;
 			char * copy;
 			char * temp;
 			copy = strdup(re->value);
-			temp = strtok_r(copy,":",&tok);
+			status->sampleRate = atoi(copy);
+			temp = strchr(copy,':');
 			if(temp) {
-				status->sampleRate = atoi(temp);
-				temp = strtok_r(NULL,":",&tok);
+				status->bits = atoi(++temp);
+				temp = strchr(temp,':');
 				if(temp) {
-					status->bits = atoi(temp);
-					temp = strtok_r(NULL,"",&tok);
-					if(temp) status->channels = atoi(temp);
+					status->channels = atoi(++temp);
 				}
 			}
 			free(copy);

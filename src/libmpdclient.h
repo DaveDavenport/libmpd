@@ -34,6 +34,11 @@
 #ifndef LIBMPDCLIENT_H
 #define LIBMPDCLIENT_H
 
+
+#ifdef WIN32
+        #define __W32API_USE_DLLIMPORT__ 1
+#endif
+
 #include <sys/time.h>
 #include <stdarg.h>
 #define MPD_BUFFER_MAX_LENGTH	50000

@@ -1,6 +1,7 @@
 INCLUDES = 				\
 	-I.				\
-	-I$(top_srcdir)			
+	-I$(top_srcdir)			\
+	@EXTRA_CFLAGS@
 
 lib_LTLIBRARIES = libmpd.la
 
@@ -15,4 +16,5 @@ libmpdinclude_HEADERS = 		\
 		debug_printf.h
 
 libmpd_la_LIBADD = 
+libmpd_la_LDFLAGS = @EXTRA_LDFLAGS@ 
 libmpdincludedir= $(includedir)/libmpd/

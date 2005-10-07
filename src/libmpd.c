@@ -20,9 +20,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #define __USE_GNU
+
 #include <string.h>
 #include <regex.h>
 #include <stdarg.h>
+#include <config.h>
 #include "debug_printf.h"
 #include "libmpd.h"
 
@@ -124,6 +126,28 @@ typedef struct _MpdQueue
 MpdData * mpd_playlist_sort_artist_list(MpdData *data);
 MpdData * mpd_playlist_sort_tag_list(MpdData *data);
 
+
+
+#ifndef HAVE_STRNDUP
+char * strndup(const char *s, size_t n)
+{
+        size_t nAvail;
+        char *p;
+
+        if(!s) {
+                return NULL;
+        }
+
+        /*  nAvail = min( strlen(s)+1, n+1 ); */
+        nAvail=((strlen(s)+1) > (n+1)) ? n+1 : strlen(s)+1;
+        if(!(p=malloc(nAvail))) {
+                return NULL;
+        }
+        memcpy(p, s, nAvail);
+        p[nAvail - 1]=NULL;
+        return p;
+}
+#endif
 
 
 
