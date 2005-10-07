@@ -194,7 +194,8 @@ MpdData *	mpd_playlist_find_adv		(MpdObj *mi,int exact, ...);
 MpdData *	mpd_playlist_token_find		(MpdObj *mi , char *string);
 /* MpdData struct functions */
 int 		mpd_data_is_last			(MpdData *data);
-void 		mpd_free_data_ob			(MpdData *data);
+/* new api name.. don't like the old one */
+void 		mpd_data_free				(MpdData *data);
 MpdData * 	mpd_data_get_next			(MpdData *data);
 
 /* mpd ob data next will return NULL when there are no more items. it will also call free when called on the last item. */

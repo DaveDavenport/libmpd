@@ -1870,7 +1870,7 @@ MpdData * mpd_data_get_next(MpdData *data)
 	}
 	else if(data->next == NULL)
 	{
-		mpd_free_data_ob(data);
+		mpd_data_free(data);
 		return NULL;
 	}
 	return data;	
@@ -1886,8 +1886,7 @@ int mpd_data_is_last(MpdData *data)
 }
 
 
-/* clean this up.. make one while look */
-void mpd_free_data_ob(MpdData *data)
+void mpd_data_free(MpdData *data)
 {
 	MpdData *temp = NULL;
 	if(data == NULL)
@@ -2351,8 +2350,17 @@ MpdData * mpd_playlist_find(MpdObj *mi, int table, char *string, int exact)
 	{
 		artist->next = data;
 		data->prev = artist;
+		/* make data point to the first in the list */
 		data= artist->first;
+		/* use the artist to iterate over it */
+		/* I need to set all the -> first correct */
+		artist = data;
+		do{
+			artist->first = data;
+			artist = artist->next;
+		}while(artist);
 	}
+
 	return data;
 }
 
@@ -2412,7 +2420,7 @@ MpdData * mpd_playlist_get_changes(MpdObj *mi,int old_playlist_id)
 	if(mpd_unlock_conn(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_playlist_get_changes: unlock failed.\n");
-		mpd_free_data_ob(data);
+		mpd_data_free(data);
 		return NULL;
 	}
 	if(data == NULL) 
