@@ -1,3 +1,6 @@
+24-10-2005 Qball <Qball@qballcow.nl>
+	* Added avuton's libmpdclient patch
+
 07-10-2005 Qball <Qball@qballcow.nl>
 	* Added win32 patch. 
 	* Added fix for possible memory in mpd_plyalist_find
