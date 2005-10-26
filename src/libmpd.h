@@ -57,18 +57,19 @@ typedef struct _MpdQueue MpdQueue;
 /* main object struct. */
 typedef struct _MpdObj MpdObj;
 
-/* enumeration determining what value the MpdData structure hold. 
- * it's allowed to have different type's of item's in one list.
+/** enumeration to determine what value the MpdData structure hold. 
+ *  And MpdData structure can hold only one type of value, but of MpdData structs can hold different type of values.
+ *  It's required to check every MpdData Structure.
  */
-enum {
-	MPD_DATA_TYPE_NONE,
-	MPD_DATA_TYPE_TAG,
-	MPD_DATA_TYPE_ARTIST,
-	MPD_DATA_TYPE_ALBUM,
-	MPD_DATA_TYPE_DIRECTORY,
-	MPD_DATA_TYPE_SONG,
-	MPD_DATA_TYPE_PLAYLIST,
-	MPD_DATA_TYPE_OUTPUT_DEV
+enum MpdDataType{
+	MPD_DATA_TYPE_NONE, 		/** The MpdData structure holds no value */
+	MPD_DATA_TYPE_TAG,		/** Holds an Tag String. value->tag is filled.*/
+	MPD_DATA_TYPE_ARTIST,		/** Holds an Artist string. value->artist is filled. value->album is possible valid */
+	MPD_DATA_TYPE_ALBUM,		/** Holds an Album string. value->album is filled. value->artist is possible valid */
+	MPD_DATA_TYPE_DIRECTORY,	/** Holds an Directory String. value->directory is filled.*/
+	MPD_DATA_TYPE_SONG,		/** Holds an MpdSong Structure. value->song is valid.*/
+	MPD_DATA_TYPE_PLAYLIST,		/** Holds an Playlist String. value->playlist is filled.*/
+	MPD_DATA_TYPE_OUTPUT_DEV	/** Holds an MpdOutputDevice structure. value->output_dev is valid.*/
 } MpdDataType;
 
 /* 
