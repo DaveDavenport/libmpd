@@ -3,8 +3,7 @@
 
 #include "libmpdclient.h"
 
-typedef struct _MpdObj 
-{
+typedef struct _MpdObj {
 	/* defines if we are connected */
 	/* This should be made true if and only if the connection is up and running */
 	short int 	connected;
@@ -81,8 +80,7 @@ enum {
 	MPD_QUEUE_DELETE_ID
 } MpdQueueType;
 
-typedef struct _MpdQueue
-{
+typedef struct _MpdQueue { 
 	struct _MpdQueue *next;
 	struct _MpdQueue *prev;
 	struct _MpdQueue *first;

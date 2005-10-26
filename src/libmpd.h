@@ -101,7 +101,34 @@ typedef struct _MpdData
 #include "libmpd-status.h"
 #include "libmpd-playlist.h"
 
+
+
+
+/**
+ * mpd_new_default 
+ * 
+ * Create an new #MpdObj with default settings. 
+ * hostname will be set to "localhost"
+ * port will be 6600
+ * same as calling #mpd_new("localhost",6600,NULL)
+ * 
+ * returns: the new #MpdObj
+ */
 MpdObj * 	mpd_new_default			();
+
+
+
+/**
+ * mpd_new 
+ * @hostname: The hostname to connect to
+ * @port:	The port to connect to
+ * @Password:	The password to use for the connection, or NULL for no password
+ *
+ * Create a new #MpdObj with provided settings:
+ *
+ * returns: the new #MpdObj
+ */
+
 MpdObj * 	mpd_new				(char *hostname, int port, char *password);
 void 		mpd_set_hostname			(MpdObj *mi, char *hostname);
 void 		mpd_set_password			(MpdObj *mi, char *hostname);
