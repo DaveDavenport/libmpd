@@ -1,3 +1,7 @@
+27-10-2005 Qball <Qball@qballcow.nl>
+	* first splitting of parts in to seperate C and header files
+	* missing mpd_status_update function added to header file
+
 24-10-2005 Qball <Qball@qballcow.nl>
 	* Added avuton's libmpdclient patch
 

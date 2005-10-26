@@ -5,13 +5,19 @@ INCLUDES = 				\
 
 lib_LTLIBRARIES = libmpd.la
 
-libmpd_la_SOURCES =		\
+libmpd_la_SOURCES =			\
 		libmpd.c		\
+		libmpd-player.c		\
+		libmpd-status.c		\
+		libmpd-playlist.c	\
 		libmpdclient.c		\
 		debug_printf.c
 
 libmpdinclude_HEADERS = 		\
 		libmpd.h		\
+		libmpd-player.h		\
+		libmpd-status.h		\
+		libmpd-playlist.h	\
 		libmpdclient.h		\
 		debug_printf.h
 
