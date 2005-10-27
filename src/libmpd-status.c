@@ -49,6 +49,7 @@ int mpd_status_queue_update(MpdObj *mi)
 
 int mpd_status_update(MpdObj *mi)
 {
+  ChangedStatusType what_changed=0;
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_INFO,"mpd_status_update: Where not connected\n");
@@ -60,7 +61,7 @@ int mpd_status_update(MpdObj *mi)
 		return MPD_O_LOCK_FAILED;
 	}
 
-
+	
 	if(mi->status != NULL)
 	{
 		mpd_freeStatus(mi->status);
@@ -81,21 +82,23 @@ int mpd_status_update(MpdObj *mi)
 	/*
 	 * check for changes 
 	 */
+	/* first save the old status */
+		memcpy(&(mi->OldState), &(mi->CurrentState), sizeof(MpdServerState));
 
-	if(mi->playlistid != mi->status->playlist)
+	/* playlist change */
+	if(mi->CurrentState.playlistid != mi->status->playlist)
 	{
 		/* print debug message */
 		debug_printf(DEBUG_INFO, "mpd_status_update: Playlist has changed!");
 
-		/* TODO: Call defined functions */
+		/* deprecated */
 		if(mi->playlist_changed != NULL)
 		{
-			mi->playlist_changed(mi, mi->playlistid, mi->status->playlist,mi->playlist_changed_pointer);
-		}
-		if(!mpd_check_connected(mi))
-		{
-			return TRUE;
-
+			mi->playlist_changed(mi, mi->OldState.playlistid, mi->status->playlist,mi->playlist_changed_pointer);
+			if(!mpd_check_connected(mi))
+			{
+				return TRUE;
+			}
 		}
 
 
@@ -107,57 +110,68 @@ int mpd_status_update(MpdObj *mi)
 			mi->CurrentSong = NULL;
 		}
 
+    /* set MPD_CST_PLAYLIST to be changed */
+		what_changed |= MPD_CST_PLAYLIST;
+
 		/* save new id */
-		mi->playlistid = mi->status->playlist;
+		mi->CurrentState.playlistid = mi->status->playlist;
 	}
 
 
-	/* playlist change */
-	if(mi->state != mi->status->state)
+	/* state change */
+	if(mi->CurrentState.state != mi->status->state)
 	{
-		/* TODO: Call defined functions */
+		/* deprecated */
 		if(mi->state_changed != NULL)
 		{                                                                      		
-			mi->state_changed(mi, mi->state,mi->status->state,mi->state_changed_signal_pointer);
+			mi->state_changed(mi, mi->OldState.state,mi->status->state,mi->state_changed_signal_pointer);
 		}                                                                                           		
-
-		mi->state = mi->status->state;
+		what_changed |= MPD_CST_STATE;
+		mi->CurrentState.state = mi->status->state;
 	}
 
-	if(mi->songid != mi->status->songid)
+	if(mi->CurrentState.songid != mi->status->songid)
 	{
 		/* print debug message */
-		debug_printf(DEBUG_INFO, "mpd_status_update: Song has changed %i %i!", mi->songid, mi->status->songid);
+		debug_printf(DEBUG_INFO, "mpd_status_update: Song has changed %i %i!", mi->OldState.songid, mi->status->songid);
 
-		/* TODO: Call defined functions */
+		/* deprecated */
 		if(mi->song_changed != NULL)
 		{                                                                      		
-			mi->song_changed(mi, mi->songid,mi->status->songid,mi->song_changed_signal_pointer);
+			mi->song_changed(mi, mi->OldState.songid,mi->status->songid,mi->song_changed_signal_pointer);
 		}
+		what_changed |= MPD_CST_SONGID;
 		/* save new songid */
-		mi->songid = mi->status->songid;
+		mi->CurrentState.songid = mi->status->songid;
 
 	}
 
 
-
+	/* deprecated */
 	if(mi->status_changed != NULL)
 	{                                                                      		
 		mi->status_changed(mi, mi->status_changed_signal_pointer);		
 	}
 
 
-	if(mi->status->updatingDb != mi->updatingDb)
+	if(mi->CurrentState.updatingDb != mi->status->updatingDb )
 	{
+		/* deprecated */
 		if(mi->updating_changed != NULL)
 		{
 			mi->updating_changed(mi, mi->status->updatingDb,mi->updating_signal_pointer);
 		}
+		what_changed |= MPD_CST_UPDATING;
 		if(!mi->status->updatingDb)
 		{
-			mpd_stats_update(mi);
+			mpd_stats_update_real(mi, &what_changed);
 		}
-		mi->updatingDb = mi->status->updatingDb;
+		mi->CurrentState.updatingDb = mi->status->updatingDb;
+	}
+
+	if(mi->the_status_changed_callback != NULL)
+	{                                                                      		
+		mi->the_status_changed_callback( mi, what_changed, mi->the_status_changed_signal_userdata );		
 	}
 
 	return FALSE;
@@ -292,7 +306,7 @@ int mpd_status_get_bitrate(MpdObj *mi)
 /* TODO: error checking might be nice? */
 int mpd_status_db_is_updating(MpdObj *mi)
 {
-	return mi->updatingDb;
+	return mi->CurrentState.updatingDb;
 }
 
 
@@ -419,6 +433,17 @@ int mpd_stats_queue_update(MpdObj *mi)
 
 int mpd_stats_update(MpdObj *mi)
 {
+	mpd_stats_update_real(mi, NULL);
+}
+
+int mpd_stats_update_real(MpdObj *mi, ChangedStatusType* what_changed)
+{
+	ChangedStatusType what_changed_here = 0;
+	if ( what_changed == NULL ) {
+		/* we need to save the current state, because we're called standalone */
+		memcpy(&(mi->OldState), &(mi->CurrentState), sizeof(MpdServerState));
+	}
+	
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_INFO,"mpd_stats_update: Where not connected\n");
@@ -440,17 +465,27 @@ int mpd_stats_update(MpdObj *mi)
 	{
 		debug_printf(DEBUG_ERROR,"mpd_stats_update: Failed to grab stats from mpd\n");
 	}
-	else if(mi->stats->dbUpdateTime != mi->dbUpdateTime)
+	else if(mi->stats->dbUpdateTime != mi->OldState.dbUpdateTime)
 	{
 		debug_printf(DEBUG_INFO, "mpd_stats_update: database updated\n");
+		/* deprecated */
 		if(mi->database_changed != NULL)
 		{                                                                      		
 			mi->database_changed(mi, mi->database_changed_signal_pointer);
-		}                                                                                           		
-		mi->dbUpdateTime = mi->stats->dbUpdateTime;
+		}
+		what_changed_here |= MPD_CST_DATABASE;
+		
+		mi->CurrentState.dbUpdateTime = mi->stats->dbUpdateTime;
 	}
 
-
+  if (what_changed) {
+    (*what_changed) |= what_changed_here;
+  } else {
+   	if(mi->the_status_changed_callback != NULL)
+    {                                                                      		
+      mi->the_status_changed_callback(mi, what_changed_here, mi->the_status_changed_signal_userdata);		
+    }
+  }
 
 	if(mpd_unlock_conn(mi))
 	{

@@ -80,11 +80,14 @@ MpdObj * mpd_create()
 	mi->error_msg = NULL;
 	mi->CurrentSong = NULL;
 	/* info */
-	mi->playlistid = -1;
-	mi->songid = -1;
-	mi->state = -1;
-	mi->dbUpdateTime = 0;
-	mi->updatingDb = 0;
+	mi->CurrentState.playlistid = -1;
+	mi->CurrentState.state = -1;
+	mi->CurrentState.songid = -1;
+	mi->CurrentState.dbUpdateTime = 0;
+	mi->CurrentState.updatingDb = 0;
+ 
+	memcpy(&(mi->OldState), &(mi->CurrentState), sizeof(MpdServerState));
+
 
 	/* signals */
 	mi->playlist_changed = NULL;
@@ -187,16 +190,17 @@ int mpd_check_error(MpdObj *mi)
 
 		debug_printf(DEBUG_ERROR, "mpd_check_error: Following error occured: code: %i msg: %s", mi->error, mi->error_msg);
 		mpd_disconnect(mi);
-		/* trigger signal for error */
+		/* deprecated */
 		if(mi->error_signal)
 		{
 			mi->error_signal(mi, mi->error, mi->error_msg,mi->error_signal_pointer);
 		}
-
-
+		if (mi->the_error_callback)
+		{
+			mi->the_error_callback( mi, mi->error, mi->error_msg, mi->the_error_signal_userdata );
+		}
 		return TRUE;
 	}
-
 	return FALSE;
 }
 
@@ -353,14 +357,21 @@ int mpd_disconnect(MpdObj *mi)
 		mpd_freeSong(mi->CurrentSong);
 		mi->CurrentSong = NULL;
 	}
-	mi->playlistid = -1;
-	mi->state = -1;
-	mi->songid = -1;
-	mi->dbUpdateTime = 0;
-	mi->updatingDb = 0;
-
+	mi->CurrentState.playlistid = -1;
+	mi->CurrentState.state = -1;
+	mi->CurrentState.songid = -1;
+	mi->CurrentState.dbUpdateTime = 0;
+	mi->CurrentState.updatingDb = 0;
+	
+	memcpy(&(mi->OldState), &(mi->CurrentState) , sizeof(MpdServerState));
 	/*don't reset errors */
-
+	
+	
+	if(mi->the_connection_changed_callback != NULL)
+	{                                                                      		
+		mi->the_connection_changed_callback( mi, FALSE, mi->the_connection_changed_signal_userdata );
+	}                                                                                           		
+	/* deprecated */
 	if(mi->disconnect != NULL)
 	{                                                                      		
 		mi->disconnect(mi, mi->disconnect_pointer);
@@ -385,11 +396,13 @@ int mpd_connect(MpdObj *mi)
 	mi->error_msg = NULL;
 
 	debug_printf(DEBUG_INFO, "mpd_connect: connecting\n");
-	mi->playlistid = -1;
-	mi->state = -1;
-	mi->songid = -1;
-	mi->dbUpdateTime = 0;
-	mi->updatingDb = 0;
+	mi->CurrentState.playlistid = -1;
+	mi->CurrentState.state = -1;
+	mi->CurrentState.songid = -1;
+	mi->CurrentState.dbUpdateTime = 0;
+	mi->CurrentState.updatingDb = 0;
+ 
+	memcpy(&(mi->OldState), &(mi->CurrentState), sizeof(MpdServerState));
 
 	if(mi->connected)
 	{
@@ -427,6 +440,13 @@ int mpd_connect(MpdObj *mi)
 	{
 		return -1;
 	}
+	
+	
+	if(mi->the_connection_changed_callback != NULL)
+	{                                                                      		
+		mi->the_connection_changed_callback( mi, TRUE, mi->the_connection_changed_signal_userdata );
+	}
+	/* deprecated */
 	if(mi->connect != NULL)
 	{                                                                      		
 		mi->connect(mi, mi->connect_pointer);
@@ -888,5 +908,3 @@ int mpd_misc_get_tag_by_name(char *name)
 	}
 	return -1;
 }
-
-

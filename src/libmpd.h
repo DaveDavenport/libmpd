@@ -72,6 +72,25 @@ enum MpdDataType{
 	MPD_DATA_TYPE_OUTPUT_DEV	/** Holds an MpdOutputDevice structure. value->output_dev is valid.*/
 } MpdDataType;
 
+/** Bitwise enumeration to determine what triggered the status_changed signals
+ *
+ */
+typedef enum _ChangedStatusType {
+	MPD_CST_PLAYLIST      = 0x01,
+	MPD_CST_SONG          = 0x02,
+	MPD_CST_SONGID        = 0x04,
+	MPD_CST_DATABASE      = 0x08,
+	MPD_CST_UPDATING      = 0x10,
+	MPD_CST_VOLUME        = 0x11,
+	MPD_CST_TIME          = 0x12,
+	MPD_CST_ELAPSED_TIME  = 0x14,
+	MPD_CST_CROSSFADE     = 0x18,
+	MPD_CST_RANDOM        = 0x20,
+	MPD_CST_REPEAT        = 0x21,
+  MPD_CST_AUDIO         = 0x22,
+	MPD_CST_STATE         = 0x24
+} ChangedStatusType;
+
 /* 
  * there will be wrapper functions in the future to grab the internals.
  */
@@ -158,15 +177,26 @@ void 		mpd_free				(MpdObj *mi);
 /* 
  * signals 
  */
-void 		mpd_signal_set_playlist_changed	(MpdObj *mi, void *(* playlist_changed)(MpdObj *mi, int old_playlist_id, int new_playlist_id,void *pointer), void *pointer);
-void 		mpd_signal_set_error			(MpdObj *mi, void *(* error_signal)(MpdObj *mi, int id, char *msg, void *pointer),void *pointer);
-void 		mpd_signal_set_song_changed		(MpdObj *mi, void *(* song_changed)(MpdObj *mi, int old_song_id, int new_song_id,void *pointer), void *pointer);
-void 		mpd_signal_set_status_changed	(MpdObj *mi, void *(* status_changed)(MpdObj *mi,void *pointer), void *pointer);
-void 		mpd_signal_set_state_changed 	(MpdObj *mi, void *(* state_changed)(MpdObj *mi, int old_state, int new_state, void *pointer),void *pointer);
-void 		mpd_signal_set_disconnect		(MpdObj *mi, void *(* disconnect)(MpdObj *mi, void *pointer),void *disconnect_pointer);
-void 		mpd_signal_set_connect		(MpdObj *mi, void *(* connect)(MpdObj *mi, void *pointer),void *connect_pointer);
-void 		mpd_signal_set_database_changed	(MpdObj *mi, void *(* database_changed)(MpdObj *mi, void *pointer), void *pointer);
-void 		mpd_signal_set_updating_changed	(MpdObj *mi, void *(* updating_changed)(MpdObj *mi,int updating, void *pointer), void *pointer);
+/* callback typedef's */
+typedef void *(* StatusChangedCallback)(MpdObj *mi, ChangedStatusType what, void *userdata);
+typedef void *(* ErrorCallback)(MpdObj *mi, int id, char *msg, void *userdata);
+typedef void *(* ConnectionChangedCallback)(MpdObj *mi, int connect, void *userdata);
+
+/* new style signal connectors */
+void 		mpd_signal_connect_status_changed        (MpdObj *mi, StatusChangedCallback status_changed, void *userdata);
+void 		mpd_signal_connect_error                 (MpdObj *mi, ErrorCallback error, void *userdata);
+void 		mpd_signal_connect_connection_changed	   (MpdObj *mi, ConnectionChangedCallback disconnect, int connected, void *userdata);
+
+/* old style signal connectors */
+void 		mpd_signal_set_playlist_changed	(MpdObj *mi, void *(* playlist_changed)(MpdObj *mi, int old_playlist_id, int new_playlist_id,void *pointer), void *pointer) __attribute__ ((deprecated)); 
+void 		mpd_signal_set_error			(MpdObj *mi, void *(* error_signal)(MpdObj *mi, int id, char *msg, void *pointer),void *pointer) __attribute__ ((deprecated)); 
+void 		mpd_signal_set_song_changed		(MpdObj *mi, void *(* song_changed)(MpdObj *mi, int old_song_id, int new_song_id,void *pointer), void *pointer) __attribute__ ((deprecated)); 
+void 		mpd_signal_set_status_changed	(MpdObj *mi, void *(* status_changed)(MpdObj *mi,void *pointer), void *pointer) __attribute__ ((deprecated)); 
+void 		mpd_signal_set_state_changed 	(MpdObj *mi, void *(* state_changed)(MpdObj *mi, int old_state, int new_state, void *pointer),void *pointer) __attribute__ ((deprecated)); 
+void 		mpd_signal_set_disconnect		(MpdObj *mi, void *(* disconnect)(MpdObj *mi, void *pointer),void *disconnect_pointer) __attribute__ ((deprecated)); 
+void 		mpd_signal_set_connect		(MpdObj *mi, void *(* connect)(MpdObj *mi, void *pointer),void *connect_pointer) __attribute__ ((deprecated)); 
+void 		mpd_signal_set_database_changed	(MpdObj *mi, void *(* database_changed)(MpdObj *mi, void *pointer), void *pointer) __attribute__ ((deprecated)); 
+void 		mpd_signal_set_updating_changed	(MpdObj *mi, void *(* updating_changed)(MpdObj *mi,int updating, void *pointer), void *pointer) __attribute__ ((deprecated)); 
 
 
 /* MpdData struct functions */

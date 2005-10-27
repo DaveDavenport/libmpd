@@ -178,7 +178,7 @@ int mpd_playlist_clear(MpdObj *mi)
 	mpd_sendClearCommand(mi->connection);
 	mpd_finishCommand(mi->connection);
 	/* hack to make it update correctly when replacing 1 song */
-	mi->songid = -1;
+	mi->CurrentState.songid = -1;
 	/* unlock */
 	mpd_unlock_conn(mi);
 	return FALSE;

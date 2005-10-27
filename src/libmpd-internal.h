@@ -3,6 +3,16 @@
 
 #include "libmpdclient.h"
 
+
+typedef struct _MpdServerState {
+		/* information needed to detect changes on mpd's side */
+	long long 	playlistid;
+	int 		songid;
+	int 		state;
+	unsigned long	dbUpdateTime;	
+	int updatingDb;
+} MpdServerState;
+
 typedef struct _MpdObj {
 	/* defines if we are connected */
 	/* This should be made true if and only if the connection is up and running */
@@ -19,15 +29,22 @@ typedef struct _MpdObj {
 	mpd_Stats 	*stats;
 	mpd_Song 	*CurrentSong;
 
-	/* information needed to detect changes on mpd's side */
-	long long 	playlistid;
-	int 		songid;
-	int 		state;
-	unsigned long	dbUpdateTime;	
-	int updatingDb;
-
+  /* used to store/detect serverside status changes */
+	MpdServerState CurrentState;
+	MpdServerState OldState;
+ 
+	/* new style signals */
+	/* error signal */
+	ErrorCallback the_error_callback;
+	void *the_error_signal_userdata;
+	/* song status changed */
+	StatusChangedCallback the_status_changed_callback;
+	void *the_status_changed_signal_userdata;
+	/* (dis)connect signal */
+	ConnectionChangedCallback the_connection_changed_callback;
+	void *the_connection_changed_signal_userdata;
         
-	/* functions to call */
+	/* old style signals */
 	void *(* playlist_changed)(struct _MpdObj *mi, int old_playlist_id, int new_playlist_id, void *pointer);	
 	void *playlist_changed_pointer;
 	/* error signal */
