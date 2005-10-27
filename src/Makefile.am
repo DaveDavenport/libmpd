@@ -18,6 +18,7 @@ libmpdinclude_HEADERS = 		\
 		libmpd-player.h		\
 		libmpd-status.h		\
 		libmpd-playlist.h	\
+		libmpd-internal.h	\
 		libmpdclient.h		\
 		debug_printf.h
 
