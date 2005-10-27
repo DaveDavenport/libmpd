@@ -1,0 +1,387 @@
+<!-- ##### SECTION Title ##### -->
+libmpd
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO MPD_O_NOT_CONNECTED ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_O_FAILED_STATUS ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_O_LOCK_FAILED ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_O_FAILED_STATS ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_O_ERROR ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_O_PLAYLIST_EXIST ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_PLAYER_PAUSE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_PLAYER_PLAY ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_PLAYER_STOP ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_PLAYER_UNKNOWN ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT MpdQueue ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT MpdObj ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT MpdData ##### -->
+<para>
+
+</para>
+
+@tag: 
+@artist: 
+@album: 
+@directory: 
+@playlist: 
+@song: 
+@output_dev: 
+
+<!-- ##### FUNCTION mpd_new_default ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_new ##### -->
+<para>
+
+</para>
+
+@hostname: 
+@port: 
+@password: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_set_hostname ##### -->
+<para>
+
+</para>
+
+@mi: 
+@hostname: 
+
+
+<!-- ##### FUNCTION mpd_set_password ##### -->
+<para>
+
+</para>
+
+@mi: 
+@password: 
+
+
+<!-- ##### FUNCTION mpd_set_port ##### -->
+<para>
+
+</para>
+
+@mi: 
+@port: 
+
+
+<!-- ##### FUNCTION mpd_set_connection_timeout ##### -->
+<para>
+
+</para>
+
+@mi: 
+@timeout: 
+
+
+<!-- ##### FUNCTION mpd_connect ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_disconnect ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_check_connected ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_check_error ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_free ##### -->
+<para>
+
+</para>
+
+@mi: 
+
+
+<!-- ##### FUNCTION mpd_signal_set_playlist_changed ##### -->
+<para>
+
+</para>
+
+@mi: 
+@playlist_changed: 
+@pointer: 
+
+
+<!-- ##### FUNCTION mpd_signal_set_error ##### -->
+<para>
+
+</para>
+
+@mi: 
+@error_signal: 
+@pointer: 
+
+
+<!-- ##### FUNCTION mpd_signal_set_song_changed ##### -->
+<para>
+
+</para>
+
+@mi: 
+@song_changed: 
+@pointer: 
+
+
+<!-- ##### FUNCTION mpd_signal_set_status_changed ##### -->
+<para>
+
+</para>
+
+@mi: 
+@status_changed: 
+@pointer: 
+
+
+<!-- ##### FUNCTION mpd_signal_set_state_changed ##### -->
+<para>
+
+</para>
+
+@mi: 
+@state_changed: 
+@pointer: 
+
+
+<!-- ##### FUNCTION mpd_signal_set_disconnect ##### -->
+<para>
+
+</para>
+
+@mi: 
+@disconnect: 
+@disconnect_pointer: 
+
+
+<!-- ##### FUNCTION mpd_signal_set_connect ##### -->
+<para>
+
+</para>
+
+@mi: 
+@connect: 
+@connect_pointer: 
+
+
+<!-- ##### FUNCTION mpd_signal_set_database_changed ##### -->
+<para>
+
+</para>
+
+@mi: 
+@database_changed: 
+@pointer: 
+
+
+<!-- ##### FUNCTION mpd_signal_set_updating_changed ##### -->
+<para>
+
+</para>
+
+@mi: 
+@updating_changed: 
+@pointer: 
+
+
+<!-- ##### FUNCTION mpd_data_is_last ##### -->
+<para>
+
+</para>
+
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_data_free ##### -->
+<para>
+
+</para>
+
+@data: 
+
+
+<!-- ##### FUNCTION mpd_data_get_next ##### -->
+<para>
+
+</para>
+
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_server_get_output_devices ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_server_set_output_device ##### -->
+<para>
+
+</para>
+
+@mi: 
+@device_id: 
+@state: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_server_check_version ##### -->
+<para>
+
+</para>
+
+@mi: 
+@major: 
+@minor: 
+@micro: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_misc_tokenize ##### -->
+<para>
+
+</para>
+
+@string: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_misc_tokens_free ##### -->
+<para>
+
+</para>
+
+@tokens: 
+
+
+<!-- ##### FUNCTION mpd_misc_get_tag_by_name ##### -->
+<para>
+
+</para>
+
+@name: 
+@Returns: 
+
+

@@ -1,0 +1,36 @@
+<!-- ##### SECTION Title ##### -->
+debug_printf
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO NO_DEBUG_OUTPUT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION debug_printf ##### -->
+<para>
+
+</para>
+
+@dp: 
+@format: 
+@Varargs: 
+
+

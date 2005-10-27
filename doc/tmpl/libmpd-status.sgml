@@ -1,0 +1,184 @@
+<!-- ##### SECTION Title ##### -->
+libmpd-status
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION mpd_status_check ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_status_queue_update ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_status_update ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_status_set_volume_as_float ##### -->
+<para>
+
+</para>
+
+@mi: 
+@fvol: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_status_set_volume ##### -->
+<para>
+
+</para>
+
+@mi: 
+@volume: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_status_get_volume ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_status_get_bitrate ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_status_get_total_song_time ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_status_get_elapsed_song_time ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_status_get_crossfade ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_status_set_crossfade ##### -->
+<para>
+
+</para>
+
+@mi: 
+@crossfade_time: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_stats_update ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_stats_get_total_songs ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_stats_get_total_artists ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_stats_get_total_albums ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_stats_get_uptime ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_stats_get_playtime ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_status_db_is_updating ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+

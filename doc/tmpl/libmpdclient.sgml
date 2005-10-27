@@ -1,0 +1,1124 @@
+<!-- ##### SECTION Title ##### -->
+libmpdclient
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO MPD_BUFFER_MAX_LENGTH ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_WELCOME_MESSAGE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ERROR_TIMEOUT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ERROR_SYSTEM ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ERROR_UNKHOST ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ERROR_CONNPORT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ERROR_NOTMPD ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ERROR_NORESPONSE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ERROR_SENDING ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ERROR_CONNCLOSED ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ERROR_ACK ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ERROR_BUFFEROVERRUN ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ACK_ERROR_UNK ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ERROR_AT_UNK ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ACK_ERROR_NOT_LIST ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ACK_ERROR_ARG ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ACK_ERROR_PASSWORD ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ACK_ERROR_PERMISSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ACK_ERROR_UNKNOWN_CMD ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ACK_ERROR_NO_EXIST ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ACK_ERROR_PLAYLIST_MAX ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ACK_ERROR_SYSTEM ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ACK_ERROR_PLAYLIST_LOAD ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ACK_ERROR_UPDATE_ALREADY ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ACK_ERROR_PLAYER_SYNC ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_ACK_ERROR_EXIST ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT mpd_ReturnElement ##### -->
+<para>
+
+</para>
+
+@name: 
+@value: 
+
+<!-- ##### STRUCT mpd_Connection ##### -->
+<para>
+
+</para>
+
+@version: 
+@errorStr: 
+@errorCode: 
+@errorAt: 
+@error: 
+@sock: 
+@buffer: 
+@buflen: 
+@bufstart: 
+@doneProcessing: 
+@listOks: 
+@doneListOk: 
+@commandList: 
+@returnElement: 
+@timeout: 
+
+<!-- ##### FUNCTION mpd_newConnection ##### -->
+<para>
+
+</para>
+
+@host: 
+@port: 
+@timeout: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_setConnectionTimeout ##### -->
+<para>
+
+</para>
+
+@connection: 
+@timeout: 
+
+
+<!-- ##### FUNCTION mpd_closeConnection ##### -->
+<para>
+
+</para>
+
+@connection: 
+
+
+<!-- ##### FUNCTION mpd_clearError ##### -->
+<para>
+
+</para>
+
+@connection: 
+
+
+<!-- ##### MACRO MPD_STATUS_STATE_UNKNOWN ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_STATUS_STATE_STOP ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_STATUS_STATE_PLAY ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_STATUS_STATE_PAUSE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_STATUS_NO_VOLUME ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT mpd_Status ##### -->
+<para>
+
+</para>
+
+@volume: 
+@repeat: 
+@random: 
+@playlistLength: 
+@state: 
+@crossfade: 
+@song: 
+@songid: 
+@elapsedTime: 
+@totalTime: 
+@bitRate: 
+@sampleRate: 
+@bits: 
+@channels: 
+@updatingDb: 
+@error: 
+
+<!-- ##### FUNCTION mpd_sendStatusCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+
+
+<!-- ##### FUNCTION mpd_getStatus ##### -->
+<para>
+
+</para>
+
+@connection: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_freeStatus ##### -->
+<para>
+
+</para>
+
+@status: 
+
+
+<!-- ##### STRUCT mpd_Stats ##### -->
+<para>
+
+</para>
+
+@numberOfArtists: 
+@numberOfAlbums: 
+@numberOfSongs: 
+@uptime: 
+@dbUpdateTime: 
+@playTime: 
+@dbPlayTime: 
+
+<!-- ##### FUNCTION mpd_sendStatsCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+
+
+<!-- ##### FUNCTION mpd_getStats ##### -->
+<para>
+
+</para>
+
+@connection: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_freeStats ##### -->
+<para>
+
+</para>
+
+@stats: 
+
+
+<!-- ##### MACRO MPD_SONG_NO_TIME ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_SONG_NO_NUM ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_SONG_NO_ID ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT mpd_Song ##### -->
+<para>
+
+</para>
+
+@file: 
+@artist: 
+@title: 
+@album: 
+@track: 
+@name: 
+@date: 
+@genre: 
+@composer: 
+@time: 
+@pos: 
+@id: 
+
+<!-- ##### FUNCTION mpd_newSong ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_freeSong ##### -->
+<para>
+
+</para>
+
+@song: 
+
+
+<!-- ##### FUNCTION mpd_songDup ##### -->
+<para>
+
+</para>
+
+@song: 
+@Returns: 
+
+
+<!-- ##### STRUCT mpd_Directory ##### -->
+<para>
+
+</para>
+
+@path: 
+
+<!-- ##### FUNCTION mpd_newDirectory ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_freeDirectory ##### -->
+<para>
+
+</para>
+
+@directory: 
+
+
+<!-- ##### FUNCTION mpd_directoryDup ##### -->
+<para>
+
+</para>
+
+@directory: 
+@Returns: 
+
+
+<!-- ##### STRUCT mpd_PlaylistFile ##### -->
+<para>
+
+</para>
+
+@path: 
+
+<!-- ##### FUNCTION mpd_newPlaylistFile ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_freePlaylistFile ##### -->
+<para>
+
+</para>
+
+@playlist: 
+
+
+<!-- ##### FUNCTION mpd_playlistFileDup ##### -->
+<para>
+
+</para>
+
+@playlist: 
+@Returns: 
+
+
+<!-- ##### MACRO MPD_INFO_ENTITY_TYPE_DIRECTORY ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_INFO_ENTITY_TYPE_SONG ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_INFO_ENTITY_TYPE_PLAYLISTFILE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT mpd_InfoEntity ##### -->
+<para>
+
+</para>
+
+@type: 
+
+<!-- ##### FUNCTION mpd_newInfoEntity ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_freeInfoEntity ##### -->
+<para>
+
+</para>
+
+@entity: 
+
+
+<!-- ##### FUNCTION mpd_getNextInfoEntity ##### -->
+<para>
+
+</para>
+
+@connection: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_sendCurrentSongCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+
+
+<!-- ##### FUNCTION mpd_sendPlaylistInfoCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@songNum: 
+
+
+<!-- ##### FUNCTION mpd_sendPlaylistIdCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@songId: 
+
+
+<!-- ##### FUNCTION mpd_sendPlChangesCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@playlist: 
+
+
+<!-- ##### FUNCTION mpd_sendListallCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@dir: 
+
+
+<!-- ##### FUNCTION mpd_sendListallInfoCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@dir: 
+
+
+<!-- ##### FUNCTION mpd_sendLsInfoCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@dir: 
+
+
+<!-- ##### MACRO MPD_TABLE_ARTIST ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_TABLE_ALBUM ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_TABLE_TITLE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_TABLE_FILENAME ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION mpd_sendSearchCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@table: 
+@str: 
+
+
+<!-- ##### FUNCTION mpd_sendFindCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@table: 
+@str: 
+
+
+<!-- ##### FUNCTION mpd_sendSearchTagCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@Varargs: 
+
+
+<!-- ##### FUNCTION mpd_sendFindTagCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@Varargs: 
+
+
+<!-- ##### FUNCTION mpd_sendVSearchTagCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@arglist: 
+
+
+<!-- ##### FUNCTION mpd_sendVFindTagCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@arglist: 
+
+
+<!-- ##### FUNCTION mpd_getNextArtist ##### -->
+<para>
+
+</para>
+
+@connection: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_getNextAlbum ##### -->
+<para>
+
+</para>
+
+@connection: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_getNextTag ##### -->
+<para>
+
+</para>
+
+@connection: 
+@table: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_sendListCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@table: 
+@arg1: 
+
+
+<!-- ##### FUNCTION mpd_sendListTagCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@table: 
+@Varargs: 
+
+
+<!-- ##### FUNCTION mpd_sendVListTagCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@ret_table: 
+@arglist: 
+
+
+<!-- ##### FUNCTION mpd_sendAddCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@file: 
+
+
+<!-- ##### FUNCTION mpd_sendDeleteCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@songNum: 
+
+
+<!-- ##### FUNCTION mpd_sendDeleteIdCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@songNum: 
+
+
+<!-- ##### FUNCTION mpd_sendSaveCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@name: 
+
+
+<!-- ##### FUNCTION mpd_sendLoadCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@name: 
+
+
+<!-- ##### FUNCTION mpd_sendRmCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@name: 
+
+
+<!-- ##### FUNCTION mpd_sendShuffleCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+
+
+<!-- ##### FUNCTION mpd_sendClearCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+
+
+<!-- ##### MACRO MPD_PLAY_AT_BEGINNING ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION mpd_sendPlayCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@songNum: 
+
+
+<!-- ##### FUNCTION mpd_sendPlayIdCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@songNum: 
+
+
+<!-- ##### FUNCTION mpd_sendStopCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+
+
+<!-- ##### FUNCTION mpd_sendPauseCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@pauseMode: 
+
+
+<!-- ##### FUNCTION mpd_sendNextCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+
+
+<!-- ##### FUNCTION mpd_sendPrevCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+
+
+<!-- ##### FUNCTION mpd_sendMoveCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@from: 
+@to: 
+
+
+<!-- ##### FUNCTION mpd_sendMoveIdCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@from: 
+@to: 
+
+
+<!-- ##### FUNCTION mpd_sendSwapCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@song1: 
+@song2: 
+
+
+<!-- ##### FUNCTION mpd_sendSwapIdCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@song1: 
+@song2: 
+
+
+<!-- ##### FUNCTION mpd_sendSeekCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@song: 
+@time: 
+
+
+<!-- ##### FUNCTION mpd_sendSeekIdCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@song: 
+@time: 
+
+
+<!-- ##### FUNCTION mpd_sendRepeatCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@repeatMode: 
+
+
+<!-- ##### FUNCTION mpd_sendRandomCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@randomMode: 
+
+
+<!-- ##### FUNCTION mpd_sendSetvolCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@volumeChange: 
+
+
+<!-- ##### FUNCTION mpd_sendVolumeCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@volumeChange: 
+
+
+<!-- ##### FUNCTION mpd_sendCrossfadeCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@seconds: 
+
+
+<!-- ##### FUNCTION mpd_sendUpdateCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@path: 
+
+
+<!-- ##### FUNCTION mpd_getUpdateId ##### -->
+<para>
+
+</para>
+
+@connection: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_sendPasswordCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@pass: 
+
+
+<!-- ##### FUNCTION mpd_finishCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+
+
+<!-- ##### FUNCTION mpd_sendCommandListBegin ##### -->
+<para>
+
+</para>
+
+@connection: 
+
+
+<!-- ##### FUNCTION mpd_sendCommandListOkBegin ##### -->
+<para>
+
+</para>
+
+@connection: 
+
+
+<!-- ##### FUNCTION mpd_sendCommandListEnd ##### -->
+<para>
+
+</para>
+
+@connection: 
+
+
+<!-- ##### FUNCTION mpd_nextListOkCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@Returns: 
+
+
+<!-- ##### STRUCT mpd_OutputEntity ##### -->
+<para>
+
+</para>
+
+@id: 
+@name: 
+@enabled: 
+
+<!-- ##### FUNCTION mpd_sendOutputsCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+
+
+<!-- ##### FUNCTION mpd_getNextOutput ##### -->
+<para>
+
+</para>
+
+@connection: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_sendEnableOutputCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@outputId: 
+
+
+<!-- ##### FUNCTION mpd_sendDisableOutputCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@outputId: 
+
+
+<!-- ##### FUNCTION mpd_freeOutputElement ##### -->
+<para>
+
+</para>
+
+@output: 
+
+

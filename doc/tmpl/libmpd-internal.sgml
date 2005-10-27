@@ -1,0 +1,107 @@
+<!-- ##### SECTION Title ##### -->
+libmpd-internal
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT _MpdObj ##### -->
+<para>
+
+</para>
+
+@connected: 
+@hostname: 
+@port: 
+@password: 
+@connection_timeout: 
+@connection: 
+@status: 
+@stats: 
+@CurrentSong: 
+@songid: 
+@state: 
+@dbUpdateTime: 
+@updatingDb: 
+@playlist_changed: 
+@playlist_changed_pointer: 
+@error_signal: 
+@error_signal_pointer: 
+@song_changed: 
+@song_changed_signal_pointer: 
+@status_changed: 
+@status_changed_signal_pointer: 
+@state_changed: 
+@state_changed_signal_pointer: 
+@disconnect: 
+@disconnect_pointer: 
+@connect: 
+@connect_pointer: 
+@error: 
+@error_msg: 
+@database_changed: 
+@database_changed_signal_pointer: 
+@updating_changed: 
+@updating_signal_pointer: 
+@connection_lock: 
+@queue: 
+
+<!-- ##### STRUCT _MpdQueue ##### -->
+<para>
+
+</para>
+
+@next: 
+@prev: 
+@first: 
+@type: 
+@path: 
+@id: 
+
+<!-- ##### FUNCTION mpd_new_queue_struct ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_new_data_struct ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_new_data_struct_append ##### -->
+<para>
+
+</para>
+
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION strndup ##### -->
+<para>
+
+</para>
+
+@s: 
+@n: 
+@Returns: 
+
+
