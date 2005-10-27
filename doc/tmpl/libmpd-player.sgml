@@ -9,12 +9,42 @@ libmpd-player
 
 </para>
 
+
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
 
+
 <!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO MPD_PLAYER_PAUSE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_PLAYER_PLAY ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_PLAYER_STOP ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO MPD_PLAYER_UNKNOWN ##### -->
+<para>
+
+</para>
+
 
 
 <!-- ##### FUNCTION mpd_player_play ##### -->

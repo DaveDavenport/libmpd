@@ -9,13 +9,31 @@ libmpd-internal
 
 </para>
 
+
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
 
+
 <!-- ##### SECTION Stability_Level ##### -->
 
+
+<!-- ##### STRUCT MpdQueue ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT MpdServerState ##### -->
+<para>
+
+</para>
+
+@songid: 
+@state: 
+@dbUpdateTime: 
+@updatingDb: 
 
 <!-- ##### STRUCT _MpdObj ##### -->
 <para>

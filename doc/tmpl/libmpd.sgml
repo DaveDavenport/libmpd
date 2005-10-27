@@ -9,88 +9,56 @@ libmpd
 
 </para>
 
+
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
 
+
 <!-- ##### SECTION Stability_Level ##### -->
 
 
-<!-- ##### MACRO MPD_O_NOT_CONNECTED ##### -->
+<!-- ##### MACRO MPD_NOT_CONNECTED ##### -->
 <para>
 
 </para>
 
 
 
-<!-- ##### MACRO MPD_O_FAILED_STATUS ##### -->
+<!-- ##### MACRO MPD_FAILED_STATUS ##### -->
 <para>
 
 </para>
 
 
 
-<!-- ##### MACRO MPD_O_LOCK_FAILED ##### -->
+<!-- ##### MACRO MPD_LOCK_FAILED ##### -->
 <para>
 
 </para>
 
 
 
-<!-- ##### MACRO MPD_O_FAILED_STATS ##### -->
+<!-- ##### MACRO MPD_FAILED_STATS ##### -->
 <para>
 
 </para>
 
 
 
-<!-- ##### MACRO MPD_O_ERROR ##### -->
+<!-- ##### MACRO MPD_ERROR ##### -->
 <para>
 
 </para>
 
 
 
-<!-- ##### MACRO MPD_O_PLAYLIST_EXIST ##### -->
+<!-- ##### MACRO MPD_PLAYLIST_EXIST ##### -->
 <para>
 
 </para>
 
-
-
-<!-- ##### MACRO MPD_PLAYER_PAUSE ##### -->
-<para>
-
-</para>
-
-
-
-<!-- ##### MACRO MPD_PLAYER_PLAY ##### -->
-<para>
-
-</para>
-
-
-
-<!-- ##### MACRO MPD_PLAYER_STOP ##### -->
-<para>
-
-</para>
-
-
-
-<!-- ##### MACRO MPD_PLAYER_UNKNOWN ##### -->
-<para>
-
-</para>
-
-
-
-<!-- ##### STRUCT MpdQueue ##### -->
-<para>
-
-</para>
 
 
 <!-- ##### STRUCT MpdObj ##### -->
@@ -99,18 +67,29 @@ libmpd
 </para>
 
 
+<!-- ##### ENUM MpdDataType ##### -->
+<para>
+
+</para>
+
+@MPD_DATA_TYPE_NONE: 
+@MPD_DATA_TYPE_TAG: 
+@MPD_DATA_TYPE_ARTIST: 
+@MPD_DATA_TYPE_ALBUM: 
+@MPD_DATA_TYPE_DIRECTORY: 
+@MPD_DATA_TYPE_SONG: 
+@MPD_DATA_TYPE_PLAYLIST: 
+@MPD_DATA_TYPE_OUTPUT_DEV: 
+
 <!-- ##### STRUCT MpdData ##### -->
 <para>
 
 </para>
 
-@tag: 
-@artist: 
-@album: 
-@directory: 
-@playlist: 
-@song: 
-@output_dev: 
+@next: 
+@prev: 
+@first: 
+@type: 
 
 <!-- ##### FUNCTION mpd_new_default ##### -->
 <para>
@@ -209,6 +188,87 @@ libmpd
 </para>
 
 @mi: 
+
+
+<!-- ##### ENUM ChangedStatusType ##### -->
+<para>
+
+</para>
+
+@MPD_CST_PLAYLIST: 
+@MPD_CST_SONG: 
+@MPD_CST_SONGID: 
+@MPD_CST_DATABASE: 
+@MPD_CST_UPDATING: 
+@MPD_CST_VOLUME: 
+@MPD_CST_TIME: 
+@MPD_CST_ELAPSED_TIME: 
+@MPD_CST_CROSSFADE: 
+@MPD_CST_RANDOM: 
+@MPD_CST_REPEAT: 
+@MPD_CST_AUDIO: 
+@MPD_CST_STATE: 
+
+<!-- ##### USER_FUNCTION StatusChangedCallback ##### -->
+<para>
+
+</para>
+
+@mi: 
+@what: 
+@userdata: 
+
+
+<!-- ##### USER_FUNCTION ErrorCallback ##### -->
+<para>
+
+</para>
+
+@mi: 
+@id: 
+@msg: 
+@userdata: 
+
+
+<!-- ##### USER_FUNCTION ConnectionChangedCallback ##### -->
+<para>
+
+</para>
+
+@mi: 
+@connect: 
+@userdata: 
+
+
+<!-- ##### FUNCTION mpd_signal_connect_status_changed ##### -->
+<para>
+
+</para>
+
+@mi: 
+@status_changed: 
+@userdata: 
+
+
+<!-- ##### FUNCTION mpd_signal_connect_error ##### -->
+<para>
+
+</para>
+
+@mi: 
+@error: 
+@userdata: 
+
+
+<!-- ##### FUNCTION mpd_signal_connect_connection_changed ##### -->
+<para>
+
+</para>
+
+@mi: 
+@disconnect: 
+@connected: 
+@userdata: 
 
 
 <!-- ##### FUNCTION mpd_signal_set_playlist_changed ##### -->
