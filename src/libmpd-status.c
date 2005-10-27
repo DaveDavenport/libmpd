@@ -49,7 +49,7 @@ int mpd_status_queue_update(MpdObj *mi)
 
 int mpd_status_update(MpdObj *mi)
 {
-  ChangedStatusType what_changed=0;
+	ChangedStatusType what_changed=0;
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_INFO,"mpd_status_update: Where not connected\n");
@@ -110,7 +110,7 @@ int mpd_status_update(MpdObj *mi)
 			mi->CurrentSong = NULL;
 		}
 
-    /* set MPD_CST_PLAYLIST to be changed */
+		/* set MPD_CST_PLAYLIST to be changed */
 		what_changed |= MPD_CST_PLAYLIST;
 
 		/* save new id */

@@ -49,20 +49,22 @@ extern "C" {
 
 
 
-
-
-
-/* queue struct */
-typedef struct _MpdQueue MpdQueue;
-/* main object struct. */
+/** 
+ * MpdObj
+ *
+ *  The Main Mpd Object. Don't access any of the internal values directly, but use the provided functions.
+ */ 
 typedef struct _MpdObj MpdObj;
 
-/** 
+/**
+ * MpdDataType
+ *
  * enumeration to determine what value the MpdData structure hold. 
- * And MpdData structure can hold only one type of value, but of MpdData structs can hold different type of values.
+ * The MpdData structure can hold only one type of value, 
+ * but a list of MpdData structs can hold structs with different type of values.
  * It's required to check every MpdData Structure.
  */
-enum MpdDataType{
+typedef enum _MpdDataType {
 	MPD_DATA_TYPE_NONE, 		/** The MpdData structure holds no value */
 	MPD_DATA_TYPE_TAG,		/** Holds an Tag String. value->tag is filled.*/
 	MPD_DATA_TYPE_ARTIST,		/** Holds an Artist string. value->artist is filled. value->album is possible valid */
@@ -73,39 +75,25 @@ enum MpdDataType{
 	MPD_DATA_TYPE_OUTPUT_DEV	/** Holds an MpdOutputDevice structure. value->output_dev is valid.*/
 } MpdDataType;
 
-/** Bitwise enumeration to determine what triggered the status_changed signals
+/**
+ * MpdData
  *
+ * A linked list in witch data is passed from libmpd to the client. 
  */
-typedef enum _ChangedStatusType {
-	MPD_CST_PLAYLIST      = 0x01,
-	MPD_CST_SONG          = 0x02,
-	MPD_CST_SONGID        = 0x04,
-	MPD_CST_DATABASE      = 0x08,
-	MPD_CST_UPDATING      = 0x10,
-	MPD_CST_VOLUME        = 0x11,
-	MPD_CST_TIME          = 0x12,
-	MPD_CST_ELAPSED_TIME  = 0x14,
-	MPD_CST_CROSSFADE     = 0x18,
-	MPD_CST_RANDOM        = 0x20,
-	MPD_CST_REPEAT        = 0x21,
-  MPD_CST_AUDIO         = 0x22,
-	MPD_CST_STATE         = 0x24
-} ChangedStatusType;
-
-/* 
- * there will be wrapper functions in the future to grab the internals.
- */
-typedef struct _MpdData
-{
+typedef struct _MpdData {
+	/* Use wrapper #mpd_data_get_next to get the next item in the list.
+	 * Don't use this pointer.
+	 */
 	struct _MpdData *next;
+	/* Previous MpdData in the list */
 	struct _MpdData *prev;
+	/* First MpdData in the list */
 	struct _MpdData *first;
 
 	/* MpdDataType */
-	int type;
+	MpdDataType type;
 
-	struct 
-	{
+	struct {
 		char *tag;
 		char *artist;
 		char *album;
@@ -227,10 +215,39 @@ void 		mpd_free				(MpdObj *mi);
 /* 
  * signals 
  */
+
+/**
+ * ChangedStatusType
+ *
+ * Bitwise enumeration to determine what triggered the status_changed signals
+ */
+typedef enum _ChangedStatusType {
+	MPD_CST_PLAYLIST      = 0x01,
+	MPD_CST_SONG          = 0x02,
+	MPD_CST_SONGID        = 0x04,
+	MPD_CST_DATABASE      = 0x08,
+	MPD_CST_UPDATING      = 0x10,
+	MPD_CST_VOLUME        = 0x11,
+	MPD_CST_TIME          = 0x12,
+	MPD_CST_ELAPSED_TIME  = 0x14,
+	MPD_CST_CROSSFADE     = 0x18,
+	MPD_CST_RANDOM        = 0x20,
+	MPD_CST_REPEAT        = 0x21,
+ 	MPD_CST_AUDIO         = 0x22,
+	MPD_CST_STATE         = 0x24
+} ChangedStatusType;
+
+
 /* callback typedef's */
-typedef void *(* StatusChangedCallback)(MpdObj *mi, ChangedStatusType what, void *userdata);
-typedef void *(* ErrorCallback)(MpdObj *mi, int id, char *msg, void *userdata);
-typedef void *(* ConnectionChangedCallback)(MpdObj *mi, int connect, void *userdata);
+/**
+ * StatusChangedCallback
+ * @mi: a #MpdObj
+ * @what: a #ChangedStatusType that determines what changed triggered the signal. This is a bitmask.
+ * @userdata: user data set when the signal handler was connected.
+ */
+typedef void (* StatusChangedCallback)(MpdObj *mi, ChangedStatusType what, void *userdata);
+typedef void (* ErrorCallback)(MpdObj *mi, int id, char *msg, void *userdata);
+typedef void (* ConnectionChangedCallback)(MpdObj *mi, int connect, void *userdata);
 
 /* new style signal connectors */
 void 		mpd_signal_connect_status_changed        (MpdObj *mi, StatusChangedCallback status_changed, void *userdata);
@@ -250,8 +267,28 @@ void 		mpd_signal_set_updating_changed	(MpdObj *mi, void *(* updating_changed)(M
 
 
 /* MpdData struct functions */
+/**
+ * mpd_data_is_last
+ * @data: a #MpdData 
+ *
+ * Check's if the passed #MpdData is the last in a list
+ * returns: TRUE when data is the last in the list.
+ */
 int 		mpd_data_is_last			(MpdData *data);
+/**
+ * mpd_data_free
+ * @data: a #MpdData
+ *
+ * Free's a #MpdData List
+ */
 void 		mpd_data_free				(MpdData *data);
+/**
+ * mpd_data_get_next
+ * @data: a #MpdData
+ *
+ * Returns the next #MpdData in the list. If it's the last item in the list, it will free the list.
+ * returns: The next #MpdData or NULL
+ */
 MpdData * 	mpd_data_get_next			(MpdData *data);
 
 /* Server Stuff */

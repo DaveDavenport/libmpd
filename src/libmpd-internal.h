@@ -3,7 +3,8 @@
 
 #include "libmpdclient.h"
 
-
+/* queue struct */
+typedef struct _MpdQueue MpdQueue;
 typedef struct _MpdServerState {
 		/* information needed to detect changes on mpd's side */
 	long long 	playlistid;
@@ -29,7 +30,7 @@ typedef struct _MpdObj {
 	mpd_Stats 	*stats;
 	mpd_Song 	*CurrentSong;
 
-  /* used to store/detect serverside status changes */
+	/* used to store/detect serverside status changes */
 	MpdServerState CurrentState;
 	MpdServerState OldState;
  
