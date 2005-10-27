@@ -40,26 +40,27 @@ extern "C" {
 #define FALSE 0
 #endif
 
-#define MPD_O_NOT_CONNECTED -2
-#define MPD_O_FAILED_STATUS -3
-#define MPD_O_LOCK_FAILED -4
-#define MPD_O_FAILED_STATS -5
-#define MPD_O_ERROR -6
-#define MPD_O_PLAYLIST_EXIST -10
+#define MPD_NOT_CONNECTED -2
+#define MPD_FAILED_STATUS -3
+#define MPD_LOCK_FAILED -4
+#define MPD_FAILED_STATS -5
+#define MPD_ERROR -6
+#define MPD_PLAYLIST_EXIST -10
 
-#define	MPD_PLAYER_PAUSE 	3
-#define	MPD_PLAYER_PLAY 	2
-#define	MPD_PLAYER_STOP 	1
-#define	MPD_PLAYER_UNKNOWN 	0
+
+
+
+
 
 /* queue struct */
 typedef struct _MpdQueue MpdQueue;
 /* main object struct. */
 typedef struct _MpdObj MpdObj;
 
-/** enumeration to determine what value the MpdData structure hold. 
- *  And MpdData structure can hold only one type of value, but of MpdData structs can hold different type of values.
- *  It's required to check every MpdData Structure.
+/** 
+ * enumeration to determine what value the MpdData structure hold. 
+ * And MpdData structure can hold only one type of value, but of MpdData structs can hold different type of values.
+ * It's required to check every MpdData Structure.
  */
 enum MpdDataType{
 	MPD_DATA_TYPE_NONE, 		/** The MpdData structure holds no value */
@@ -165,12 +166,61 @@ void 		mpd_set_hostname			(MpdObj *mi, char *hostname);
  * Set the password
  */
 void 		mpd_set_password			(MpdObj *mi, char *password);
+/**
+ * mpd_set_port
+ * @mi: a #MpdObj
+ * @port: The port to use. (Default: 6600)
+ *
+ * Set the Port number
+ */
 void 		mpd_set_port				(MpdObj *mi, int port);
+/**
+ * mpd_set_connection_timeout
+ * @mi: a #MpdObj
+ * @timeout: A timeout (in seconds)
+ *
+ * Set the timeout of the connection. 
+ * If allready connected the timeout of the running connection
+ */
 void 		mpd_set_connection_timeout		(MpdObj *mi, float timeout);
+/**
+ * mpd_connect
+ * @mi: a #MpdObj
+ *
+ * Connect to the mpd daemon.
+ * returns: returns 0 when successful 
+ */
 int 		mpd_connect				(MpdObj *mi);
+/**
+ * mpd_disconnect
+ * @mi: The #MpdObj to disconnect
+ *
+ * Disconnect the current connection
+ * returns: False (always)
+ */
 int 		mpd_disconnect			(MpdObj *mi);
+/**
+ * mpd_check_connected
+ * @mi:	a #MpdObj
+ *
+ * Checks if #MpdObj is connected
+ * returns: True when connected
+ */ 
 int 		mpd_check_connected			(MpdObj *mi);
+/**
+ * mpd_check_error
+ * @mi: a #MpdObj
+ *
+ * Checks if there was an error
+ * returns: True when there is an error
+ */
 int 		mpd_check_error			(MpdObj *mi);
+/**
+ * mpd_free
+ * @mi: a #MpdObj
+ *
+ * Free the #MpdObj, when still connected the connection will be disconnected first
+ */
 void 		mpd_free				(MpdObj *mi);
 
 

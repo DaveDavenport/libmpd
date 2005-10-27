@@ -20,6 +20,11 @@
 #ifndef __MPD_LIB_PLAYER__
 #define __MPD_LIB_PLAYER__
 
+#define	MPD_PLAYER_PAUSE 	3
+#define	MPD_PLAYER_PLAY 	2
+#define	MPD_PLAYER_STOP 	1
+#define	MPD_PLAYER_UNKNOWN 	0
+
 /* Player commands */
 int 		mpd_player_play			(MpdObj *mi);
 int 		mpd_player_play_id			(MpdObj *mi, int id);

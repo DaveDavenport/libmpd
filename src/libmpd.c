@@ -734,12 +734,12 @@ long unsigned mpd_server_get_database_update_time(MpdObj *mi)
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_server_get_database_update: not connected\n");
-		return MPD_O_NOT_CONNECTED;
+		return MPD_NOT_CONNECTED;
 	}
 	if(!mpd_stats_check(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_server_get_database_update: Failed grabbing status\n");
-		return MPD_O_FAILED_STATS;
+		return MPD_FAILED_STATS;
 	}
 	return mi->stats->dbUpdateTime;
 }
@@ -799,12 +799,12 @@ int mpd_server_set_output_device(MpdObj *mi,int device_id,int state)
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_server_set_output_device: not connected\n");	
-		return MPD_O_NOT_CONNECTED;
+		return MPD_NOT_CONNECTED;
 	}
 	if(mpd_lock_conn(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_server_set_output_device: lock failed\n");
-		return MPD_O_LOCK_FAILED;
+		return MPD_LOCK_FAILED;
 	}
 	if(state)
 	{

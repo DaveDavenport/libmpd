@@ -58,7 +58,7 @@ int mpd_status_update(MpdObj *mi)
 	if(mpd_lock_conn(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_status_set_volume: lock failed\n");
-		return MPD_O_LOCK_FAILED;
+		return MPD_LOCK_FAILED;
 	}
 
 	
@@ -208,7 +208,7 @@ int mpd_stats_get_total_songs(MpdObj *mi)
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_ERROR,"Failed to get status\n");
-		return MPD_O_FAILED_STATUS;
+		return MPD_FAILED_STATUS;
 	}
 	return mi->stats->numberOfSongs;
 }
@@ -223,7 +223,7 @@ int mpd_stats_get_total_artists(MpdObj *mi)
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"Failed to get status\n");
-		return MPD_O_FAILED_STATUS;
+		return MPD_FAILED_STATUS;
 	}
 	return mi->stats->numberOfArtists;
 }
@@ -238,7 +238,7 @@ int mpd_stats_get_total_albums(MpdObj *mi)
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_stats_get_total_albums: Failed to get status\n");
-		return MPD_O_FAILED_STATUS;
+		return MPD_FAILED_STATUS;
 	}
 	return mi->stats->numberOfAlbums;
 }
@@ -254,7 +254,7 @@ int mpd_stats_get_uptime(MpdObj *mi)
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_stats_get_uptime: Failed to get status\n");
-		return MPD_O_FAILED_STATUS;
+		return MPD_FAILED_STATUS;
 	}
 	return mi->stats->uptime;
 }
@@ -269,7 +269,7 @@ int mpd_stats_get_playtime(MpdObj *mi)
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_stats_get_playtime: Failed to get status\n");
-		return MPD_O_FAILED_STATUS;
+		return MPD_FAILED_STATUS;
 	}
 	return mi->stats->playTime;
 }
@@ -283,7 +283,7 @@ int mpd_status_get_volume(MpdObj *mi)
 	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING, "mpd_status_get_volume: Failed to get status\n");
-		return MPD_O_FAILED_STATUS;
+		return MPD_FAILED_STATUS;
 	}
 	return mi->status->volume;
 }
@@ -299,7 +299,7 @@ int mpd_status_get_bitrate(MpdObj *mi)
 	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
-		return MPD_O_FAILED_STATUS;
+		return MPD_FAILED_STATUS;
 	}
 	return mi->status->bitRate;
 }
@@ -320,7 +320,7 @@ int mpd_status_get_total_song_time(MpdObj *mi)
 	if(!mpd_status_check(mi))
 	{
 		debug_printf(DEBUG_WARNING, "mpd_status_get_total_song_time: Failed to get status\n");
-		return MPD_O_FAILED_STATUS;
+		return MPD_FAILED_STATUS;
 	}
 	return mi->status->totalTime;
 }
@@ -336,7 +336,7 @@ int mpd_status_get_elapsed_song_time(MpdObj *mi)
 	if(!mpd_status_check(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_status_get_elapsed_song_time: Failed to get status\n");
-		return MPD_O_FAILED_STATUS;
+		return MPD_FAILED_STATUS;
 	}
 	return mi->status->elapsedTime;
 }
@@ -346,7 +346,7 @@ int mpd_status_set_volume(MpdObj *mi,int volume)
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_status_set_volume: not connected\n");
-		return MPD_O_NOT_CONNECTED;
+		return MPD_NOT_CONNECTED;
 	}
 	/* making sure volume is between 0 and 100 */
 	volume = (volume < 0)? 0:(volume>100)? 100:volume;
@@ -354,7 +354,7 @@ int mpd_status_set_volume(MpdObj *mi,int volume)
 	if(mpd_lock_conn(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_status_set_volume: lock failed\n");
-		return MPD_O_LOCK_FAILED;
+		return MPD_LOCK_FAILED;
 	}
 
 	/* send the command */
@@ -374,12 +374,12 @@ int mpd_status_get_crossfade(MpdObj *mi)
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_status_get_crossfade: not connected\n");
-		return MPD_O_NOT_CONNECTED;
+		return MPD_NOT_CONNECTED;
 	}
 	if(!mpd_status_check(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_status_get_crossfade: Failed grabbing status\n");
-		return MPD_O_NOT_CONNECTED;
+		return MPD_NOT_CONNECTED;
 	}
 	return mi->status->crossfade;
 }
@@ -389,12 +389,12 @@ int mpd_status_set_crossfade(MpdObj *mi,int crossfade_time)
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_status_set_crossfade: not connected\n");	
-		return MPD_O_NOT_CONNECTED;
+		return MPD_NOT_CONNECTED;
 	}
 	if(mpd_lock_conn(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_status_set_crossfade: lock failed\n");
-		return MPD_O_LOCK_FAILED;
+		return MPD_LOCK_FAILED;
 	}
 	mpd_sendCrossfadeCommand(mi->connection, crossfade_time);
 	mpd_finishCommand(mi->connection);
@@ -452,7 +452,7 @@ int mpd_stats_update_real(MpdObj *mi, ChangedStatusType* what_changed)
 	if(mpd_lock_conn(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_stats_set_volume: lock failed\n");
-		return MPD_O_LOCK_FAILED;
+		return MPD_LOCK_FAILED;
 	}
 
 	if(mi->stats != NULL)
