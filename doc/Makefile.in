@@ -74,7 +74,6 @@ F77 = @F77@
 GCJ = @GCJ@
 GCJFLAGS = @GCJFLAGS@
 HAVE_LIB = @HAVE_LIB@
-HTML_DIR = @HTML_DIR@
 LIB = @LIB@
 LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
@@ -83,7 +82,6 @@ MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
-PKG_CONFIG = @PKG_CONFIG@
 RANLIB = @RANLIB@
 RC = @RC@
 STRIP = @STRIP@
@@ -193,7 +191,7 @@ distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
 
-all: doc
+all: 
 doc:
 	gtkdoc-scan --module=$(PACKAGE) --source-dir=../src --output-dir=.
 	gtkdoc-mktmpl --module=$(PACKAGE)

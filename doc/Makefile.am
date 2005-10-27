@@ -1,4 +1,4 @@
-all: doc
+all: 
 doc:
 	gtkdoc-scan --module=$(PACKAGE) --source-dir=../src --output-dir=.
 	gtkdoc-mktmpl --module=$(PACKAGE)

@@ -24,7 +24,7 @@ AC_SUBST(EXTRA_LDFLAGS)
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdlib.h string.h unistd.h])
 
-GTK_DOC_CHECK(1,0)
+#GTK_DOC_CHECK(1,0)
 
 AC_OUTPUT([
 Makefile
