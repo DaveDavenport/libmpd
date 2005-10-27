@@ -130,8 +130,22 @@ MpdObj * 	mpd_new_default			();
  */
 
 MpdObj * 	mpd_new				(char *hostname, int port, char *password);
+/**
+ * mpd_set_hostname
+ *@mi: a #MpdObj
+ *@hostname: The new hostname to use
+ *
+ * set the hostname
+ */
 void 		mpd_set_hostname			(MpdObj *mi, char *hostname);
-void 		mpd_set_password			(MpdObj *mi, char *hostname);
+/**
+ * mpd_set_password
+ * @mi: a #MpdObj
+ * @password: The new password to use
+ * 
+ * Set the password
+ */
+void 		mpd_set_password			(MpdObj *mi, char *password);
 void 		mpd_set_port				(MpdObj *mi, int port);
 void 		mpd_set_connection_timeout		(MpdObj *mi, float timeout);
 int 		mpd_connect				(MpdObj *mi);

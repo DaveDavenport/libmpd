@@ -258,7 +258,6 @@ MpdObj *mpd_new(char *hostname,  int port, char *password)
 	return mi;
 }
 
-
 void mpd_set_hostname(MpdObj *mi, char *hostname)
 {
 	if(mi == NULL)
