@@ -61,7 +61,7 @@ int mpd_status_update(MpdObj *mi)
 		return MPD_LOCK_FAILED;
 	}
 
-	
+
 	if(mi->status != NULL)
 	{
 		mpd_freeStatus(mi->status);
@@ -83,7 +83,7 @@ int mpd_status_update(MpdObj *mi)
 	 * check for changes 
 	 */
 	/* first save the old status */
-		memcpy(&(mi->OldState), &(mi->CurrentState), sizeof(MpdServerState));
+	memcpy(&(mi->OldState), &(mi->CurrentState), sizeof(MpdServerState));
 
 	/* playlist change */
 	if(mi->CurrentState.playlistid != mi->status->playlist)
@@ -443,7 +443,7 @@ int mpd_stats_update_real(MpdObj *mi, ChangedStatusType* what_changed)
 		/* we need to save the current state, because we're called standalone */
 		memcpy(&(mi->OldState), &(mi->CurrentState), sizeof(MpdServerState));
 	}
-	
+
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_INFO,"mpd_stats_update: Where not connected\n");
@@ -474,18 +474,18 @@ int mpd_stats_update_real(MpdObj *mi, ChangedStatusType* what_changed)
 			mi->database_changed(mi, mi->database_changed_signal_pointer);
 		}
 		what_changed_here |= MPD_CST_DATABASE;
-		
+
 		mi->CurrentState.dbUpdateTime = mi->stats->dbUpdateTime;
 	}
 
-  if (what_changed) {
-    (*what_changed) |= what_changed_here;
-  } else {
-   	if(mi->the_status_changed_callback != NULL)
-    {                                                                      		
-      mi->the_status_changed_callback(mi, what_changed_here, mi->the_status_changed_signal_userdata);		
-    }
-  }
+	if (what_changed) {
+		(*what_changed) |= what_changed_here;
+	} else {
+		if(mi->the_status_changed_callback != NULL)
+		{                                                                      		
+			mi->the_status_changed_callback(mi, what_changed_here, mi->the_status_changed_signal_userdata);		
+		}
+	}
 
 	if(mpd_unlock_conn(mi))
 	{

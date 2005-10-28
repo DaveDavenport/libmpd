@@ -6,7 +6,7 @@
 /* queue struct */
 typedef struct _MpdQueue MpdQueue;
 typedef struct _MpdServerState {
-		/* information needed to detect changes on mpd's side */
+	/* information needed to detect changes on mpd's side */
 	long long 	playlistid;
 	int 		songid;
 	int 		state;

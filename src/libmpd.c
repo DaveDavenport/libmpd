@@ -487,6 +487,21 @@ void mpd_signal_set_disconnect (MpdObj *mi, void *(* disconnect)(MpdObj *mi, voi
 }
 
 /* SIGNALS */
+void 		mpd_signal_connect_status_changed        (MpdObj *mi, StatusChangedCallback status_changed, void *userdata)
+{
+	if(mi == NULL)
+	{
+		return;
+	}
+	mi->the_status_changed_callback = status_changed;
+	mi->the_status_changed_signal_userdata = userdata;
+}
+
+
+
+
+
+
 void mpd_signal_set_playlist_changed (MpdObj *mi, void *(* playlist_changed)(MpdObj *mi, int old_playlist_id, int new_playlist_id,void *pointer), void *pointer)
 {
 	if(mi == NULL)
