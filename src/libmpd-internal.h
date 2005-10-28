@@ -11,7 +11,10 @@ typedef struct _MpdServerState {
 	int 		songid;
 	int 		state;
 	unsigned long	dbUpdateTime;	
-	int updatingDb;
+	int 		updatingDb;
+	int		random;
+	int		repeat;
+	int		volume;
 } MpdServerState;
 
 typedef struct _MpdObj {

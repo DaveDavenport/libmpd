@@ -252,7 +252,7 @@ typedef void (* ConnectionChangedCallback)(MpdObj *mi, int connect, void *userda
 /* new style signal connectors */
 void 		mpd_signal_connect_status_changed        (MpdObj *mi, StatusChangedCallback status_changed, void *userdata);
 void 		mpd_signal_connect_error                 (MpdObj *mi, ErrorCallback error, void *userdata);
-void 		mpd_signal_connect_connection_changed	   (MpdObj *mi, ConnectionChangedCallback disconnect, int connected, void *userdata);
+void 		mpd_signal_connect_connection_changed	   (MpdObj *mi, ConnectionChangedCallback connection_changed, void *userdata);
 
 /* old style signal connectors */
 void 		mpd_signal_set_playlist_changed	(MpdObj *mi, void *(* playlist_changed)(MpdObj *mi, int old_playlist_id, int new_playlist_id,void *pointer), void *pointer) __attribute__ ((deprecated)); 

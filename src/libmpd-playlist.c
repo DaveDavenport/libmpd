@@ -47,6 +47,20 @@ int mpd_playlist_get_playlist_length(MpdObj *mi)
 	return mi->status->playlistLength;
 }
 
+long long mpd_playlist_get_playlist_id(MpdObj *mi)
+{
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"mpd_player_get_playlist_id: not connected\n");
+		return MPD_NOT_CONNECTED;
+	}
+	if(!mpd_status_check(mi))
+	{
+		debug_printf(DEBUG_WARNING,"mpd_player_get_playlist_id: Failed grabbing status\n");
+		return MPD_NOT_CONNECTED;
+	}
+	return mi->status->playlist;
+}
 void mpd_playlist_add(MpdObj *mi, char *path)
 {
 	mpd_playlist_queue_add(mi, path);

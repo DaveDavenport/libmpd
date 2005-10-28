@@ -85,7 +85,10 @@ MpdObj * mpd_create()
 	mi->CurrentState.songid = -1;
 	mi->CurrentState.dbUpdateTime = 0;
 	mi->CurrentState.updatingDb = 0;
- 
+	mi->CurrentState.repeat = 0;
+       	mi->CurrentState.random = 0;
+	mi->CurrentState.volume = -1;
+       
 	memcpy(&(mi->OldState), &(mi->CurrentState), sizeof(MpdServerState));
 
 
@@ -362,6 +365,9 @@ int mpd_disconnect(MpdObj *mi)
 	mi->CurrentState.songid = -1;
 	mi->CurrentState.dbUpdateTime = 0;
 	mi->CurrentState.updatingDb = 0;
+	mi->CurrentState.repeat = 0;
+	mi->CurrentState.random = 0;
+	mi->CurrentState.volume = -1;
 	
 	memcpy(&(mi->OldState), &(mi->CurrentState) , sizeof(MpdServerState));
 	/*don't reset errors */
@@ -487,7 +493,7 @@ void mpd_signal_set_disconnect (MpdObj *mi, void *(* disconnect)(MpdObj *mi, voi
 }
 
 /* SIGNALS */
-void 		mpd_signal_connect_status_changed        (MpdObj *mi, StatusChangedCallback status_changed, void *userdata)
+void	mpd_signal_connect_status_changed        (MpdObj *mi, StatusChangedCallback status_changed, void *userdata)
 {
 	if(mi == NULL)
 	{
@@ -497,8 +503,25 @@ void 		mpd_signal_connect_status_changed        (MpdObj *mi, StatusChangedCallba
 	mi->the_status_changed_signal_userdata = userdata;
 }
 
+void	mpd_signal_connect_error(MpdObj *mi, ErrorCallback error_callback, void *userdata)
+{
+	if(mi == NULL)
+	{
+		return;
+	}
+	mi->the_error_callback = error_callback;
+	mi->the_error_signal_userdata = userdata;
+}
 
-
+void	mpd_signal_connect_connection_changed(MpdObj *mi, ConnectionChangedCallback connection_changed, void *userdata)
+{
+	if(mi == NULL)
+	{
+		return;
+	}
+	mi->the_connection_changed_callback = connection_changed;
+	mi->the_connection_changed_signal_userdata = userdata;
+}
 
 
 

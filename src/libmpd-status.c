@@ -145,8 +145,23 @@ int mpd_status_update(MpdObj *mi)
 		mi->CurrentState.songid = mi->status->songid;
 
 	}
+	if(mi->CurrentState.repeat != mi->status->repeat)
+	{
+		what_changed |= MPD_CST_REPEAT;
+		mi->CurrentState.repeat = mi->status->repeat;
+	}
+	if(mi->CurrentState.random != mi->status->random)
+	{
+		what_changed |= MPD_CST_RANDOM;
+		mi->CurrentState.random = mi->status->random;
+	}                                                    	
+	if(mi->CurrentState.volume != mi->status->volume)
+	{
+		what_changed |= MPD_CST_VOLUME;
+		mi->CurrentState.volume = mi->status->volume;
+	}                                                    	
 
-
+	
 	/* deprecated */
 	if(mi->status_changed != NULL)
 	{                                                                      		
