@@ -184,7 +184,7 @@ int mpd_status_update(MpdObj *mi)
 		mi->CurrentState.updatingDb = mi->status->updatingDb;
 	}
 
-	if(mi->the_status_changed_callback != NULL)
+	if(mi->the_status_changed_callback != NULL && what_changed)
 	{                                                                      		
 		mi->the_status_changed_callback( mi, what_changed, mi->the_status_changed_signal_userdata );		
 	}
@@ -496,7 +496,7 @@ int mpd_stats_update_real(MpdObj *mi, ChangedStatusType* what_changed)
 	if (what_changed) {
 		(*what_changed) |= what_changed_here;
 	} else {
-		if(mi->the_status_changed_callback != NULL)
+		if(mi->the_status_changed_callback != NULL & what_changed_here)
 		{                                                                      		
 			mi->the_status_changed_callback(mi, what_changed_here, mi->the_status_changed_signal_userdata);		
 		}

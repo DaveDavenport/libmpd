@@ -227,14 +227,14 @@ typedef enum _ChangedStatusType {
 	MPD_CST_SONGID        = 0x04,
 	MPD_CST_DATABASE      = 0x08,
 	MPD_CST_UPDATING      = 0x10,
-	MPD_CST_VOLUME        = 0x11,
-	MPD_CST_TIME          = 0x12,
-	MPD_CST_ELAPSED_TIME  = 0x14,
-	MPD_CST_CROSSFADE     = 0x18,
-	MPD_CST_RANDOM        = 0x20,
-	MPD_CST_REPEAT        = 0x21,
- 	MPD_CST_AUDIO         = 0x22,
-	MPD_CST_STATE         = 0x24
+	MPD_CST_VOLUME        = 0x20,
+	MPD_CST_TIME          = 0x40,
+	MPD_CST_ELAPSED_TIME  = 0x80,
+	MPD_CST_CROSSFADE     = 0x100,
+	MPD_CST_RANDOM        = 0x200,
+	MPD_CST_REPEAT        = 0x400,
+ 	MPD_CST_AUDIO         = 0x800,
+	MPD_CST_STATE         = 0x1000
 } ChangedStatusType;
 
 
