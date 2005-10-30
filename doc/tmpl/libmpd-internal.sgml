@@ -19,9 +19,6 @@ libmpd-internal
 <!-- ##### SECTION Stability_Level ##### -->
 
 
-<<<<<<< .mine
-<!-- ##### STRUCT MpdQueue ##### -->
-=======
 <!-- ##### STRUCT MpdQueue ##### -->
 <para>
 
@@ -37,13 +34,66 @@ libmpd-internal
 @state: 
 @dbUpdateTime: 
 @updatingDb: 
+@random: 
+@repeat: 
+@volume: 
 
 <!-- ##### STRUCT _MpdObj ##### -->
->>>>>>> .r3580
 <para>
 
 </para>
 
+@connected: 
+@hostname: 
+@port: 
+@password: 
+@connection_timeout: 
+@connection: 
+@status: 
+@stats: 
+@CurrentSong: 
+@CurrentState: 
+@OldState: 
+@the_error_callback: 
+@the_error_signal_userdata: 
+@the_status_changed_callback: 
+@the_status_changed_signal_userdata: 
+@the_connection_changed_callback: 
+@the_connection_changed_signal_userdata: 
+@playlist_changed: 
+@playlist_changed_pointer: 
+@error_signal: 
+@error_signal_pointer: 
+@song_changed: 
+@song_changed_signal_pointer: 
+@status_changed: 
+@status_changed_signal_pointer: 
+@state_changed: 
+@state_changed_signal_pointer: 
+@disconnect: 
+@disconnect_pointer: 
+@connect: 
+@connect_pointer: 
+@error: 
+@error_msg: 
+@database_changed: 
+@database_changed_signal_pointer: 
+@updating_changed: 
+@updating_signal_pointer: 
+@connection_lock: 
+@queue: 
+
+<!-- ##### STRUCT _MpdQueue ##### -->
+<para>
+
+</para>
+
+@next: 
+@prev: 
+@first: 
+@type: 
+@path: 
+@id: 
 
 <!-- ##### FUNCTION mpd_new_queue_struct ##### -->
 <para>

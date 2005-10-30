@@ -19,8 +19,6 @@ libmpd
 <!-- ##### SECTION Stability_Level ##### -->
 
 
-<<<<<<< .mine
-=======
 <!-- ##### MACRO MPD_NOT_CONNECTED ##### -->
 <para>
 
@@ -63,7 +61,6 @@ libmpd
 
 
 
->>>>>>> .r3580
 <!-- ##### STRUCT MpdObj ##### -->
 <para>
 
@@ -145,15 +142,8 @@ libmpd
 
 </para>
 
-<<<<<<< .mine
-@next: 
-@prev: 
-@first: 
-@type: 
-=======
 @mi: 
 @timeout: 
->>>>>>> .r3580
 
 
 <!-- ##### FUNCTION mpd_connect ##### -->
@@ -276,8 +266,7 @@ libmpd
 </para>
 
 @mi: 
-@disconnect: 
-@connected: 
+@connection_changed: 
 @userdata: 
 
 
