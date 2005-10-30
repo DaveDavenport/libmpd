@@ -15,6 +15,7 @@ typedef struct _MpdServerState {
 	int		random;
 	int		repeat;
 	int		volume;
+	int		xfade;
 } MpdServerState;
 
 typedef struct _MpdObj {

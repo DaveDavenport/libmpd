@@ -382,23 +382,8 @@ MpdData * mpd_playlist_get_artists(MpdObj *mi)
 
 	mpd_sendListCommand(mi->connection,MPD_TABLE_ARTIST,NULL);
 	while (( string = mpd_getNextArtist(mi->connection)) != NULL)
-	{	
-		if(data == NULL)
-		{
-			data = mpd_new_data_struct();
-			data->first = data;
-			data->next = NULL;
-			data->prev = NULL;
-
-		}	
-		else
-		{
-			data->next = mpd_new_data_struct();
-			data->next->first = data->first;
-			data->next->prev = data;
-			data = data->next;
-			data->next = NULL;
-		}
+	{
+		data = mpd_new_data_struct_append(data);	
 		data->type = MPD_DATA_TYPE_ARTIST; 
 		data->value.artist = string;
 	}
@@ -414,7 +399,36 @@ MpdData * mpd_playlist_get_artists(MpdObj *mi)
 	return data->first;
 }
 
+MpdData *mpd_playlist_sort_artist_list2(MpdData *data)
+{
+	MpdData *test;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
 
 MpdData * mpd_playlist_sort_artist_list(MpdData *data)
 {
@@ -433,7 +447,7 @@ MpdData * mpd_playlist_sort_artist_list(MpdData *data)
 			{
 				/* do nothing */
 			}
-			else if((pldata->type != MPD_DATA_TYPE_ARTIST && pldata->next->type == MPD_DATA_TYPE_ARTIST)||
+			else if(/*(pldata->type != MPD_DATA_TYPE_ARTIST && pldata->next->type == MPD_DATA_TYPE_ARTIST)||*/
 					(pldata->next != NULL && strcasecmp(pldata->next->value.artist,pldata->value.artist) < 0 ))
 			{
 				/* swap them.*/

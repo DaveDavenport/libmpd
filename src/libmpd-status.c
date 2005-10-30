@@ -160,7 +160,11 @@ int mpd_status_update(MpdObj *mi)
 		what_changed |= MPD_CST_VOLUME;
 		mi->CurrentState.volume = mi->status->volume;
 	}                                                    	
-
+	if(mi->CurrentState.xfade != mi->status->crossfade)
+	{
+		what_changed |= MPD_CST_CROSSFADE;
+		mi->CurrentState.xfade = mi->status->crossfade;
+	}
 	
 	/* deprecated */
 	if(mi->status_changed != NULL)

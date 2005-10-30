@@ -88,6 +88,7 @@ MpdObj * mpd_create()
 	mi->CurrentState.repeat = 0;
        	mi->CurrentState.random = 0;
 	mi->CurrentState.volume = -1;
+	mi->CurrentState.xfade = 0;
        
 	memcpy(&(mi->OldState), &(mi->CurrentState), sizeof(MpdServerState));
 
@@ -368,6 +369,7 @@ int mpd_disconnect(MpdObj *mi)
 	mi->CurrentState.repeat = 0;
 	mi->CurrentState.random = 0;
 	mi->CurrentState.volume = -1;
+	mi->CurrentState.xfade = 0;
 	
 	memcpy(&(mi->OldState), &(mi->CurrentState) , sizeof(MpdServerState));
 	/*don't reset errors */
@@ -629,7 +631,7 @@ MpdData *mpd_new_data_struct()
 	return data;	
 }
 
-MpdData *mpd_new_data_struct_append(MpdData *data)
+inline MpdData *mpd_new_data_struct_append(MpdData *data)
 {
 	if(data == NULL)
 	{
