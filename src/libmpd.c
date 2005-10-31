@@ -468,12 +468,12 @@ int mpd_check_connected(MpdObj *mi)
 	{
 		return FALSE;
 	}
-	if(mi->connection_lock && mi->connected)
+/*	if(mi->connection_lock && mi->connected)
 	{
 		debug_printf(DEBUG_ERROR,"check connection: Somehow connection is still locked, connected state is: %i", mi->connected);
 		return FALSE;
 	}
-	return mi->connected;
+*/	return mi->connected;
 }
 
 
