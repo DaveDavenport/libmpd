@@ -122,6 +122,11 @@ MpdQueue *	mpd_new_queue_struct			();
 MpdData *	mpd_new_data_struct			();
 MpdData *	mpd_new_data_struct_append		(MpdData *data);
 
+/* more internal stuff*/
+int mpd_stats_check(MpdObj *mi);
+int mpd_lock_conn(MpdObj *mi);
+int mpd_unlock_conn(MpdObj *mi);
+
 
 #ifndef HAVE_STRNDUP
 char * 		strndup					(const char *s, size_t n);

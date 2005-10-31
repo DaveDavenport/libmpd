@@ -28,7 +28,8 @@
 #include "debug_printf.h"
 #include "libmpd.h"
 #include "libmpd-internal.h"
-int mpd_stats_check(MpdObj *mi);
+
+int mpd_stats_update_real(MpdObj *mi, ChangedStatusType* what_changed);
 
 int mpd_status_queue_update(MpdObj *mi)
 {
@@ -57,7 +58,7 @@ int mpd_status_update(MpdObj *mi)
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_status_set_volume: lock failed\n");
+		debug_printf(DEBUG_WARNING,"mpd_status_update: lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 
@@ -73,10 +74,11 @@ int mpd_status_update(MpdObj *mi)
 	{
 		debug_printf(DEBUG_ERROR,"mpd_status_update: Failed to grab status from mpd\n");
 		mpd_unlock_conn(mi);
-		return FALSE;
+		return TRUE;
 	}
 	if(mpd_unlock_conn(mi))
 	{
+		debug_printf(DEBUG_ERROR, "mpd_status_update: Failed to unlock");
 		return TRUE;
 	}
 	/*
@@ -97,6 +99,7 @@ int mpd_status_update(MpdObj *mi)
 			mi->playlist_changed(mi, mi->OldState.playlistid, mi->status->playlist,mi->playlist_changed_pointer);
 			if(!mpd_check_connected(mi))
 			{
+				debug_printf(DEBUG_INFO, "mpd_status_update: Not connected anymore");
 				return TRUE;
 			}
 		}
@@ -341,6 +344,11 @@ int mpd_status_get_total_song_time(MpdObj *mi)
 		debug_printf(DEBUG_WARNING, "mpd_status_get_total_song_time: Failed to get status\n");
 		return MPD_FAILED_STATUS;
 	}
+	if(mi->status == NULL)
+	{
+		debug_printf(DEBUG_ERROR, "mpd_status_get_total_song_time: mi->status is NULL even after check\n");
+		return -2;
+	}
 	return mi->status->totalTime;
 }
 
@@ -452,7 +460,7 @@ int mpd_stats_queue_update(MpdObj *mi)
 
 int mpd_stats_update(MpdObj *mi)
 {
-	mpd_stats_update_real(mi, NULL);
+	return mpd_stats_update_real(mi, NULL);
 }
 
 int mpd_stats_update_real(MpdObj *mi, ChangedStatusType* what_changed)
@@ -500,7 +508,7 @@ int mpd_stats_update_real(MpdObj *mi, ChangedStatusType* what_changed)
 	if (what_changed) {
 		(*what_changed) |= what_changed_here;
 	} else {
-		if(mi->the_status_changed_callback != NULL & what_changed_here)
+		if((mi->the_status_changed_callback != NULL) & what_changed_here)
 		{                                                                      		
 			mi->the_status_changed_callback(mi, what_changed_here, mi->the_status_changed_signal_userdata);		
 		}
