@@ -195,7 +195,11 @@ int mpd_status_update(MpdObj *mi)
 	{                                                                      		
 		mi->the_status_changed_callback( mi, what_changed, mi->the_status_changed_signal_userdata );		
 	}
-
+	/* We could have lost connection again during signal handling... so before we return check again if we are connected */
+	if(!mpd_check_connected(mi))
+	{
+		return TRUE;
+	}
 	return FALSE;
 }
 

@@ -38,6 +38,7 @@ void debug_printf(int dp,char *format, ...)
 		{
 			printf("\n");
 		}
+		fflush(NULL);
 		va_end(arglist);
 	}
 }

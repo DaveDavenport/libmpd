@@ -459,6 +459,7 @@ int mpd_connect(MpdObj *mi)
 	{                                                                      		
 		mi->connect(mi, mi->connect_pointer);
 	}
+	debug_printf(DEBUG_INFO, "mpd_connect: Connected to mpd");
 	return 0;
 }
 
