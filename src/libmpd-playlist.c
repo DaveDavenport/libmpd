@@ -318,7 +318,6 @@ MpdData * mpd_playlist_get_unique_tags(MpdObj *mi, int table,...)
 		debug_printf(DEBUG_WARNING, "mpd_playlist_get_unique_tag:For this feature you need at least mpd version 0.12.0");
 		return NULL;
 	}
-
 	if(table < 0 || table >= MPD_TAG_NUM_OF_ITEM_TYPES)
 	{
 		debug_printf(DEBUG_ERROR, "mpd_playlist_get_unique_tag: Undefined table defined");
@@ -334,22 +333,7 @@ MpdData * mpd_playlist_get_unique_tags(MpdObj *mi, int table,...)
 	va_end(arglist);
 	while (( string = mpd_getNextTag(mi->connection,table)) != NULL)
 	{	
-		if(data == NULL)
-		{
-			data = mpd_new_data_struct();
-			data->first = data;
-			data->next = NULL;
-			data->prev = NULL;
-
-		}	
-		else
-		{
-			data->next = mpd_new_data_struct();
-			data->next->first = data->first;
-			data->next->prev = data;
-			data = data->next;
-			data->next = NULL;
-		}
+		data = mpd_new_data_struct_append(data);
 		data->type = MPD_DATA_TYPE_TAG; 
 		data->value.tag = string;
 	}
@@ -398,86 +382,107 @@ MpdData * mpd_playlist_get_artists(MpdObj *mi)
 	}
 	return data->first;
 }
+/* "hack" to keep the compiler happy */
+typedef int (* QsortCompare)(const void *a, const void *b);
 
-MpdData *mpd_playlist_sort_artist_list2(MpdData *data)
+static int compa(char **a, char **b)
 {
-	MpdData *test;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	char *c =*a;
+	char *d =*b;
+#ifndef NO_SMART_SORT
+	if(!strncasecmp(c, "The ",4) && strlen(c) > 4)
+	{
+		c = &c[4];
+	}
+	if(!strncasecmp(d, "The ",4) && strlen(d) > 4)
+	{
+		d = &d[4];
+	}
+#endif
+	
+	return strcasecmp(c,d);
 }
-
-MpdData * mpd_playlist_sort_artist_list(MpdData *data)
+MpdData *mpd_playlist_sort_artist_list(MpdData *data)
 {
-	int changed = 0;
-	MpdData *temp = NULL;
-	MpdData *pldata = NULL, *first = NULL;
-	if(data == NULL) return NULL;
-	first = pldata = data->first;
+	char **array;
+	MpdData *test;
+	int i=0;
+	int length=0;
+	test = data = data->first;
+
+	do{
+		length++;
+		test = test->next;
+	}while(test != NULL);
+	array = malloc(length*sizeof(char*));
+	test = data;
+	
 	do
 	{
-		changed = 0;
-		while(pldata != NULL && pldata->next != NULL)	
-		{
-			pldata->first = first;
-			if(pldata->next->type != MPD_DATA_TYPE_ARTIST)
-			{
-				/* do nothing */
-			}
-			else if(/*(pldata->type != MPD_DATA_TYPE_ARTIST && pldata->next->type == MPD_DATA_TYPE_ARTIST)||*/
-					(pldata->next != NULL && strcasecmp(pldata->next->value.artist,pldata->value.artist) < 0 ))
-			{
-				/* swap them.*/
-				temp = pldata->next;
-				if(temp->next != NULL)
-				{
-					temp->next->prev = pldata;
-				}
-				pldata->next = temp->next;
-				temp->next = pldata;
-				if(pldata->prev)
-				{
-					pldata->prev->next = temp;				
-				}   
-				temp->prev = pldata->prev;
-				pldata->prev = temp;
+		array[i] = test->value.artist;	
+		test = test->next;
+		i++;
+	}while(test != NULL);
 
-				if(first == pldata)
-				{
-					first = temp;		
-				}
-				changed = TRUE;
-			}
-			pldata = pldata->next;
-		}
-		pldata = first;
-	}
-	while(changed);
-	return pldata;
+	qsort(array,length,sizeof(char *),(QsortCompare)compa);
+
+	/* reset list */
+	test =data->first;
+	i=0;
+	do
+	{
+		test->value.artist = array[i];
+		test = test->next;
+		i++;                            	
+	}while(test != NULL);             	
+	free(array);
+	return data->first;
 }
+
+MpdData *mpd_playlist_sort_tag_list(MpdData *data)
+{
+	char **array;
+	MpdData *test;
+	int i=0;
+	int length=0;
+	test = data = data->first;
+
+	do{
+		length++;
+		test = test->next;
+	}while(test != NULL);
+	array = malloc(length*sizeof(char*));
+	test = data;
+	
+	do
+	{
+		array[i] = test->value.tag;	
+		test = test->next;
+		i++;
+	}while(test != NULL);
+
+	qsort(array,length,sizeof(char *),(QsortCompare)compa);
+
+	/* reset list */
+	test =data->first;
+	i=0;
+	do
+	{
+		test->value.tag = array[i];
+		test = test->next;
+		i++;                            	
+	}while(test != NULL);             	
+	free(array);
+	return data->first;
+}
+
+
+/*
+
+
+
+
+
 
 
 MpdData * mpd_playlist_sort_tag_list(MpdData *data)
@@ -495,12 +500,12 @@ MpdData * mpd_playlist_sort_tag_list(MpdData *data)
 			pldata->first = first;
 			if(pldata->next->type != MPD_DATA_TYPE_TAG)
 			{
-				/* do nothing */
+
 			}
 			else if((pldata->type != MPD_DATA_TYPE_TAG && pldata->next->type == MPD_DATA_TYPE_TAG)||
 					(pldata->next != NULL && strcasecmp(pldata->next->value.tag,pldata->value.tag) < 0 ))
 			{
-				/* swap them.*/
+
 				temp = pldata->next;
 				if(temp->next != NULL)
 				{
@@ -530,7 +535,7 @@ MpdData * mpd_playlist_sort_tag_list(MpdData *data)
 }
 
 
-
+*/
 MpdData * mpd_playlist_get_albums(MpdObj *mi,char *artist)
 {
 	char *string = NULL;
@@ -709,9 +714,7 @@ MpdData *mpd_playlist_token_find(MpdObj *mi , char *string)
 				}
 				if(!match)
 				{
-
 					loop = 0;
-
 				}
 			}
 

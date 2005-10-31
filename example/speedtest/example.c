@@ -8,7 +8,7 @@
 int main(int argc, char ** argv) {
 	char *string;
 	mpd_Connection * conn;
-	conn = mpd_newConnection("192.150.0.111",6600,10);
+	conn = mpd_newConnection("localhost",6600,10);
 
 
 	if(conn->error) {
@@ -23,7 +23,7 @@ int main(int argc, char ** argv) {
 		printf("%s\n", string);
 	}
 	mpd_finishCommand(conn);
-	mpd_closeConnection(conn);
+//	mpd_closeConnection(conn);
 
 	return 0;
 }
