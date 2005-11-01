@@ -49,7 +49,7 @@ char * strndup(const char *s, size_t n)
 		return NULL;
 	}
 	memcpy(p, s, nAvail);
-	p[nAvail - 1]=NULL;
+	p[nAvail - 1] = 0;
 	return p;
 }
 #endif
@@ -85,10 +85,10 @@ MpdObj * mpd_create()
 	mi->CurrentState.songid = -1;
 	mi->CurrentState.dbUpdateTime = 0;
 	mi->CurrentState.updatingDb = 0;
-	mi->CurrentState.repeat = 0;
-       	mi->CurrentState.random = 0;
-	mi->CurrentState.volume = -1;
-	mi->CurrentState.xfade = 0;
+	mi->CurrentState.repeat = -1;
+       	mi->CurrentState.random = -1;
+	mi->CurrentState.volume = -2;
+	mi->CurrentState.xfade 	= -1;
        
 	memcpy(&(mi->OldState), &(mi->CurrentState), sizeof(MpdServerState));
 
@@ -366,10 +366,10 @@ int mpd_disconnect(MpdObj *mi)
 	mi->CurrentState.songid = -1;
 	mi->CurrentState.dbUpdateTime = 0;
 	mi->CurrentState.updatingDb = 0;
-	mi->CurrentState.repeat = 0;
-	mi->CurrentState.random = 0;
-	mi->CurrentState.volume = -1;
-	mi->CurrentState.xfade = 0;
+	mi->CurrentState.repeat = -1;
+	mi->CurrentState.random = -1;
+	mi->CurrentState.volume = -2;
+	mi->CurrentState.xfade 	= -1;
 	
 	memcpy(&(mi->OldState), &(mi->CurrentState) , sizeof(MpdServerState));
 	/*don't reset errors */
@@ -620,7 +620,7 @@ void mpd_signal_set_error (MpdObj *mi, void *(* error_signal)(MpdObj *mi, int id
 /* MpdData Part */
 MpdData *mpd_new_data_struct()
 {
-	MpdData* data = malloc(sizeof(MpdData));
+	MpdData_real* data = malloc(sizeof(MpdData_real));
 
 	data->type = 0;
 
@@ -634,98 +634,162 @@ MpdData *mpd_new_data_struct()
 	data->next = NULL;
 	data->prev = NULL;
 	data->first = NULL;
-	return data;	
+	return (MpdData*)data;	
 }
 
-inline MpdData *mpd_new_data_struct_append(MpdData *data)
+inline MpdData *mpd_new_data_struct_append(MpdData const *data)
 {
-	if(data == NULL)
+	MpdData_real *data_real = (MpdData_real*)data;
+	if(data_real == NULL)
 	{
-		data = mpd_new_data_struct();
-		data->first = data;
+		data_real = (MpdData_real*)mpd_new_data_struct();
+		data_real->first = data_real;
 	}
 	else
 	{
-		data->next = mpd_new_data_struct(); 	
-		data->next->first = data->first;
-		data->next->prev = data;
-		data = data->next;
-		data->next = NULL;
+		data_real->next = (MpdData_real*)mpd_new_data_struct(); 	
+		data_real->next->first = data_real->first;
+		data_real->next->prev = data_real;
+		data_real = data_real->next;
+		data_real->next = NULL;
 
 	}
-	return data;
+	return (MpdData*)data_real;
 }
 
-MpdData * mpd_data_get_next(MpdData *data)
+MpdData * mpd_data_get_first(MpdData const *data)
 {
-	if(data == NULL || data->next != NULL)
+	MpdData_real *data_real = (MpdData_real*)data;
+	if(data_real != NULL)
 	{
-		return data->next;
+		if (data_real->first != NULL)
+		{
+			return (MpdData*)data_real->first;
+		} 
+		else 
+		{
+			return NULL;
+		}
 	}
-	else if(data->next == NULL)
+	return NULL;
+}
+	
+
+MpdData * mpd_data_get_next(MpdData *data) 
+{
+	return mpd_data_get_next_real(data, TRUE);
+}
+
+MpdData * mpd_data_get_next_real(MpdData *data, int kill_list)
+{
+	MpdData_real *data_real = (MpdData_real*)data;
+	if (data_real != NULL) 
 	{
-		mpd_data_free(data);
-		return NULL;
+		if (data_real->next != NULL )
+		{
+			return (MpdData*)data_real->next;
+		}
+		else		
+		{
+			if (kill_list) mpd_data_free((MpdData*)data_real);
+			return NULL;
+		}
 	}
-	return data;	
+	return (MpdData*)data_real;	
 }
 
 int mpd_data_is_last(MpdData *data)
 {
-	if(data == NULL || data->next == NULL)
+	MpdData_real *data_real = (MpdData_real*)data;
+	if(data_real != NULL)
 	{
-		return TRUE;
+		if (data_real->next == NULL)
+		{
+			return TRUE;
+		}
 	}
 	return FALSE;	
 }
-
+MpdData* mpd_data_concatenate( MpdData const *first, MpdData const *second) 
+{
+	MpdData_real *first_real  = (MpdData_real*)first;
+	MpdData_real *second_real = (MpdData_real*)second;
+	MpdData_real *final_first = (MpdData_real*)mpd_data_get_first(first);
+	
+	if ( first == NULL ) {
+		if ( second != NULL ) 
+			return (MpdData*)second_real;
+		else
+			return NULL;
+	} else {
+		if ( second == NULL )
+			return (MpdData*)first_real;
+	}
+	
+	/* find last element in first data list */	
+	while (!mpd_data_is_last((MpdData*)first_real)) first_real = (MpdData_real*)mpd_data_get_next_real((MpdData*)first_real, FALSE);
+	second_real =(MpdData_real*) mpd_data_get_first((MpdData*)second_real);
+	
+	first_real->next = second_real;
+	second_real->prev = first_real;
+	
+        /* I need to set all the -> first correct */
+        while (second_real)
+	{
+        	second_real->first = final_first;
+                second_real = (MpdData_real*)mpd_data_get_next_real((MpdData*)second_real, FALSE);
+        } 
+	
+	return (MpdData*)final_first;
+}
 
 void mpd_data_free(MpdData *data)
 {
-	MpdData *temp = NULL;
-	if(data == NULL)
+	MpdData_real *temp = NULL;
+	MpdData_real *data_real = (MpdData_real*)data;
+	if(data_real == NULL)
 	{
 		return;
 	}
-	data = data->first;	
-	while(data != NULL)
+	data_real = data_real->first;
+	while(data_real != NULL)
 	{
-		temp = data->next;
-		if(data->value.artist)
+		temp = data_real->next;
+		if(data_real->value.artist)
 		{
-			free(data->value.artist);
+			free(data_real->value.artist);
 		}
-		if (data->value.tag)
+		if (data_real->value.tag)
 		{
-			free(data->value.tag);
+			free(data_real->value.tag);
 		}
-		if (data->value.album)
+		if (data_real->value.album)
 		{
-			free(data->value.album);
+			free(data_real->value.album);
 		}
-		if (data->value.directory)
+		if (data_real->value.directory)
 		{
-			free(data->value.directory);
+			free(data_real->value.directory);
 		}
-		if (data->value.song)
+		if (data_real->value.song)
 		{
-			mpd_freeSong(data->value.song);
+			mpd_freeSong(data_real->value.song);
 		}
-		if (data->value.playlist)
+		if (data_real->value.playlist)
 		{
-			free(data->value.playlist);
+			free(data_real->value.playlist);
 		}
-		if (data->value.output_dev)
+		if (data_real->value.output_dev)
 		{
-			mpd_freeOutputElement(data->value.output_dev);
+			mpd_freeOutputElement(data_real->value.output_dev);
 		}
 
-		free(data);
-		data= temp;
+		free(data_real);
+		data_real= temp;
 	}
 }
 
-/* clean this up.. make one while look */
+/* clean this up.. make one while loop */
 void mpd_free_queue_ob(MpdObj *mi)
 {
 	MpdQueue *temp = NULL;
@@ -810,22 +874,7 @@ MpdData * mpd_server_get_output_devices(MpdObj *mi)
 	mpd_sendOutputsCommand(mi->connection);
 	while (( output = mpd_getNextOutput(mi->connection)) != NULL)
 	{	
-		if(data == NULL)
-		{
-			data = mpd_new_data_struct();
-			data->first = data;
-			data->next = NULL;
-			data->prev = NULL;
-
-		}	
-		else
-		{
-			data->next = mpd_new_data_struct();
-			data->next->first = data->first;
-			data->next->prev = data;
-			data = data->next;
-			data->next = NULL;
-		}
+		data = mpd_new_data_struct_append(data);
 		data->type = MPD_DATA_TYPE_OUTPUT_DEV; 
 		data->value.output_dev = output;
 	}
@@ -837,7 +886,7 @@ MpdData * mpd_server_get_output_devices(MpdObj *mi)
 	{
 		return NULL;
 	}
-	return data->first;
+	return mpd_data_get_first(data);
 }
 
 int mpd_server_set_output_device(MpdObj *mi,int device_id,int state)
@@ -921,7 +970,6 @@ regex_t ** mpd_misc_tokenize(char *string)
 			bpos = i+1;                                         
 			tokens++;
 		}
-
 	}
 	return result;
 }

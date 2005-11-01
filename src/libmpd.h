@@ -81,15 +81,6 @@ typedef enum _MpdDataType {
  * A linked list in witch data is passed from libmpd to the client. 
  */
 typedef struct _MpdData {
-	/* Use wrapper #mpd_data_get_next to get the next item in the list.
-	 * Don't use this pointer.
-	 */
-	struct _MpdData *next;
-	/* Previous MpdData in the list */
-	struct _MpdData *prev;
-	/* First MpdData in the list */
-	struct _MpdData *first;
-
 	/* MpdDataType */
 	MpdDataType type;
 
@@ -290,6 +281,7 @@ void 		mpd_data_free				(MpdData *data);
  * returns: The next #MpdData or NULL
  */
 MpdData * 	mpd_data_get_next			(MpdData *data);
+MpdData * 	mpd_data_get_first			(MpdData const *data);
 
 /* Server Stuff */
 MpdData * 	mpd_server_get_output_devices	(MpdObj *mi);

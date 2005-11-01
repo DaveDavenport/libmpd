@@ -2,6 +2,27 @@
 #define __MPD_INTERNAL_LIB_
 
 #include "libmpdclient.h"
+typedef struct _MpdData_real {
+	/* MpdDataType */
+	MpdDataType type;
+
+	struct {
+		char *tag;
+		char *artist;
+		char *album;
+		char *directory;
+		char *playlist; /*is a path*/
+		mpd_Song *song;
+		mpd_OutputEntity *output_dev; /* from devices */
+	}value;
+	
+	struct _MpdData_real *next;
+	/* Previous MpdData in the list */
+	struct _MpdData_real *prev;
+	/* First MpdData in the list */
+	struct _MpdData_real *first;
+}MpdData_real;
+
 
 /* queue struct */
 typedef struct _MpdQueue MpdQueue;
@@ -120,7 +141,9 @@ MpdQueue *	mpd_new_queue_struct			();
 
 /* Internal Data struct functions */
 MpdData *	mpd_new_data_struct			();
-MpdData *	mpd_new_data_struct_append		(MpdData *data);
+MpdData *	mpd_new_data_struct_append		(MpdData const *data);
+MpdData *	mpd_data_concatenate			(MpdData const *first, MpdData const *second);
+MpdData * 	mpd_data_get_next_real			(MpdData *data, int kill_list);
 
 /* more internal stuff*/
 int mpd_stats_check(MpdObj *mi);

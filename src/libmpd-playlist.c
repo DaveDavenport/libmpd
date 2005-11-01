@@ -346,7 +346,7 @@ MpdData * mpd_playlist_get_unique_tags(MpdObj *mi, int table,...)
 	{
 		return NULL;
 	}
-	return data->first;
+	return mpd_data_get_first(data);
 }
 
 MpdData * mpd_playlist_get_artists(MpdObj *mi)
@@ -373,14 +373,14 @@ MpdData * mpd_playlist_get_artists(MpdObj *mi)
 	}
 	mpd_finishCommand(mi->connection);
 
-	data = mpd_playlist_sort_artist_list(data);
 	/* unlock */
 	mpd_unlock_conn(mi);
 	if(data == NULL) 
 	{
 		return NULL;
 	}
-	return data->first;
+	data = mpd_playlist_sort_artist_list(data);
+	return mpd_data_get_first(data);
 }
 /* "hack" to keep the compiler happy */
 typedef int (* QsortCompare)(const void *a, const void *b);
@@ -408,35 +408,35 @@ MpdData *mpd_playlist_sort_artist_list(MpdData *data)
 	MpdData *test;
 	int i=0;
 	int length=0;
-	test = data = data->first;
+	test = mpd_data_get_first(data);
 
 	do{
 		length++;
-		test = test->next;
+		test = mpd_data_get_next_real(test, FALSE);
 	}while(test != NULL);
 	array = malloc(length*sizeof(char*));
-	test = data;
+	test = mpd_data_get_first(data);
 	
 	do
 	{
 		array[i] = test->value.artist;	
-		test = test->next;
+		test = mpd_data_get_next_real(test, FALSE);
 		i++;
 	}while(test != NULL);
 
 	qsort(array,length,sizeof(char *),(QsortCompare)compa);
 
 	/* reset list */
-	test =data->first;
+	test = mpd_data_get_first(data);
 	i=0;
 	do
 	{
 		test->value.artist = array[i];
-		test = test->next;
+		test = mpd_data_get_next_real(test, FALSE);
 		i++;                            	
 	}while(test != NULL);             	
 	free(array);
-	return data->first;
+	return mpd_data_get_first(data);
 }
 
 MpdData *mpd_playlist_sort_tag_list(MpdData *data)
@@ -445,11 +445,11 @@ MpdData *mpd_playlist_sort_tag_list(MpdData *data)
 	MpdData *test;
 	int i=0;
 	int length=0;
-	test = data = data->first;
+	test = data = mpd_data_get_first(data);
 
 	do{
 		length++;
-		test = test->next;
+		test = mpd_data_get_next_real(test, FALSE);
 	}while(test != NULL);
 	array = malloc(length*sizeof(char*));
 	test = data;
@@ -457,23 +457,23 @@ MpdData *mpd_playlist_sort_tag_list(MpdData *data)
 	do
 	{
 		array[i] = test->value.tag;	
-		test = test->next;
+		test = mpd_data_get_next_real(test, FALSE);
 		i++;
 	}while(test != NULL);
 
 	qsort(array,length,sizeof(char *),(QsortCompare)compa);
 
 	/* reset list */
-	test =data->first;
+	test = mpd_data_get_first(data);
 	i=0;
 	do
 	{
 		test->value.tag = array[i];
-		test = test->next;
+		test = mpd_data_get_next_real(test, FALSE);
 		i++;                            	
 	}while(test != NULL);             	
 	free(array);
-	return data->first;
+	return mpd_data_get_first(data);
 }
 
 
@@ -554,21 +554,7 @@ MpdData * mpd_playlist_get_albums(MpdObj *mi,char *artist)
 	mpd_sendListCommand(mi->connection,MPD_TABLE_ALBUM,artist);
 	while (( string = mpd_getNextAlbum(mi->connection)) != NULL)
 	{	
-		if(data == NULL)
-		{
-			data = mpd_new_data_struct();
-			data->first = data;
-			data->next = NULL;
-			data->prev = NULL;
-		}	
-		else
-		{
-			data->next = mpd_new_data_struct();
-			data->next->first = data->first;
-			data->next->prev = data;
-			data = data->next;
-			data->next = NULL;
-		}
+		data = mpd_new_data_struct_append(data);
 		data->type = MPD_DATA_TYPE_ALBUM;
 		data->value.album = string;
 	}
@@ -580,11 +566,8 @@ MpdData * mpd_playlist_get_albums(MpdObj *mi,char *artist)
 	{
 		return NULL;
 	}
-	return data->first;
+	return mpd_data_get_first(data);
 }
-
-
-
 
 MpdData * mpd_playlist_get_directory(MpdObj *mi,char *path)
 {
@@ -608,21 +591,7 @@ MpdData * mpd_playlist_get_directory(MpdObj *mi,char *path)
 	mpd_sendLsInfoCommand(mi->connection,path);
 	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
 	{	
-		if(data == NULL)
-		{
-			data = mpd_new_data_struct();
-			data->first = data;
-			data->next = NULL;
-			data->prev = NULL;
-		}	
-		else
-		{
-			data->next = mpd_new_data_struct();
-			data->next->first = data->first;
-			data->next->prev = data;
-			data = data->next;
-			data->next = NULL;
-		}
+		data = mpd_new_data_struct_append(data);
 		if(ent->type == MPD_INFO_ENTITY_TYPE_DIRECTORY)
 		{
 			data->type = MPD_DATA_TYPE_DIRECTORY;
@@ -650,7 +619,7 @@ MpdData * mpd_playlist_get_directory(MpdObj *mi,char *path)
 	{
 		return NULL;
 	}
-	return data->first;
+	return mpd_data_get_first(data);
 }
 
 MpdData *mpd_playlist_token_find(MpdObj *mi , char *string)
@@ -720,21 +689,7 @@ MpdData *mpd_playlist_token_find(MpdObj *mi , char *string)
 
 			if(match)
 			{
-				if(data == NULL)
-				{
-					data = mpd_new_data_struct();
-					data->first = data;
-					data->next = NULL;
-					data->prev = NULL;
-				}	
-				else
-				{
-					data->next = mpd_new_data_struct();
-					data->next->first = data->first;
-					data->next->prev = data;
-					data = data->next;
-					data->next = NULL;
-				}
+				data = mpd_new_data_struct_append(data);
 				data->type = MPD_DATA_TYPE_SONG;
 				data->value.song = mpd_songDup(ent->info.song);				
 			}
@@ -752,7 +707,7 @@ MpdData *mpd_playlist_token_find(MpdObj *mi , char *string)
 	{
 		return NULL;
 	}
-	return data->first;
+	return mpd_data_get_first(data);
 }
 
 MpdData *mpd_playlist_find_adv(MpdObj *mi,int exact, ...)
@@ -787,21 +742,7 @@ MpdData *mpd_playlist_find_adv(MpdObj *mi,int exact, ...)
 	va_end(arglist);
 	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
 	{	
-		if(data == NULL)
-		{
-			data = mpd_new_data_struct();
-			data->first = data;
-			data->next = NULL;
-			data->prev = NULL;
-		}	
-		else
-		{
-			data->next = mpd_new_data_struct();
-			data->next->first = data->first;
-			data->next->prev = data;
-			data = data->next;
-			data->next = NULL;
-		}
+		data = mpd_new_data_struct_append( data );
 		if(ent->type == MPD_INFO_ENTITY_TYPE_DIRECTORY)
 		{
 			data->type = MPD_DATA_TYPE_DIRECTORY;
@@ -828,7 +769,7 @@ MpdData *mpd_playlist_find_adv(MpdObj *mi,int exact, ...)
 	{
 		return NULL;
 	}
-	return data->first;
+	return mpd_data_get_first(data);
 }
 
 MpdData * mpd_playlist_find(MpdObj *mi, int table, char *string, int exact)
@@ -872,7 +813,7 @@ MpdData * mpd_playlist_find(MpdObj *mi, int table, char *string, int exact)
 				int found = FALSE;
 				if(artist != NULL)
 				{
-					MpdData *fartist = artist->first;
+					MpdData *fartist = mpd_data_get_first(artist);
 					do{
 						if(fartist->type == MPD_DATA_TYPE_ARTIST)
 						{
@@ -885,7 +826,7 @@ MpdData * mpd_playlist_find(MpdObj *mi, int table, char *string, int exact)
 								found = TRUE;
 							}
 						}
-						fartist = fartist->next;
+						fartist = mpd_data_get_next_real(fartist, FALSE);
 					}while(fartist && !found);
 				}	
 				if(!found)
@@ -900,7 +841,7 @@ MpdData * mpd_playlist_find(MpdObj *mi, int table, char *string, int exact)
 				int found = FALSE;
 				if(artist != NULL)
 				{
-					MpdData *fartist = artist->first;
+					MpdData *fartist = mpd_data_get_first(artist);
 					do{
 						if(fartist->type == MPD_DATA_TYPE_ALBUM)
 						{
@@ -913,7 +854,7 @@ MpdData * mpd_playlist_find(MpdObj *mi, int table, char *string, int exact)
 								found = TRUE;
 							}
 						}
-						fartist = fartist->next;
+						fartist = mpd_data_get_next_real(fartist, FALSE);
 					}while(fartist && !found);
 				}	
 				if(!found)
@@ -945,21 +886,11 @@ MpdData * mpd_playlist_find(MpdObj *mi, int table, char *string, int exact)
 	{
 		return NULL;
 	}
-	data = data->first;
+	data = mpd_data_get_first(data);
 	/* prepend the album then artists*/
 	if(artist)
 	{
-		artist->next = data;
-		data->prev = artist;
-		/* make data point to the first in the list */
-		data= artist->first;
-		/* use the artist to iterate over it */
-		/* I need to set all the -> first correct */
-		artist = data;
-		do{
-			artist->first = data;
-			artist = artist->next;
-		}while(artist);
+		data = mpd_data_concatenate(artist, data);
 	}
 
 	return data;
@@ -995,21 +926,7 @@ MpdData * mpd_playlist_get_changes(MpdObj *mi,int old_playlist_id)
 	{	
 		if(ent->type == MPD_INFO_ENTITY_TYPE_SONG)
 		{	
-			if(data == NULL)
-			{
-				data = mpd_new_data_struct();
-				data->first = data;
-				data->next = NULL;
-				data->prev = NULL;
-			}	
-			else
-			{
-				data->next = mpd_new_data_struct();
-				data->next->first = data->first;
-				data->next->prev = data;
-				data = data->next;
-				data->next = NULL;
-			}
+			data = mpd_new_data_struct_append(data);
 			data->type = MPD_DATA_TYPE_SONG;
 			data->value.song = mpd_songDup(ent->info.song);
 		}
@@ -1028,7 +945,7 @@ MpdData * mpd_playlist_get_changes(MpdObj *mi,int old_playlist_id)
 	{
 		return NULL;
 	}
-	return data->first;
+	return mpd_data_get_first(data);
 }
 
 
