@@ -115,6 +115,13 @@ MpdObj * mpd_create()
 	mi->connect = NULL;
 	mi->connect_pointer = NULL;	
 
+	/* connection changed signal */
+	mi->the_connection_changed_callback = NULL;
+	mi->the_connection_changed_signal_userdata = NULL;
+
+	/* status changed */
+	mi->the_status_changed_callback = NULL;
+	mi->the_status_changed_signal_userdata = NULL;	
 	/* error signal */
 	mi->error_signal = NULL;
 	mi->error_signal_pointer = NULL;
@@ -409,7 +416,12 @@ int mpd_connect(MpdObj *mi)
 	mi->CurrentState.songid = -1;
 	mi->CurrentState.dbUpdateTime = 0;
 	mi->CurrentState.updatingDb = 0;
- 
+	mi->CurrentState.repeat = -1;
+	mi->CurrentState.random = -1;
+	mi->CurrentState.volume = -2;
+	mi->CurrentState.xfade 	= -1;
+
+
 	memcpy(&(mi->OldState), &(mi->CurrentState), sizeof(MpdServerState));
 
 	if(mi->connected)
@@ -469,12 +481,7 @@ int mpd_check_connected(MpdObj *mi)
 	{
 		return FALSE;
 	}
-/*	if(mi->connection_lock && mi->connected)
-	{
-		debug_printf(DEBUG_ERROR,"check connection: Somehow connection is still locked, connected state is: %i", mi->connected);
-		return FALSE;
-	}
-*/	return mi->connected;
+	return mi->connected;
 }
 
 
