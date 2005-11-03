@@ -67,8 +67,6 @@ typedef struct _MpdObj MpdObj;
 typedef enum _MpdDataType {
 	MPD_DATA_TYPE_NONE, 		/** The MpdData structure holds no value */
 	MPD_DATA_TYPE_TAG,		/** Holds an Tag String. value->tag is filled.*/
-	MPD_DATA_TYPE_ARTIST,		/** Holds an Artist string. value->artist is filled. value->album is possible valid */
-	MPD_DATA_TYPE_ALBUM,		/** Holds an Album string. value->album is filled. value->artist is possible valid */
 	MPD_DATA_TYPE_DIRECTORY,	/** Holds an Directory String. value->directory is filled.*/
 	MPD_DATA_TYPE_SONG,		/** Holds an MpdSong Structure. value->song is valid.*/
 	MPD_DATA_TYPE_PLAYLIST,		/** Holds an Playlist String. value->playlist is filled.*/
@@ -84,15 +82,16 @@ typedef struct _MpdData {
 	/* MpdDataType */
 	MpdDataType type;
 
-	struct {
-		char *tag;
-		char *artist;
-		char *album;
+	union {
+		struct {
+			int tag_type;
+			char *tag;
+		};
 		char *directory;
 		char *playlist; /*is a path*/
 		mpd_Song *song;
 		mpd_OutputEntity *output_dev; /* from devices */
-	}value;
+	};
 }MpdData;
 
 

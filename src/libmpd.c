@@ -125,7 +125,9 @@ MpdObj * mpd_create()
 	/* error signal */
 	mi->error_signal = NULL;
 	mi->error_signal_pointer = NULL;
-
+	/* error callback */
+	mi->the_error_callback = NULL;
+	mi->the_error_signal_userdata  = NULL;
 	/* connection is locked because where not connected */
 	mi->connection_lock = TRUE;
 
@@ -631,13 +633,12 @@ MpdData *mpd_new_data_struct()
 
 	data->type = 0;
 
-	data->value.artist = NULL;
-	data->value.album = NULL;
-	data->value.tag = NULL;
-	data->value.song = NULL;
-	data->value.directory = NULL;
-	data->value.playlist = NULL;
-	data->value.output_dev = NULL;
+	data->tag_type = 0;
+	data->tag = NULL;
+	data->song = NULL;
+	data->directory = NULL;
+	data->playlist = NULL;
+	data->output_dev = NULL;
 	data->next = NULL;
 	data->prev = NULL;
 	data->first = NULL;
@@ -762,35 +763,13 @@ void mpd_data_free(MpdData *data)
 	while(data_real != NULL)
 	{
 		temp = data_real->next;
-		if(data_real->value.artist)
-		{
-			free(data_real->value.artist);
+		if (data_real->type == MPD_DATA_TYPE_SONG) {
+			mpd_freeSong(data_real->song);
+		} else if (data_real->type == MPD_DATA_TYPE_OUTPUT_DEV) {
+			mpd_freeOutputElement(data_real->output_dev);
+		} else {
+			free((void*)(data_real->tag));
 		}
-		if (data_real->value.tag)
-		{
-			free(data_real->value.tag);
-		}
-		if (data_real->value.album)
-		{
-			free(data_real->value.album);
-		}
-		if (data_real->value.directory)
-		{
-			free(data_real->value.directory);
-		}
-		if (data_real->value.song)
-		{
-			mpd_freeSong(data_real->value.song);
-		}
-		if (data_real->value.playlist)
-		{
-			free(data_real->value.playlist);
-		}
-		if (data_real->value.output_dev)
-		{
-			mpd_freeOutputElement(data_real->value.output_dev);
-		}
-
 		free(data_real);
 		data_real= temp;
 	}
@@ -883,7 +862,7 @@ MpdData * mpd_server_get_output_devices(MpdObj *mi)
 	{	
 		data = mpd_new_data_struct_append(data);
 		data->type = MPD_DATA_TYPE_OUTPUT_DEV; 
-		data->value.output_dev = output;
+		data->output_dev = output;
 	}
 	mpd_finishCommand(mi->connection);
 
@@ -977,6 +956,7 @@ regex_t ** mpd_misc_tokenize(char *string)
 			bpos = i+1;                                         
 			tokens++;
 		}
+
 	}
 	return result;
 }

@@ -6,15 +6,16 @@ typedef struct _MpdData_real {
 	/* MpdDataType */
 	MpdDataType type;
 
-	struct {
-		char *tag;
-		char *artist;
-		char *album;
+	union {
+		struct {
+			int tag_type;
+			char *tag;
+		};
 		char *directory;
 		char *playlist; /*is a path*/
 		mpd_Song *song;
 		mpd_OutputEntity *output_dev; /* from devices */
-	}value;
+	};
 	
 	struct _MpdData_real *next;
 	/* Previous MpdData in the list */

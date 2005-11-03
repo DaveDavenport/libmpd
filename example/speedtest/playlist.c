@@ -5,7 +5,7 @@
 int main(int argc, char *argv)
 {
 	int i=0;
-	MpdObj *obj = mpd_new("192.150.0.111", 6600, NULL);
+	MpdObj *obj = mpd_new("192.150.0.13", 6600, NULL);
 	if(!mpd_connect(obj))
 //	for(i=0;i<1000;i++)
 	{
@@ -18,7 +18,7 @@ int main(int argc, char *argv)
 		data = mpd_playlist_get_artists(obj);
 		while(data != NULL)
 		{
-			MpdData *dat2 = mpd_playlist_get_albums(obj, data->value.artist);
+			MpdData *dat2 = mpd_playlist_get_albums(obj, data->tag);
 			while(dat2 != NULL)
 			{
 				dat2 = mpd_data_get_next(dat2);
