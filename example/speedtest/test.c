@@ -12,7 +12,7 @@ int main(int argc, char *argv)
 		MpdData * data = mpd_playlist_get_artists(obj);
 		while(data != NULL)
 		{
-			printf("%s\n", data->value.artist);
+			printf("%s\n", data->tag);
 			data = mpd_data_get_next(data);
 		}
 
