@@ -2,19 +2,17 @@
 libmpd-status
 
 <!-- ##### SECTION Short_Description ##### -->
-
+Read out the state of mpd
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
 
 </para>
 
-
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
-
 
 <!-- ##### SECTION Stability_Level ##### -->
 

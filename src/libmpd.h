@@ -40,13 +40,43 @@ extern "C" {
 #define FALSE 0
 #endif
 
-#define MPD_NOT_CONNECTED -2
-#define MPD_FAILED_STATUS -3
-#define MPD_LOCK_FAILED -4
-#define MPD_FAILED_STATS -5
-#define MPD_ERROR -6
-#define MPD_PLAYLIST_EXIST -10
 
+/** 
+ *MDP_NOT_CONNECTED
+ * 
+ * Action failed because there is no connection to an mpd daemon 
+ */
+#define MPD_NOT_CONNECTED -2 	
+/**
+ * MPD_FAILED_STATUS
+ *
+ * Failed to grab status 
+ */
+#define MPD_FAILED_STATUS -3
+/**
+ * MPD_LOCK_FAILED
+ *
+ * Connection is still locked
+ */
+#define MPD_LOCK_FAILED -4
+/**
+ * MPD_FAILED_STATS
+ * 
+ * Failed to grab status
+ */
+#define MPD_FAILED_STATS -5
+/** 
+ * MPD_ERROR
+ *
+ * Mpd returned an error 
+ */
+#define MPD_ERROR -6		
+/** 
+ * MPD_PLAYLIST_EXIST
+ * 
+ * The playlist allready extists 
+ */
+#define MPD_PLAYLIST_EXIST -10	
 
 
 /** 
@@ -58,6 +88,12 @@ typedef struct _MpdObj MpdObj;
 
 /**
  * MpdDataType
+ * @MPD_DATA_TYPE_NONE:	 The MpdData structure holds no value 
+ * @MPD_DATA_TYPE_TAG: 	Holds an Tag String. value->tag is filled value->tag_type defines what type of tag.
+ * @MPD_DATA_TYPE_DIRECTORY:   Holds an Directory String. value->directory is filled.
+ * @MPD_DATA_TYPE_SONG:  Holds an MpdSong Structure. value->song is valid.
+ * @MPD_DATA_TYPE_PLAYLIST: Holds an Playlist String. value->playlist is filled.
+ * @MPD_DATA_TYPE_OUTPUT_DEV: Holds an MpdOutputDevice structure. value->output_dev is valid.
  *
  * enumeration to determine what value the MpdData structure hold. 
  * The MpdData structure can hold only one type of value, 
@@ -65,18 +101,20 @@ typedef struct _MpdObj MpdObj;
  * It's required to check every MpdData Structure.
  */
 typedef enum _MpdDataType {
-	MPD_DATA_TYPE_NONE, 		/** The MpdData structure holds no value */
-	MPD_DATA_TYPE_TAG,		/** Holds an Tag String. value->tag is filled.*/
-	MPD_DATA_TYPE_DIRECTORY,	/** Holds an Directory String. value->directory is filled.*/
-	MPD_DATA_TYPE_SONG,		/** Holds an MpdSong Structure. value->song is valid.*/
-	MPD_DATA_TYPE_PLAYLIST,		/** Holds an Playlist String. value->playlist is filled.*/
-	MPD_DATA_TYPE_OUTPUT_DEV	/** Holds an MpdOutputDevice structure. value->output_dev is valid.*/
+	MPD_DATA_TYPE_NONE,
+	MPD_DATA_TYPE_TAG,
+	MPD_DATA_TYPE_DIRECTORY,
+	MPD_DATA_TYPE_SONG,
+	MPD_DATA_TYPE_PLAYLIST,
+	MPD_DATA_TYPE_OUTPUT_DEV
 } MpdDataType;
 
 /**
  * MpdData
  *
- * A linked list in witch data is passed from libmpd to the client. 
+ * @type: A #MpdDataType defining the data it contains
+ *
+ * A linked list that is used to pass data from libmpd to the client. 
  */
 typedef struct _MpdData {
 	/* MpdDataType */
@@ -234,14 +272,49 @@ typedef enum _ChangedStatusType {
  * @mi: a #MpdObj
  * @what: a #ChangedStatusType that determines what changed triggered the signal. This is a bitmask.
  * @userdata: user data set when the signal handler was connected.
+ * Signal that get's called when the state of mpd changed. Look #ChangedStatusType to see the possible events.
  */
 typedef void (* StatusChangedCallback)(MpdObj *mi, ChangedStatusType what, void *userdata);
+/**
+ * ErrorCallback
+ * @mi: a #MpdObj
+ * @id: The error Code.
+ * @msg: human-readable informative error message.
+ * @userdata:  user data set when the signal handler was connected.
+ * This signal is called when an error has occured in the communication with mpd.
+ */
 typedef void (* ErrorCallback)(MpdObj *mi, int id, char *msg, void *userdata);
+/**
+ * ConnectionChangedCallback
+ * @mi: a #MpdObj
+ * @connect: 1 if you are now connect, 0 if you are disconnect.
+ * @userdata:  user data set when the signal handler was connected.
+ * Signal is triggered when the connection state changes.
+ */
+
 typedef void (* ConnectionChangedCallback)(MpdObj *mi, int connect, void *userdata);
 
 /* new style signal connectors */
+/**
+ * mpd_signal_connect_status_changed
+ * @mi: a #MpdObj
+ * @status_changed: a #StatusChangedCallback
+ * @userdata: user data passed to the callback
+ */
 void 		mpd_signal_connect_status_changed        (MpdObj *mi, StatusChangedCallback status_changed, void *userdata);
+/**
+ * mpd_signal_connect_error
+ * @mi: a #mpdObj
+ * @error: a #ErrorCallback
+ * @userdata: user data passed to the callback
+ */
 void 		mpd_signal_connect_error                 (MpdObj *mi, ErrorCallback error, void *userdata);
+/**
+ * mpd_signal_connect_connection_changed
+ * @mi: a #mpdObj
+ * @connection_changed: a #ConnectionChangedCallback
+ * @userdata: user data passed to the callback
+ */
 void 		mpd_signal_connect_connection_changed	   (MpdObj *mi, ConnectionChangedCallback connection_changed, void *userdata);
 
 /* old style signal connectors */
@@ -277,20 +350,88 @@ void 		mpd_data_free				(MpdData *data);
  * @data: a #MpdData
  *
  * Returns the next #MpdData in the list. If it's the last item in the list, it will free the list.
+ * 
  * returns: The next #MpdData or NULL
  */
 MpdData * 	mpd_data_get_next			(MpdData *data);
+/**
+ * mpd_data_get_first
+ * @data: a #MpdData
+ *
+ * Returns the first #MpdData in the list.
+ * 
+ * returns: The first #MpdData or NULL
+ */
 MpdData * 	mpd_data_get_first			(MpdData const *data);
 
 /* Server Stuff */
+/**
+ * mpd_server_get_output_devices
+ * @mi: a #MpdObj
+ * 
+ * Returns a list of audio output devices stored in a #MpdData list
+ *
+ * returns: a #MpdData
+ */
 MpdData * 	mpd_server_get_output_devices	(MpdObj *mi);
+/**
+ * mpd_server_set_output_device
+ * @mi: a #MpdObj
+ * @device_id: The id of the output device
+ * @state: The state to change the output device to, 1 is enable, 0 is disable.
+ * 
+ * Enable or Disable an audio output device
+ *
+ * returns: 0 if successful
+ */
 int 		mpd_server_set_output_device		(MpdObj *mi,int device_id,int state);
+/**
+ * mpd_server_get_database_update_time
+ * @mi: a #MpdObj
+ * 
+ * Get's a unix timestamp of the last time the database was updated.
+ * 
+ * returns: unix Timestamp
+ */
 long unsigned	mpd_server_get_database_update_time	(MpdObj *mi);
+/**
+ * mpd_server_check_version
+ * @mi: a #MpdObj
+ * @major: the major version number
+ * @minor: the minor version number
+ * @micro: the micro version number
+ * 
+ * Checks if the connected mpd server version is equal or higer.
+ * 
+ * returns: True or False
+ */
 int 		mpd_server_check_version		(MpdObj *mi, int major, int minor, int micro);
 
 /* misc */
+/**
+ * mpd_misc_tokenize
+ * @string: A NULL terminated string
+ * 
+ * Splits a string in tokens while keeping ()[] in tact. This can be used to match a string tokenized and with regex support agains a user defined string.
+ * 
+ * returns: An array of regex patterns
+ */
 regex_t** 	mpd_misc_tokenize			(char *string);
-void 		mpd_misc_tokens_free			(regex_t ** tokens);
+/**
+ * mpd_misc_tokens_free
+ * @tokens: an array of regex patterns.
+ * 
+ * Free's a list of regex patterns
+ */
+void 		mpd_misc_tokens_free(regex_t ** tokens);
+/**
+ * mpd_misc_get_tag_by_name
+ * @name: a NULL terminated string
+ * 
+ * gets the Matching #MdpDataType matching at the string
+ *
+ * returns: a #MpdDataType
+ */
 int 		mpd_misc_get_tag_by_name		(char *name);
 #endif
 

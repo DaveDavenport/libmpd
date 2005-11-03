@@ -9,15 +9,22 @@ libmpd-internal
 
 </para>
 
-
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
 
-
 <!-- ##### SECTION Stability_Level ##### -->
 
+
+<!-- ##### STRUCT MpdData_real ##### -->
+<para>
+
+</para>
+
+@type: 
+@tag_type: 
+@tag: 
 
 <!-- ##### STRUCT MpdQueue ##### -->
 <para>
@@ -37,6 +44,7 @@ libmpd-internal
 @random: 
 @repeat: 
 @volume: 
+@xfade: 
 
 <!-- ##### STRUCT _MpdObj ##### -->
 <para>
@@ -117,6 +125,53 @@ libmpd-internal
 </para>
 
 @data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_data_concatenate ##### -->
+<para>
+
+</para>
+
+@first: 
+@second: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_data_get_next_real ##### -->
+<para>
+
+</para>
+
+@data: 
+@kill_list: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_stats_check ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_lock_conn ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_unlock_conn ##### -->
+<para>
+
+</para>
+
+@mi: 
 @Returns: 
 
 

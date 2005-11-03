@@ -2,19 +2,17 @@
 libmpd
 
 <!-- ##### SECTION Short_Description ##### -->
-
+Basic functions and Signals
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+Basic connection functions and signals
 </para>
-
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
-
 
 <!-- ##### SECTION Stability_Level ##### -->
 
@@ -74,8 +72,6 @@ libmpd
 
 @MPD_DATA_TYPE_NONE: 
 @MPD_DATA_TYPE_TAG: 
-@MPD_DATA_TYPE_ARTIST: 
-@MPD_DATA_TYPE_ALBUM: 
 @MPD_DATA_TYPE_DIRECTORY: 
 @MPD_DATA_TYPE_SONG: 
 @MPD_DATA_TYPE_PLAYLIST: 
@@ -86,10 +82,9 @@ libmpd
 
 </para>
 
-@next: 
-@prev: 
-@first: 
 @type: 
+@tag_type: 
+@tag: 
 
 <!-- ##### FUNCTION mpd_new_default ##### -->
 <para>
@@ -378,6 +373,15 @@ libmpd
 
 
 <!-- ##### FUNCTION mpd_data_get_next ##### -->
+<para>
+
+</para>
+
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_data_get_first ##### -->
 <para>
 
 </para>

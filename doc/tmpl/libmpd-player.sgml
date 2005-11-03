@@ -2,50 +2,30 @@
 libmpd-player
 
 <!-- ##### SECTION Short_Description ##### -->
-
+Controlling the state of the player
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+Modifing and checking the state of the player.
 </para>
-
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
 
-
 <!-- ##### SECTION Stability_Level ##### -->
 
 
-<!-- ##### MACRO MPD_PLAYER_PAUSE ##### -->
+<!-- ##### ENUM MpdState ##### -->
 <para>
 
 </para>
 
-
-
-<!-- ##### MACRO MPD_PLAYER_PLAY ##### -->
-<para>
-
-</para>
-
-
-
-<!-- ##### MACRO MPD_PLAYER_STOP ##### -->
-<para>
-
-</para>
-
-
-
-<!-- ##### MACRO MPD_PLAYER_UNKNOWN ##### -->
-<para>
-
-</para>
-
-
+@MPD_PLAYER_PAUSE: 
+@MPD_PLAYER_PLAY: 
+@MPD_PLAYER_STOP: 
+@MPD_PLAYER_UNKNOWN: 
 
 <!-- ##### FUNCTION mpd_player_play ##### -->
 <para>
