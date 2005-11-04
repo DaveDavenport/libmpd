@@ -114,7 +114,10 @@ MpdObj * mpd_create()
 	/* connect signal */
 	mi->connect = NULL;
 	mi->connect_pointer = NULL;	
-
+	/* updating db */
+	mi->updating_changed = NULL;
+	mi->updating_signal_pointer = NULL;
+	
 	/* connection changed signal */
 	mi->the_connection_changed_callback = NULL;
 	mi->the_connection_changed_signal_userdata = NULL;

@@ -250,18 +250,18 @@ void 		mpd_free				(MpdObj *mi);
  * Bitwise enumeration to determine what triggered the status_changed signals
  */
 typedef enum _ChangedStatusType {
-	MPD_CST_PLAYLIST      = 0x01,
-	MPD_CST_SONG          = 0x02,
-	MPD_CST_SONGID        = 0x04,
-	MPD_CST_DATABASE      = 0x08,
-	MPD_CST_UPDATING      = 0x10,
-	MPD_CST_VOLUME        = 0x20,
-	MPD_CST_TIME          = 0x40,
-	MPD_CST_ELAPSED_TIME  = 0x80,
-	MPD_CST_CROSSFADE     = 0x100,
-	MPD_CST_RANDOM        = 0x200,
-	MPD_CST_REPEAT        = 0x400,
- 	MPD_CST_AUDIO         = 0x800,
+	MPD_CST_PLAYLIST      = 0x0001,
+	MPD_CST_SONG          = 0x0002, /* not yet implemented */
+	MPD_CST_SONGID        = 0x0004,
+	MPD_CST_DATABASE      = 0x0008,
+	MPD_CST_UPDATING      = 0x0010,
+	MPD_CST_VOLUME        = 0x0020,
+	MPD_CST_TIME          = 0x0040,/* not yet implemented */
+	MPD_CST_ELAPSED_TIME  = 0x0080,/* not yet implemented */
+	MPD_CST_CROSSFADE     = 0x0100,
+	MPD_CST_RANDOM        = 0x0200,
+	MPD_CST_REPEAT        = 0x0400,
+ 	MPD_CST_AUDIO         = 0x0800,/* not yet implemented */
 	MPD_CST_STATE         = 0x1000
 } ChangedStatusType;
 
