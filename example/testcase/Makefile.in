@@ -191,6 +191,7 @@ distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
 
+all:
 testcase: testcase.c
 	gcc testcase.c ../../src/*.c -I../../src -I../../ -g -o testcase
 testcase-clean:
