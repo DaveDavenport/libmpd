@@ -80,11 +80,15 @@ void status_changed(MpdObj *mi, ChangedStatusType what)
 /*11*/	if(what&MPD_CST_AUDIO){
 		printf(GREEN"Audio Changed"RESET"\n");
 	}
-/*12*/	if(what&MPD_CST_TIME){
-		printf(GREEN"Total song time changed"RESET"\n");
+/*12*/	if(what&MPD_CST_TOTAL_TIME){
+		printf(GREEN"Total song time changed:"RESET" %02i:%02i\n",
+				mpd_status_get_total_song_time(mi)/60,
+				mpd_status_get_total_song_time(mi)%60);
 	}                                             	
 /*13*/	if(what&MPD_CST_ELAPSED_TIME){
-		printf(GREEN"Time elapsed changed"RESET"\n");
+		printf(GREEN"Time elapsed changed:"RESET" %02i:%02i\n",
+				mpd_status_get_elapsed_song_time(mi)/60,
+				mpd_status_get_elapsed_song_time(mi)%60);
 	}
 }
 
@@ -98,8 +102,8 @@ int main(int argc, char *argv)
 	mpd_signal_connect_status_changed(obj,(StatusChangedCallback)status_changed, NULL);
 	if(!mpd_connect(obj))
 	{
-		char buffer[3];
-		memset(buffer, '\0', 3);
+		char buffer[6];
+		memset(buffer, '\0', 6);
 		do{		
 			if(read(fdstdin, buffer, 1) > 0)
 			{
@@ -132,6 +136,41 @@ int main(int argc, char *argv)
 					case 's':
 						mpd_player_set_random(obj, !mpd_player_get_random(obj));
 						break;
+					case 'l':
+						{
+							MpdData *data = mpd_playlist_get_changes(obj,-1);
+							if(data)
+							{
+								printf(GREEN"Playlist:"RESET"\n");
+								do{
+
+									if(data->type == MPD_DATA_TYPE_SONG)
+									{
+										printf(GREEN"%i"RESET": %s - %s\n", data->song->id,
+												data->song->artist,
+												data->song->title);	
+									}	
+									data = mpd_data_get_next(data);
+								}while(data);
+							}
+							break;
+						}
+					case 'p':
+						memset(buffer, '\0',strlen(buffer));
+						if(read(fdstdin,buffer, 5))
+						{
+							int id = atoi(buffer);
+							printf(GREEN"Playing:"RESET" %i\n", id);
+							mpd_player_play_id(obj,id);
+						}
+						break;
+					case '+':
+						mpd_status_set_volume(obj, mpd_status_get_volume(obj)+5);
+						break;
+					case '-':
+						mpd_status_set_volume(obj, mpd_status_get_volume(obj)-5);
+						break;
+						
 					default:
 						printf("buffer: %s\n", buffer);
 				}
@@ -139,8 +178,9 @@ int main(int argc, char *argv)
 			}	
 
 			mpd_status_update(obj);
-			memset(buffer, '\0', 3);
-		}while(!usleep(500000) &&  run);
+			memset(buffer, '\0', 6);
+		}while(!usleep(100000) &&  run);
 	}
 	mpd_free(obj);
+	close(fdstdin);
 }

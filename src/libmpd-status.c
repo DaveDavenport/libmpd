@@ -168,7 +168,16 @@ int mpd_status_update(MpdObj *mi)
 		what_changed |= MPD_CST_CROSSFADE;
 		mi->CurrentState.xfade = mi->status->crossfade;
 	}
-	
+	if(mi->CurrentState.totaltime != mi->status->totalTime)
+	{
+		what_changed |= MPD_CST_TOTAL_TIME;             	
+		mi->CurrentState.totaltime = mi->status->totalTime;
+	}
+	if(mi->CurrentState.elapsedtime != mi->status->elapsedTime)
+	{
+		what_changed |= MPD_CST_ELAPSED_TIME;             	
+		mi->CurrentState.elapsedtime = mi->status->elapsedTime;
+	}                                                          	
 	/* deprecated */
 	if(mi->status_changed != NULL)
 	{                                                                      		

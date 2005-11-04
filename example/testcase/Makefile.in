@@ -193,7 +193,7 @@ mostlyclean distclean maintainer-clean
 
 testcase: testcase.c
 	gcc testcase.c ../../src/*.c -I../../src -I../../ -g -o testcase
-clean:
+testcase-clean:
 	rm testcase
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

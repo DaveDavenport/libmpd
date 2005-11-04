@@ -89,7 +89,9 @@ MpdObj * mpd_create()
        	mi->CurrentState.random = -1;
 	mi->CurrentState.volume = -2;
 	mi->CurrentState.xfade 	= -1;
-       
+      	mi->CurrentState.totaltime = 0;
+	mi->CurrentState.elapsedtime = 0;	
+
 	memcpy(&(mi->OldState), &(mi->CurrentState), sizeof(MpdServerState));
 
 
@@ -382,6 +384,8 @@ int mpd_disconnect(MpdObj *mi)
 	mi->CurrentState.random = -1;
 	mi->CurrentState.volume = -2;
 	mi->CurrentState.xfade 	= -1;
+	mi->CurrentState.totaltime = 0;
+	mi->CurrentState.elapsedtime = 0;
 	
 	memcpy(&(mi->OldState), &(mi->CurrentState) , sizeof(MpdServerState));
 	/*don't reset errors */
@@ -425,7 +429,8 @@ int mpd_connect(MpdObj *mi)
 	mi->CurrentState.random = -1;
 	mi->CurrentState.volume = -2;
 	mi->CurrentState.xfade 	= -1;
-
+	mi->CurrentState.totaltime = 0;
+	mi->CurrentState.elapsedtime = 0;
 
 	memcpy(&(mi->OldState), &(mi->CurrentState), sizeof(MpdServerState));
 

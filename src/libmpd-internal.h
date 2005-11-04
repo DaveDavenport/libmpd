@@ -37,6 +37,8 @@ typedef struct _MpdServerState {
 	int		repeat;
 	int		volume;
 	int		xfade;
+	int 		totaltime;
+	int		elapsedtime;
 } MpdServerState;
 
 typedef struct _MpdObj {
