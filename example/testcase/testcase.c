@@ -1,4 +1,4 @@
-#include <libmpd/libmpd.h>
+#include "libmpd.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,10 +21,10 @@ void status_changed(MpdObj *mi, ChangedStatusType what)
 		mpd_Song *song = mpd_playlist_get_current_song(mi);
 		printf(GREEN"Song:"RESET" %s - %s\n", song->artist, song->title);
 	}
-/*2*/	if(what&MPD_CST_SONG)
-	{
-		printf(GREEN"song pos changed"RESET"\n");
-	}
+
+
+
+
 /*3*/	if(what&MPD_CST_STATE)
 	{
 		printf(GREEN"State:"RESET);
@@ -98,7 +98,7 @@ int main(int argc, char *argv)
 	int run = 1;
 	MpdObj *obj = NULL;
 	fdstdin = open("/dev/stdin", O_NONBLOCK|O_RDONLY);
-	obj = mpd_new("127.0.0.1", 6600, NULL);
+	obj = mpd_new("192.150.0.111", 6600, NULL);
 	mpd_signal_connect_status_changed(obj,(StatusChangedCallback)status_changed, NULL);
 	if(!mpd_connect(obj))
 	{
