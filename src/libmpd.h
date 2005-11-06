@@ -363,6 +363,17 @@ MpdData * 	mpd_data_get_next			(MpdData *data);
  */
 MpdData * 	mpd_data_get_first			(MpdData const *data);
 
+/**
+ * mpd_data_delete_item
+ * @item: a #MpdData
+ *
+ * removes #MpdData from the list, and returns the element before data
+ *
+ * returns: a #MpdDatat list
+ */
+MpdData * 	mpd_data_delete_item			(MpdData *data);
+
+
 /* Server Stuff */
 /**
  * mpd_server_get_output_devices

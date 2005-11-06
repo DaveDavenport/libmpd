@@ -12,8 +12,12 @@ int main(int argc, char *argv)
 		MpdData * data = mpd_playlist_get_artists(obj);
 		while(data != NULL)
 		{
-			printf("%s\n", data->tag);
+			if(i%2){
+				data = mpd_data_delete_item(data);
+			}
+			else printf("%s\n", data->tag);
 			data = mpd_data_get_next(data);
+			i++;
 		}
 
 	}

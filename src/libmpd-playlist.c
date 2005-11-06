@@ -1091,3 +1091,41 @@ void mpd_playlist_queue_delete_id(MpdObj *mi,int id)
 	mi->queue->id = id;
 	mi->queue->path = NULL;
 }
+
+
+MpdData * mpd_database_get_complete(MpdObj *mi)
+{
+	MpdData *data = NULL;
+	mpd_InfoEntity *ent = NULL;
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"mpd_database_get_complete: not connected\n");
+		return NULL;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		debug_printf(DEBUG_WARNING,"mpd_database_get_complete: lock failed\n");
+		return NULL;
+	}
+	mpd_sendListallInfoCommand(mi->connection, "/");
+	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
+	{	
+
+		if (ent->type == MPD_INFO_ENTITY_TYPE_SONG)
+		{
+			data = mpd_new_data_struct_append(data);
+			data->type = MPD_DATA_TYPE_SONG;
+			data->song = mpd_songDup(ent->info.song);
+		}
+		mpd_freeInfoEntity(ent);
+	}
+	mpd_finishCommand(mi->connection);
+
+	/* unlock */
+	mpd_unlock_conn(mi);
+	if(data == NULL) 
+	{
+		return NULL;
+	}
+	return mpd_data_get_first(data);
+}

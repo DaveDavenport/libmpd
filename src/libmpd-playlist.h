@@ -68,4 +68,28 @@ void 		mpd_playlist_queue_delete_id		(MpdObj *mi,int id);
 /* use these to commit the changes */
 void 		mpd_playlist_queue_commit		(MpdObj *mi);
 
+
+
+/**
+ * mpd_database_get_complete
+ * @mi: a #MpdObj
+ *
+ * Get's the complete datababse, only returns songs
+ *
+ * returns: a #MpdData list with songs
+ */
+
+MpdData * mpd_database_get_complete(MpdObj *mi);
+
+
+
+
+
+
+
+
+
+
+
+
 #endif

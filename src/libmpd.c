@@ -759,6 +759,60 @@ MpdData* mpd_data_concatenate( MpdData const *first, MpdData const *second)
 	return (MpdData*)final_first;
 }
 
+MpdData * mpd_data_delete_item(MpdData *data)
+{
+	MpdData_real *temp, *data_real = (MpdData_real*)data;
+	if(data_real == NULL) return NULL;
+	if(data_real->first == data_real)
+	{
+		temp = data_real->next;
+		/* check if there is a next item */
+		if(temp == NULL)
+		{
+			mpd_data_free(data);
+			return NULL;
+		}	
+		temp->prev = NULL;
+		temp->first = temp;
+		/* free item */
+		data_real->next = NULL;
+		data_real->first = data_real;
+		mpd_data_free((MpdData *)data_real);
+		data_real = temp;
+		/* I need to set all the -> first correct */
+		while (temp)
+		{
+			temp->first = data_real;
+			temp = (MpdData_real*)mpd_data_get_next_real((MpdData*)temp, FALSE);
+		} 
+	}
+	else
+	{
+		/* make the previous point to the next */
+		data_real->prev->next = data_real->next;
+		/* make the next point back to the previous */
+		if(data_real->next)
+		{
+			data_real->next->prev = data_real->prev;
+		}
+		if(data_real->next)
+			temp = data_real->next;
+		else temp = data_real->prev;
+		
+		/* free the element */
+		data_real->next = NULL;
+		data_real->first = data_real;
+		mpd_data_free((MpdData *)data_real);
+		
+		data_real = temp;
+	}
+
+
+	return (MpdData *)data_real;
+}
+
+
+
 void mpd_data_free(MpdData *data)
 {
 	MpdData_real *temp = NULL;
