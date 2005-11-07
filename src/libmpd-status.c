@@ -200,7 +200,7 @@ int mpd_status_update(MpdObj *mi)
 		mi->CurrentState.updatingDb = mi->status->updatingDb;
 	}
 
-	if(mi->the_status_changed_callback != NULL && what_changed)
+	if((mi->the_status_changed_callback != NULL) && what_changed)
 	{                                                                      		
 		mi->the_status_changed_callback( mi, what_changed, mi->the_status_changed_signal_userdata );		
 	}

@@ -20,6 +20,7 @@
 #ifndef __MPD_LIB_PLAYLIST__
 #define __MPD_LIB_PLAYLIST__
 long long	mpd_playlist_get_playlist_id		(MpdObj *mi);
+long long      mpd_playlist_get_old_playlist_id         (MpdObj *mi);
 mpd_Song * 	mpd_playlist_get_song			(MpdObj *mi, int songid);
 mpd_Song * 	mpd_playlist_get_current_song		(MpdObj *mi);
 int 		mpd_playlist_clear			(MpdObj *mi);
