@@ -77,7 +77,7 @@ extern "C" {
 #endif
 
 
-enum 
+typedef enum mpd_TagItems
 {
 	MPD_TAG_ITEM_ARTIST,
 	MPD_TAG_ITEM_ALBUM,

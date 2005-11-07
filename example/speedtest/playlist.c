@@ -9,13 +9,14 @@ int main(int argc, char *argv)
 	if(!mpd_connect(obj))
 //	for(i=0;i<1000;i++)
 	{
-		MpdData * data = mpd_playlist_get_changes(obj,-1);
+		MpdData *data;
+/*		MpdData * data = mpd_playlist_get_changes(obj,-1);
 		while(data != NULL)
 		{
 			data = mpd_data_get_next(data);
 		}
 		mpd_status_update(obj);
-		data = mpd_playlist_get_artists(obj);
+*/		data = mpd_playlist_get_artists(obj);
 		while(data != NULL)
 		{
 			MpdData *dat2 = mpd_playlist_get_albums(obj, data->tag);
@@ -25,8 +26,8 @@ int main(int argc, char *argv)
 			}
 			data = mpd_data_get_next(data);
 		}
-		mpd_status_update(obj);
-		data = mpd_server_get_output_devices(obj);
+		//mpd_status_update(obj);
+/*		data = mpd_server_get_output_devices(obj);
 		while(data != NULL)
 		{
 			
@@ -41,7 +42,7 @@ int main(int argc, char *argv)
 			mpd_status_update(obj);
 		}
 
-		
+*/		
 	}
 	mpd_free(obj);
 }

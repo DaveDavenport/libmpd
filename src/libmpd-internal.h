@@ -119,7 +119,7 @@ typedef struct _MpdObj {
 }_MpdObj;
 
 
-enum {
+typedef enum MpdQueueType {
 	MPD_QUEUE_ADD,
 	MPD_QUEUE_LOAD,
 	MPD_QUEUE_DELETE_ID
