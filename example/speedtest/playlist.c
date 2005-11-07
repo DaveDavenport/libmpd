@@ -5,7 +5,7 @@
 int main(int argc, char *argv)
 {
 	int i=0;
-	MpdObj *obj = mpd_new("192.150.0.13", 6600, NULL);
+	MpdObj *obj = mpd_new("192.150.0.180", 6600, NULL);
 	if(!mpd_connect(obj))
 //	for(i=0;i<1000;i++)
 	{

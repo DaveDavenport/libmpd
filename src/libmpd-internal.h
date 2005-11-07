@@ -146,7 +146,6 @@ MpdData *	mpd_new_data_struct			();
 MpdData *	mpd_new_data_struct_append		(MpdData const *data);
 MpdData *	mpd_data_concatenate			(MpdData const *first, MpdData const *second);
 MpdData * 	mpd_data_get_next_real			(MpdData *data, int kill_list);
-
 /* more internal stuff*/
 int mpd_stats_check(MpdObj *mi);
 int mpd_lock_conn(MpdObj *mi);

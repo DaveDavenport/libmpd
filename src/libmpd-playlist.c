@@ -112,7 +112,10 @@ mpd_Song * mpd_playlist_get_song(MpdObj *mi, int songid)
 		debug_printf(DEBUG_ERROR, "mpd_playlist_get_song: Failed to grab corect song type from mpd\n");
 		return NULL;
 	}
-	song = mpd_songDup(ent->info.song);
+/*	song = mpd_songDup(ent->info.song);*/
+	song = ent->info.song;
+	ent->info.song = NULL;
+
 	mpd_freeInfoEntity(ent);
 
 	return song;
@@ -604,18 +607,29 @@ MpdData * mpd_playlist_get_directory(MpdObj *mi,char *path)
 		if(ent->type == MPD_INFO_ENTITY_TYPE_DIRECTORY)
 		{
 			data->type = MPD_DATA_TYPE_DIRECTORY;
+			/*
 			data->directory = strdup(ent->info.directory->path);
+			*/
+			data->directory = ent->info.directory->path;
+			ent->info.directory->path = NULL;
 		}
 		else if (ent->type == MPD_INFO_ENTITY_TYPE_SONG)
 		{
 			data->type = MPD_DATA_TYPE_SONG;
+			/*
 			data->song = mpd_songDup(ent->info.song);
+			*/
+			data->song = ent->info.song;
+			ent->info.song = NULL;
 		}
 		else if (ent->type == MPD_INFO_ENTITY_TYPE_PLAYLISTFILE)
 		{
 			data->type = MPD_DATA_TYPE_PLAYLIST;
+			/*
 			data->playlist = strdup(ent->info.playlistFile->path);
-
+			*/
+			data->playlist = ent->info.playlistFile->path;
+			ent->info.playlistFile->path = NULL;
 		}
 
 		mpd_freeInfoEntity(ent);
@@ -700,7 +714,11 @@ MpdData *mpd_playlist_token_find(MpdObj *mi , char *string)
 			{
 				data = mpd_new_data_struct_append(data);
 				data->type = MPD_DATA_TYPE_SONG;
+				/*
 				data->song = mpd_songDup(ent->info.song);				
+				*/
+				data->song = ent->info.song;
+				ent->info.song = NULL;
 			}
 		}
 		mpd_freeInfoEntity(ent);
@@ -755,17 +773,29 @@ MpdData *mpd_playlist_find_adv(MpdObj *mi,int exact, ...)
 		if(ent->type == MPD_INFO_ENTITY_TYPE_DIRECTORY)
 		{
 			data->type = MPD_DATA_TYPE_DIRECTORY;
+			/*
 			data->directory = strdup(ent->info.directory->path);
+			*/
+			data->directory = ent->info.directory->path;
+			ent->info.directory->path = NULL;
 		}
 		else if (ent->type == MPD_INFO_ENTITY_TYPE_SONG)
 		{
 			data->type = MPD_DATA_TYPE_SONG;                            	
+			/*
 			data->song = mpd_songDup(ent->info.song);
+			*/
+			data->song = ent->info.song;
+			ent->info.song = NULL;
 		}
 		else if (ent->type == MPD_INFO_ENTITY_TYPE_PLAYLISTFILE)
 		{
 			data->type = MPD_DATA_TYPE_PLAYLIST;
+			/*
 			data->playlist = strdup(ent->info.playlistFile->path);
+			*/
+			data->playlist = ent->info.playlistFile->path;
+			ent->info.playlistFile->path = NULL;
 		}
 
 		mpd_freeInfoEntity(ent);
@@ -811,12 +841,20 @@ MpdData * mpd_playlist_find(MpdObj *mi, int table, char *string, int exact)
 		if(ent->type == MPD_INFO_ENTITY_TYPE_DIRECTORY)
 		{
 			data->type = MPD_DATA_TYPE_DIRECTORY;
+			/*
 			data->directory = strdup(ent->info.directory->path);
+			*/
+			data->directory = ent->info.directory->path;
+			ent->info.directory->path = NULL;
 		}
 		else if (ent->type == MPD_INFO_ENTITY_TYPE_SONG)
 		{
 			data->type = MPD_DATA_TYPE_SONG;
+			/*
 			data->song = mpd_songDup(ent->info.song);
+			*/
+			data->song = ent->info.song;
+			ent->info.song = NULL;
 			if(data->song->artist != NULL)
 			{
 				int found = FALSE;
@@ -880,7 +918,11 @@ MpdData * mpd_playlist_find(MpdObj *mi, int table, char *string, int exact)
 		else if (ent->type == MPD_INFO_ENTITY_TYPE_PLAYLISTFILE)
 		{
 			data->type = MPD_DATA_TYPE_PLAYLIST;
+			/*
 			data->playlist = strdup(ent->info.playlistFile->path);
+			*/
+			data->playlist = ent->info.playlistFile->path;
+			ent->info.playlistFile->path = NULL;
 		}
 
 		mpd_freeInfoEntity(ent);
@@ -933,7 +975,11 @@ MpdData * mpd_playlist_get_changes(MpdObj *mi,int old_playlist_id)
 		{	
 			data = mpd_new_data_struct_append(data);
 			data->type = MPD_DATA_TYPE_SONG;
+			/*
 			data->song = mpd_songDup(ent->info.song);
+			*/
+			data->song = ent->info.song;
+			ent->info.song = NULL;
 		}
 		mpd_freeInfoEntity(ent);
 	}
@@ -1116,7 +1162,11 @@ MpdData * mpd_database_get_complete(MpdObj *mi)
 		{
 			data = mpd_new_data_struct_append(data);
 			data->type = MPD_DATA_TYPE_SONG;
+			/*
 			data->song = mpd_songDup(ent->info.song);
+			*/
+			data->song = ent->info.song;
+			ent->info.song = NULL;
 		}
 		mpd_freeInfoEntity(ent);
 	}
