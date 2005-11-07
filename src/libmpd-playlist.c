@@ -277,6 +277,7 @@ void mpd_playlist_update_dir(MpdObj *mi, char *path)
 	}
 
 	mpd_sendUpdateCommand(mi->connection,path);
+	mi->CurrentState.updatingDb = mpd_getUpdateId(mi->connection);
 	mpd_finishCommand(mi->connection);
 
 	/* unlock */                                               	
