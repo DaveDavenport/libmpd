@@ -336,7 +336,7 @@ void 		mpd_signal_set_updating_changed	(MpdObj *mi, void *(* updating_changed)(M
  * Check's if the passed #MpdData is the last in a list
  * returns: TRUE when data is the last in the list.
  */
-int 		mpd_data_is_last			(MpdData *data);
+int 		mpd_data_is_last			(MpdData const * const data);
 /**
  * mpd_data_free
  * @data: a #MpdData

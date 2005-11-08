@@ -140,6 +140,27 @@ mpd_ReturnElement * mpd_newReturnElement(const char * name, const char * value)
 	return ret;
 }
 
+mpd_ReturnElement * mpd_setReturnElement(mpd_ReturnElement * what, const char * name, const char * value)
+{
+	if (what) {
+		if (strlen(name)<=strlen(what->name)) {
+			strcpy(what->name, name);
+		} else {
+			free(what->name);
+			what->name = strdup(name);
+		}
+		if (strlen(value)<=strlen(what->value)) {
+			strcpy(what->value, value);
+		} else {
+			free(what->value);
+			what->value = strdup(value);
+		}
+	} else {
+		what = mpd_newReturnElement(name, value);
+	}
+	return what;
+}
+	
 void mpd_freeReturnElement(mpd_ReturnElement * re) {
 	free(re->name);
 	free(re->value);
@@ -447,14 +468,16 @@ void mpd_getNextReturnElement(mpd_Connection * connection) {
 	int err;
 	int pos;
 
-	if(connection->returnElement) mpd_freeReturnElement(connection->returnElement);
-	connection->returnElement = NULL;
 
 	if(connection->doneProcessing || (connection->listOks &&
 			connection->doneListOk)) 
 	{
 		strcpy(connection->errorStr,"already done processing current command");
 		connection->error = 1;
+		if(connection->returnElement) { 
+			mpd_freeReturnElement(connection->returnElement);
+			connection->returnElement = NULL;
+		}
 		return;
 	}
 
@@ -475,6 +498,10 @@ void mpd_getNextReturnElement(mpd_Connection * connection) {
 			connection->error = MPD_ERROR_BUFFEROVERRUN;
 			connection->doneProcessing = 1;
 			connection->doneListOk = 0;
+			if(connection->returnElement) { 
+				mpd_freeReturnElement(connection->returnElement);
+				connection->returnElement = NULL;
+			}
 			return;
 		}
 		bufferCheck = connection->buffer+connection->buflen;
@@ -500,6 +527,10 @@ void mpd_getNextReturnElement(mpd_Connection * connection) {
 				connection->error = MPD_ERROR_CONNCLOSED;
 				connection->doneProcessing = 1;
 				connection->doneListOk = 0;
+				if(connection->returnElement) { 
+					mpd_freeReturnElement(connection->returnElement);
+					connection->returnElement = NULL;
+				}
 				return;
 			}
 			connection->buflen+=readed;
@@ -511,6 +542,10 @@ void mpd_getNextReturnElement(mpd_Connection * connection) {
 			connection->error = MPD_ERROR_TIMEOUT;
 			connection->doneProcessing = 1;
 			connection->doneListOk = 0;
+			if(connection->returnElement) {
+				mpd_freeReturnElement(connection->returnElement);
+				connection->returnElement = NULL;
+			}
 			return;
 		}
 	}
@@ -527,6 +562,10 @@ void mpd_getNextReturnElement(mpd_Connection * connection) {
 		connection->listOks = 0;
 		connection->doneProcessing = 1;
 		connection->doneListOk = 0;
+		if(connection->returnElement) {
+			mpd_freeReturnElement(connection->returnElement);
+			connection->returnElement = NULL;
+		}
 		return;
 	}
 
@@ -539,6 +578,10 @@ void mpd_getNextReturnElement(mpd_Connection * connection) {
 		else {
 			connection->doneListOk = 1;
 			connection->listOks--;
+		}
+		if(connection->returnElement) {
+			mpd_freeReturnElement(connection->returnElement);
+			connection->returnElement = NULL;
 		}
 		return;
 	}
@@ -563,22 +606,27 @@ void mpd_getNextReturnElement(mpd_Connection * connection) {
 		val = strtol(test+1, &test, 10);
 		if(*test != ']') return;
 		connection->errorAt = val;
+		if(connection->returnElement) {
+			mpd_freeReturnElement(connection->returnElement);
+			connection->returnElement = NULL;
+		}
 		return;
 	}
 
 	tok = strchr(output, ':');
 	if (!tok) return;
 	pos = tok - output;
-	value = ++tok;
-	name = (char *)malloc(pos+1);
-	strncpy(name, output, pos);
-	name[pos] = '\0';
-	
-	if(name && value && value[0]==' ') {
-		connection->returnElement = mpd_newReturnElement(name,&(value[1]));
+	tok[0]='\0';
+	value = tok+1;
+	//name = (char *)malloc(pos+1);
+	//strncpy(name, output, pos);
+	//name[pos] = '\0';
+	if(value && value[0]==' ') {
+		connection->returnElement = mpd_setReturnElement(connection->returnElement, output, &(value[1]));
 	}
 	else {
-		if(!name || !value) {
+		if(!value) {
+			tok[0]=':';
 			snprintf(connection->errorStr,MPD_BUFFER_MAX_LENGTH,
 					"error parsing: %s",output);
 		}
@@ -588,8 +636,12 @@ void mpd_getNextReturnElement(mpd_Connection * connection) {
 		}
 		connection->errorStr[MPD_BUFFER_MAX_LENGTH] = '\0';
 		connection->error = 1;
+		if(connection->returnElement) {
+			mpd_freeReturnElement(connection->returnElement);
+			connection->returnElement = NULL;
+		}
 	}
-	if(name)free(name);
+	//if(name)free(name);
 }
 
 void mpd_finishCommand(mpd_Connection * connection) {

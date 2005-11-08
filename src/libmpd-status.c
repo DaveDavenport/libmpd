@@ -491,7 +491,7 @@ int mpd_stats_update_real(MpdObj *mi, ChangedStatusType* what_changed)
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_stats_set_volume: lock failed\n");
+		debug_printf(DEBUG_WARNING,"mpd_stats_update: lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 

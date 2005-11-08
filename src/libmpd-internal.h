@@ -2,6 +2,15 @@
 #define __MPD_INTERNAL_LIB_
 
 #include "libmpdclient.h"
+struct _MpdData_real;
+struct _MpdDataPool;
+
+typedef struct _MpdData_head {
+	struct _MpdData_real *first;
+	struct _MpdDataPool *pool;
+	struct _MpdDataPool *current;
+} MpdData_head;
+
 typedef struct _MpdData_real {
 	/* MpdDataType */
 	MpdDataType type;
@@ -20,10 +29,16 @@ typedef struct _MpdData_real {
 	/* Previous MpdData in the list */
 	struct _MpdData_real *prev;
 	/* First MpdData in the list */
-	struct _MpdData_real *first;
+	MpdData_head *head;
 }MpdData_real;
 
-
+#define MPD_DATA_POOL_SIZE 256
+typedef struct _MpdDataPool {
+	MpdData_real pool[MPD_DATA_POOL_SIZE];
+	unsigned int space_left;
+	struct _MpdDataPool *next;
+} MpdDataPool;
+	
 /* queue struct */
 typedef struct _MpdQueue MpdQueue;
 typedef struct _MpdServerState {
@@ -142,10 +157,11 @@ typedef struct _MpdQueue {
 MpdQueue *	mpd_new_queue_struct			();
 
 /* Internal Data struct functions */
-MpdData *	mpd_new_data_struct			();
-MpdData *	mpd_new_data_struct_append		(MpdData const *data);
-MpdData *	mpd_data_concatenate			(MpdData const *first, MpdData const *second);
-MpdData * 	mpd_data_get_next_real			(MpdData *data, int kill_list);
+inline	MpdData *	mpd_new_data_struct			(MpdData_head * const head);
+inline	MpdData *	mpd_new_data_struct_append		(MpdData * const data);
+inline	MpdData_head *	mpd_data_get_head			(MpdData const * const data);
+inline	MpdData *	mpd_data_concatenate			(MpdData * const first, MpdData * const second);
+inline	MpdData * 	mpd_data_get_next_real			(MpdData * const data, int kill_list);
 /* more internal stuff*/
 int mpd_stats_check(MpdObj *mi);
 int mpd_lock_conn(MpdObj *mi);

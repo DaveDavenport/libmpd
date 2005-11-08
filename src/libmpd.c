@@ -634,10 +634,17 @@ void mpd_signal_set_error (MpdObj *mi, void *(* error_signal)(MpdObj *mi, int id
 
 /* more playlist */
 /* MpdData Part */
-MpdData *mpd_new_data_struct()
+MpdData *mpd_new_data_struct(MpdData_head * const head)
 {
-	MpdData_real* data = malloc(sizeof(MpdData_real));
-
+	MpdData_real* data;
+	if (head->current->space_left == 0) {
+		head->current->next = malloc(sizeof(MpdDataPool));
+		head->current = head->current->next;
+		head->current->space_left = MPD_DATA_POOL_SIZE;
+		head->current->next = NULL;
+	}
+	data = &(head->current->pool[MPD_DATA_POOL_SIZE - head->current->space_left]);
+	head->current->space_left--;
 	data->type = 0;
 
 	data->tag_type = 0;
@@ -648,22 +655,26 @@ MpdData *mpd_new_data_struct()
 	data->output_dev = NULL;
 	data->next = NULL;
 	data->prev = NULL;
-	data->first = NULL;
-	return (MpdData*)data;	
+	data->head = head;
+	return (MpdData*)data;
 }
 
-inline MpdData *mpd_new_data_struct_append(MpdData const *data)
+MpdData *mpd_new_data_struct_append(MpdData  * const data)
 {
 	MpdData_real *data_real = (MpdData_real*)data;
+	MpdData_head *head;
 	if(data_real == NULL)
 	{
-		data_real = (MpdData_real*)mpd_new_data_struct();
-		data_real->first = data_real;
+		head = (MpdData_head*)malloc(sizeof(MpdData_head));
+		head->current = head->pool = (MpdDataPool*)malloc(sizeof(MpdDataPool));
+		head->pool->space_left = MPD_DATA_POOL_SIZE;
+		head->pool->next = NULL;
+		data_real = (MpdData_real*)mpd_new_data_struct(head);
+		head->first = data_real;
 	}
 	else
 	{
-		data_real->next = (MpdData_real*)mpd_new_data_struct(); 	
-		data_real->next->first = data_real->first;
+		data_real->next = (MpdData_real*)mpd_new_data_struct(data_real->head); 	
 		data_real->next->prev = data_real;
 		data_real = data_real->next;
 		data_real->next = NULL;
@@ -672,14 +683,14 @@ inline MpdData *mpd_new_data_struct_append(MpdData const *data)
 	return (MpdData*)data_real;
 }
 
-MpdData * mpd_data_get_first(MpdData const *data)
+MpdData * mpd_data_get_first(MpdData const * const data)
 {
-	MpdData_real *data_real = (MpdData_real*)data;
+	MpdData_real const * const data_real = (MpdData_real const * const)data;
 	if(data_real != NULL)
 	{
-		if (data_real->first != NULL)
+		if (data_real->head != NULL)
 		{
-			return (MpdData*)data_real->first;
+			return (MpdData*)(mpd_data_get_head(data)->first);
 		} 
 		else 
 		{
@@ -690,12 +701,12 @@ MpdData * mpd_data_get_first(MpdData const *data)
 }
 	
 
-MpdData * mpd_data_get_next(MpdData *data) 
+MpdData * mpd_data_get_next(MpdData * const data) 
 {
 	return mpd_data_get_next_real(data, TRUE);
 }
 
-MpdData * mpd_data_get_next_real(MpdData *data, int kill_list)
+MpdData * mpd_data_get_next_real(MpdData * const data, int kill_list)
 {
 	MpdData_real *data_real = (MpdData_real*)data;
 	if (data_real != NULL) 
@@ -713,9 +724,9 @@ MpdData * mpd_data_get_next_real(MpdData *data, int kill_list)
 	return (MpdData*)data_real;	
 }
 
-int mpd_data_is_last(MpdData *data)
+int mpd_data_is_last(MpdData const * const data)
 {
-	MpdData_real *data_real = (MpdData_real*)data;
+	MpdData_real const * const data_real = (MpdData_real const * const)data;
 	if(data_real != NULL)
 	{
 		if (data_real->next == NULL)
@@ -725,11 +736,18 @@ int mpd_data_is_last(MpdData *data)
 	}
 	return FALSE;	
 }
-MpdData* mpd_data_concatenate( MpdData const *first, MpdData const *second) 
+
+MpdData_head *mpd_data_get_head(MpdData const * const data) {
+	return ((MpdData_real*)data)->head;
+}
+
+MpdData* mpd_data_concatenate( MpdData  * const first, MpdData  * const second) 
 {
 	MpdData_real *first_real  = (MpdData_real*)first;
 	MpdData_real *second_real = (MpdData_real*)second;
-	MpdData_real *final_first = (MpdData_real*)mpd_data_get_first(first);
+	MpdData_head *first_head  = mpd_data_get_head(first);
+	MpdData_head *second_head = mpd_data_get_head(second);
+	MpdDataPool *pool;
 	
 	if ( first == NULL ) {
 		if ( second != NULL ) 
@@ -751,89 +769,68 @@ MpdData* mpd_data_concatenate( MpdData const *first, MpdData const *second)
         /* I need to set all the -> first correct */
         while (second_real)
 	{
-        	second_real->first = final_first;
+        	second_real->head = first_head;
                 second_real = (MpdData_real*)mpd_data_get_next_real((MpdData*)second_real, FALSE);
         } 
-	
-	return (MpdData*)final_first;
+	/* Need to concatenate the list of MpdDataPools 
+	 * Note that this is NOT efficient in any way...
+	 */
+	pool = first_head->current;
+	pool->next = second_head->pool;
+	first_head->current = second_head->current;
+	free(second_head);
+	return (MpdData*)first_head->first;
 }
 
 MpdData * mpd_data_delete_item(MpdData *data)
 {
 	MpdData_real *temp, *data_real = (MpdData_real*)data;
 	if(data_real == NULL) return NULL;
-	if(data_real->first == data_real)
+	if(data_real->head->first == data_real)
 	{
-		temp = data_real->next;
-		/* check if there is a next item */
-		if(temp == NULL)
-		{
-			mpd_data_free(data);
-			return NULL;
-		}	
-		temp->prev = NULL;
-		temp->first = temp;
-		/* free item */
-		data_real->next = NULL;
-		data_real->first = data_real;
-		mpd_data_free((MpdData *)data_real);
-		data_real = temp;
-		/* I need to set all the -> first correct */
-		while (temp)
-		{
-			temp->first = data_real;
-			temp = (MpdData_real*)mpd_data_get_next_real((MpdData*)temp, FALSE);
-		} 
+		temp = data_real->head->first = data_real->next;
+		data_real->prev = NULL;
 	}
 	else
 	{
-		/* make the previous point to the next */
-		data_real->prev->next = data_real->next;
-		/* make the next point back to the previous */
-		if(data_real->next)
-		{
-			data_real->next->prev = data_real->prev;
-		}
-		if(data_real->next)
-			temp = data_real->next;
-		else temp = data_real->prev;
-		
-		/* free the element */
-		data_real->next = NULL;
-		data_real->first = data_real;
-		mpd_data_free((MpdData *)data_real);
-		
-		data_real = temp;
+		if (data_real->prev)
+			temp = data_real->prev->next = data_real->next;
+		if (data_real->next)
+			temp = data_real->next->prev = data_real->prev;
 	}
 
 
-	return (MpdData *)data_real;
+	return (MpdData *)temp;
 }
-
-
 
 void mpd_data_free(MpdData *data)
 {
-	MpdData_real *temp = NULL;
-	MpdData_real *data_real = (MpdData_real*)data;
+	MpdData_head *head;
+	MpdDataPool *pool, *temp_pool;
+	MpdData_real *data_real;
+	unsigned int i;
 	if(data_real == NULL)
 	{
 		return;
 	}
-	data_real = data_real->first;
-	while(data_real != NULL)
-	{
-		temp = data_real->next;
-		if (data_real->type == MPD_DATA_TYPE_SONG) {
-			mpd_freeSong(data_real->song);
-		} else if (data_real->type == MPD_DATA_TYPE_OUTPUT_DEV) {
-			mpd_freeOutputElement(data_real->output_dev);
-		} else {
-			free((void*)(data_real->tag));
+	head = mpd_data_get_head(data);
+	pool = head->pool;
+	do {
+		for (i = 0; i < MPD_DATA_POOL_SIZE - pool->space_left; i++) {
+			data_real = &(pool->pool[i]);
+			if (data_real->type == MPD_DATA_TYPE_SONG) {
+				mpd_freeSong(data_real->song);
+			} else if (data_real->type == MPD_DATA_TYPE_OUTPUT_DEV) {
+				mpd_freeOutputElement(data_real->output_dev);
+			} else {
+				free((void*)(data_real->tag));
+			}
 		}
-		free(data_real);
-		data_real= temp;
-	}
+		temp_pool = pool->next;
+		free (pool);
+		pool = temp_pool;
+	} while ( pool );
+	free(head);
 }
 
 /* clean this up.. make one while loop */
