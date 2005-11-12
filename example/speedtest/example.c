@@ -6,10 +6,9 @@
 #include <stdlib.h>
 
 int main(int argc, char ** argv) {
-	mpd_InfoEntity *string;
+	char *string;
 	mpd_Connection * conn;
 	conn = mpd_newConnection("192.150.0.111",6600,10);
-
 
 	if(conn->error) {
 		fprintf(stderr,"%s\n",conn->errorStr);
@@ -19,10 +18,11 @@ int main(int argc, char ** argv) {
 	int i=0;
 //	for(i=0;i<1000;i++)
 //	{
-	mpd_sendListallInfoCommand(conn,"/");
-	while (( string = mpd_getNextInfoEntity(conn)) != NULL)
+	mpd_sendCommandsCommand(conn);
+	while (( string = mpd_getNextCommand(conn)) != NULL)
 	{
-//		printf("%s\n", string->info.song->artist);
+		printf("%s\n", string);
+		free(string);
 	}
 	mpd_finishCommand(conn);
 //	}

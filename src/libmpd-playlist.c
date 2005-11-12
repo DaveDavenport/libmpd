@@ -280,11 +280,17 @@ void mpd_playlist_update_dir(MpdObj *mi, char *path)
 	}
 
 	mpd_sendUpdateCommand(mi->connection,path);
-	mi->CurrentState.updatingDb = mpd_getUpdateId(mi->connection);
 	mpd_finishCommand(mi->connection);
+	/* I have no idea why do this ?? it even makes gmpc very very unhappy.
+	 * Because it doesnt trigger an signal anymore when updating starts
+	mi->CurrentState.updatingDb = mpd_getUpdateId(mi->connection);
+	*/
 
 	/* unlock */                                               	
 	mpd_unlock_conn(mi);
+	/* What I think you should do is to force a direct status updated
+	 */
+	mpd_status_update(mi);                                           	
 	return;
 }
 

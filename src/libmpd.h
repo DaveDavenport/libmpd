@@ -239,6 +239,13 @@ int 		mpd_check_error			(MpdObj *mi);
  */
 void 		mpd_free				(MpdObj *mi);
 
+/**
+ * mpd_send_password
+ * @mi: a #MpdObj
+ *
+ * Forces libmpd to re-authenticate itself.
+ */
+void 		mpd_send_password			(MpdObj *mi);
 
 /* 
  * signals 
@@ -416,6 +423,20 @@ long unsigned	mpd_server_get_database_update_time	(MpdObj *mi);
  * returns: True or False
  */
 int 		mpd_server_check_version		(MpdObj *mi, int major, int minor, int micro);
+
+
+/**
+ * mpd_server_check_command_allowed
+ * @mi: a #MpdObj
+ * @command: the command to check
+ *
+ * Checks if the user is allowed to execute the command and if the server supports it
+ * 
+ * returns: True if the command is allowed/supported, False if not
+ */
+int 		mpd_server_check_command_allowed	(MpdObj *mi, const char *command);
+
+
 
 /* misc */
 /**

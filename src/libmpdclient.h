@@ -535,6 +535,34 @@ void mpd_sendDisableOutputCommand(mpd_Connection * connection, int outputId);
 
 void mpd_freeOutputElement(mpd_OutputEntity * output);
 
+/**
+ * mpd_sendCommandsCommand
+ * @connection: a #mpd_Connection
+ * 
+ * Queries mpd for the allowed commands
+ */
+void mpd_sendCommandsCommand(mpd_Connection * connection);
+/**
+ * mpd_sendNotCommandsCommand
+ * @connection: a #mpd_Connection
+ * 
+ * Queries mpd for the not allowed commands
+ */
+void mpd_sendNotCommandsCommand(mpd_Connection * connection);
+
+/**
+ * mpd_getNextCommand
+ * @connection: a #mpd_Connection
+ *
+ * returns the next supported command.
+ *
+ * returns: a string, needs to be free'ed
+ */
+char *mpd_getNextCommand(mpd_Connection *connection);
+
+
+
+
 #ifdef __cplusplus
 }
 #endif

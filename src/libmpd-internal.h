@@ -88,41 +88,41 @@ typedef struct _MpdObj {
 	void *the_connection_changed_signal_userdata;
         
 	/* old style signals */
-	void *(* playlist_changed)(struct _MpdObj *mi, int old_playlist_id, int new_playlist_id, void *pointer);	
+/*	void *(* playlist_changed)(struct _MpdObj *mi, int old_playlist_id, int new_playlist_id, void *pointer);	
 	void *playlist_changed_pointer;
-	/* error signal */
-	void *(* error_signal)(struct _MpdObj *mi, int id, char *msg, void *pointer);	
+*/	/* error signal */
+/*	void *(* error_signal)(struct _MpdObj *mi, int id, char *msg, void *pointer);	
 	void *error_signal_pointer;
-	/* song change */
-	void *(* song_changed)(struct _MpdObj *mi, int old_song_id, int new_song_id, void *pointer);	
+*/	/* song change */
+/*	void *(* song_changed)(struct _MpdObj *mi, int old_song_id, int new_song_id, void *pointer);	
 	void *song_changed_signal_pointer;                                                     	
-	/* song status changed */
-	void *(* status_changed)(struct _MpdObj *mi, void *pointer);	
+*/	/* song status changed */
+/*	void *(* status_changed)(struct _MpdObj *mi, void *pointer);	
 	void *status_changed_signal_pointer;                                                     	
-	/* song status changed */
-	void *(* state_changed)(struct _MpdObj *mi,int old_state,int new_state, void *pointer);	
+*/	/* song status changed */
+/*	void *(* state_changed)(struct _MpdObj *mi,int old_state,int new_state, void *pointer);	
 	void *state_changed_signal_pointer;                                                     	
 
-	/* disconnect signal */
-	void *(* disconnect) (struct _MpdObj *mi, void *pointer);
+*/	/* disconnect signal */
+/*	void *(* disconnect) (struct _MpdObj *mi, void *pointer);
 	void *disconnect_pointer;
 
-	/* connect signal */
-	void *(* connect) (struct _MpdObj *mi, void *pointer);
+*/	/* connect signal */
+/*	void *(* connect) (struct _MpdObj *mi, void *pointer);
 	void *connect_pointer;
-
+*/
 	/* error message */
 	int error;
 	char *error_msg;	
 
 	/* song datab update */
-	void *(* database_changed)(struct _MpdObj *mi,void *pointer);	
+/*	void *(* database_changed)(struct _MpdObj *mi,void *pointer);	
 	void *database_changed_signal_pointer;                                                     	
 
 	void *(* updating_changed)(struct _MpdObj *mi, int updating,void *pointer);
 	void *updating_signal_pointer;
 
-
+*/
 
 	/* internal values */
 	/* this "locks" the connections. so we can't have to commands competing with eachother */
@@ -130,14 +130,20 @@ typedef struct _MpdObj {
 
 	/* queue */
 	MpdQueue *queue;
-
+	/* commands */
+	/* TODO: this is a temporary implementation, I want something nice with commands that are and aren't allowed to use.
+	 * so use commands and notcommands functions
+	 *TODO: Make a callback when a commando isn't allowed, so the client application can actually offer the user to enter password
+	 */
+	char ** commands;
 }_MpdObj;
 
 
 typedef enum MpdQueueType {
 	MPD_QUEUE_ADD,
 	MPD_QUEUE_LOAD,
-	MPD_QUEUE_DELETE_ID
+	MPD_QUEUE_DELETE_ID,
+	MPD_QUEUE_COMMAND /* abuse!!! */
 } MpdQueueType;
 
 typedef struct _MpdQueue { 

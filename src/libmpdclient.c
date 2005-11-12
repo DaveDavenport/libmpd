@@ -1691,3 +1691,27 @@ void mpd_freeOutputElement(mpd_OutputEntity * output) {
 	free(output->name);
 	free(output);
 }
+
+
+
+/**
+ * mpd_sendNotCommandsCommand
+ * odd naming, but it gets the not allowed commands
+ */
+
+void mpd_sendNotCommandsCommand(mpd_Connection * connection) {
+	mpd_executeCommand(connection,"notcommands\n");
+}
+
+/**
+ * mpd_sendCommandsCommand
+ * odd naming, but it gets the allowed commands
+ */
+
+void mpd_sendCommandsCommand(mpd_Connection * connection) {
+	mpd_executeCommand(connection,"commands\n");
+}
+
+char * mpd_getNextCommand(mpd_Connection * connection) {
+	return mpd_getNextReturnElementNamed(connection,"command");
+}
