@@ -539,8 +539,10 @@ int mpd_connect(MpdObj *mi)
 	{
 		return -1;
 	}
-
-	mpd_get_allowed_commands(mi);
+	if(mpd_check_version(0,0,12))
+	{
+		mpd_get_allowed_commands(mi);
+	}
 	
 	
 	if(mi->the_connection_changed_callback != NULL)
