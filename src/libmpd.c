@@ -871,9 +871,15 @@ MpdData * mpd_data_delete_item(MpdData *data)
 	else
 	{
 		if (data_real->prev)
+		{
 			temp = data_real->prev->next = data_real->next;
+			temp = data_real->prev;
+		}
 		if (data_real->next)
-			temp = data_real->next->prev = data_real->prev;
+		{
+			data_real->next->prev = data_real->prev;
+			temp = data_real->next;
+		}
 	}
 
 
