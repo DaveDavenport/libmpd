@@ -56,7 +56,7 @@ char * strndup(const char *s, size_t n)
 
 
 /*************************************************************************************/
-MpdObj * mpd_create()
+static MpdObj * mpd_create()
 {
 	MpdObj * mi = malloc(sizeof(MpdObj));
 	if( mi == NULL )
@@ -861,7 +861,7 @@ MpdData* mpd_data_concatenate( MpdData  * const first, MpdData  * const second)
 
 MpdData * mpd_data_delete_item(MpdData *data)
 {
-	MpdData_real *temp, *data_real = (MpdData_real*)data;
+	MpdData_real *temp = NULL, *data_real = (MpdData_real*)data;
 	if(data_real == NULL) return NULL;
 	if(data_real->head->first == data_real)
 	{
@@ -911,7 +911,7 @@ void mpd_data_free(MpdData *data)
 }
 
 /* clean this up.. make one while loop */
-void mpd_free_queue_ob(MpdObj *mi)
+static void mpd_free_queue_ob(MpdObj *mi)
 {
 	MpdQueue *temp = NULL;
 	if(mi->queue == NULL)

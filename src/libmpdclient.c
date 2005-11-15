@@ -89,7 +89,7 @@ char * mpdTagItemKeys[MPD_TAG_NUM_OF_ITEM_TYPES] =
 
 
 #ifdef MPD_HAVE_IPV6        
-int mpd_ipv6Supported() {
+static int mpd_ipv6Supported() {
         int s;          
         s = socket(AF_INET6,SOCK_STREAM,0);
         if(s == -1) return 0;
@@ -131,7 +131,7 @@ static char * mpd_sanitizeArg(const char * arg) {
 }
 
 /* DONT USE THIS FUNCTION UNLESS YOU'RE ABSOLUTELY SURE WHAT YOU'RE DOING !!!! */
-void mpd_setReturnElement(mpd_Connection * connection, const char * name, const char * value)
+static void mpd_setReturnElement(mpd_Connection * connection, const char * name, const char * value)
 {
 	if (!connection) return;
 	if (!connection->returnElement) {
@@ -147,7 +147,7 @@ void mpd_setReturnElement(mpd_Connection * connection, const char * name, const 
 	connection->returnElement->value = connection->returnElement->name + strlen(name) + 2;
 }
 	
-void mpd_freeReturnElement(mpd_Connection * connection) {
+static void mpd_freeReturnElement(mpd_Connection * connection) {
 	if (connection->returnElement) {
 		free(connection->returnElement->name);
 		free(connection->returnElement);
@@ -385,7 +385,7 @@ void mpd_closeConnection(mpd_Connection * connection) {
 #endif
 }
 
-void mpd_executeCommand(mpd_Connection * connection, char * command) {
+static void mpd_executeCommand(mpd_Connection * connection, char * command) {
 	int ret;
 	struct timeval tv;
 	fd_set fds;
@@ -443,7 +443,7 @@ void mpd_executeCommand(mpd_Connection * connection, char * command) {
 	}
 }
 
-void mpd_getNextReturnElement(mpd_Connection * connection) {
+static void mpd_getNextReturnElement(mpd_Connection * connection) {
 	char * output = NULL;
 	char * rt = NULL;
 	char * name = NULL;
@@ -614,7 +614,7 @@ void mpd_finishCommand(mpd_Connection * connection) {
 	}
 }
 
-void mpd_finishListOkCommand(mpd_Connection * connection) {
+static void mpd_finishListOkCommand(mpd_Connection * connection) {
 	while(!connection->doneProcessing && connection->listOks && 
 			!connection->doneListOk ) 
 	{
@@ -847,7 +847,7 @@ void mpd_freeStats(mpd_Stats * stats) {
 	free(stats);
 }
 
-void mpd_initSong(mpd_Song * song) {
+static void mpd_initSong(mpd_Song * song) {
 	song->file = NULL;
 	song->artist = NULL;
 	song->album = NULL;
@@ -864,7 +864,7 @@ void mpd_initSong(mpd_Song * song) {
 	song->id = MPD_SONG_NO_ID;
 }
 
-void mpd_finishSong(mpd_Song * song) {
+static void mpd_finishSong(mpd_Song * song) {
 	if(song->file) free(song->file);
 	if(song->artist) free(song->artist);
 	if(song->album) free(song->album);
@@ -908,11 +908,11 @@ mpd_Song * mpd_songDup(mpd_Song * song) {
 	return ret;
 }
 
-void mpd_initDirectory(mpd_Directory * directory) {
+static void mpd_initDirectory(mpd_Directory * directory) {
 	directory->path = NULL;
 }
 
-void mpd_finishDirectory(mpd_Directory * directory) {
+static void mpd_finishDirectory(mpd_Directory * directory) {
 	if(directory->path) free(directory->path);
 }
 
@@ -938,11 +938,11 @@ mpd_Directory * mpd_directoryDup(mpd_Directory * directory) {
 	return ret;
 }
 
-void mpd_initPlaylistFile(mpd_PlaylistFile * playlist) {
+static void mpd_initPlaylistFile(mpd_PlaylistFile * playlist) {
 	playlist->path = NULL;
 }
 
-void mpd_finishPlaylistFile(mpd_PlaylistFile * playlist) {
+static void mpd_finishPlaylistFile(mpd_PlaylistFile * playlist) {
 	if(playlist->path) free(playlist->path);
 }
 
@@ -967,11 +967,11 @@ mpd_PlaylistFile * mpd_playlistFileDup(mpd_PlaylistFile * playlist) {
 	return ret;
 }
 
-void mpd_initInfoEntity(mpd_InfoEntity * entity) {
+static void mpd_initInfoEntity(mpd_InfoEntity * entity) {
 	entity->info.directory = NULL;
 } 
 
-void mpd_finishInfoEntity(mpd_InfoEntity * entity) {
+static void mpd_finishInfoEntity(mpd_InfoEntity * entity) {
 	if(entity->info.directory) {
 		if(entity->type == MPD_INFO_ENTITY_TYPE_DIRECTORY) {
 			mpd_freeDirectory(entity->info.directory);
@@ -998,7 +998,7 @@ void mpd_freeInfoEntity(mpd_InfoEntity * entity) {
 	free(entity);
 }
 
-void mpd_sendInfoCommand(mpd_Connection * connection, char * command) {
+static void mpd_sendInfoCommand(mpd_Connection * connection, char * command) {
 	mpd_executeCommand(connection,command);
 }
 
@@ -1111,7 +1111,7 @@ mpd_InfoEntity * mpd_getNextInfoEntity(mpd_Connection * connection) {
 	return entity;
 }
 
-char * mpd_getNextReturnElementNamed(mpd_Connection * connection, 
+static char * mpd_getNextReturnElementNamed(mpd_Connection * connection, 
 		const char * name) 
 {
 	if(connection->doneProcessing || (connection->listOks && 

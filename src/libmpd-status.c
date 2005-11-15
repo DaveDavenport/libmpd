@@ -455,7 +455,9 @@ float mpd_status_set_volume_as_float(MpdObj *mi, float fvol)
 	return (float)volume;
 }
 
-int mpd_stats_queue_update(MpdObj *mi)
+/*
+ * this isn't used anywhere, should we delete it?
+static int mpd_stats_queue_update(MpdObj *mi)
 {
 
 	if(!mpd_check_connected(mi))
@@ -470,6 +472,7 @@ int mpd_stats_queue_update(MpdObj *mi)
 	}
 	return FALSE;
 }
+*/
 
 int mpd_stats_update(MpdObj *mi)
 {
