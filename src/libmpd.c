@@ -539,7 +539,7 @@ int mpd_connect(MpdObj *mi)
 	{
 		return -1;
 	}
-	if(mpd_check_version(0,0,12))
+	if(mpd_server_check_version(mi,0,0,12))
 	{
 		mpd_get_allowed_commands(mi);
 	}
