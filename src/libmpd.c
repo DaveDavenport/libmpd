@@ -372,6 +372,7 @@ void mpd_get_allowed_commands(MpdObj *mi)
 	int num_commands = 0;
 	if(!mi) return;
 	if(!mpd_check_connected(mi))return;
+	if(!mpd_server_check_version(mi,0,12,0)) return;
 	if(mi->commands)
 	{
 		int i=0;
@@ -539,11 +540,10 @@ int mpd_connect(MpdObj *mi)
 	{
 		return -1;
 	}
-	if(mpd_server_check_version(mi,0,12,0))
-	{
-		mpd_get_allowed_commands(mi);
-	}
-	
+
+
+	mpd_get_allowed_commands(mi);
+
 	
 	if(mi->the_connection_changed_callback != NULL)
 	{                                                                      		
