@@ -161,6 +161,7 @@ typedef struct _MpdQueue {
 
 /* Internal Queue struct functions */
 MpdQueue *	mpd_new_queue_struct			();
+void 		mpd_queue_get_next			(MpdObj *mi);
 
 /* Internal Data struct functions */
 inline	MpdData *	mpd_new_data_struct			(MpdData_head * const head);
