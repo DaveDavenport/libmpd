@@ -1,2 +1,2 @@
-SUBDIRS=mpdesklet testcase
+SUBDIRS=testcase
 EXTRA_DIST=README

@@ -14,6 +14,8 @@ int main(int argc, char **argv)
 	do{
 
 
+
+
 	}while((data = mpd_data_get_next(data)));
 
 

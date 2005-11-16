@@ -11,6 +11,7 @@ libmpd_la_SOURCES =			\
 		libmpd-status.c		\
 		libmpd-playlist.c	\
 		libmpdclient.c		\
+		libmpd-strfsong.c	\
 		debug_printf.c
 
 libmpdinclude_HEADERS = 		\
@@ -20,6 +21,7 @@ libmpdinclude_HEADERS = 		\
 		libmpd-playlist.h	\
 		libmpd-internal.h	\
 		libmpdclient.h		\
+		libmpd-strfsong.h	\
 		debug_printf.h
 
 libmpd_la_LIBADD = 

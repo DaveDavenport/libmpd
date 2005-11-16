@@ -87,6 +87,13 @@ extern "C" {
 typedef struct _MpdObj MpdObj;
 
 /**
+ * MpdSong
+ *
+ * A structure that holds information about a song
+ */
+typedef struct mpd_Song MpdSong;
+
+/**
  * MpdDataType
  * @MPD_DATA_TYPE_NONE:	 The MpdData structure holds no value 
  * @MPD_DATA_TYPE_TAG: 	Holds an Tag String. value->tag is filled value->tag_type defines what type of tag.
@@ -136,7 +143,7 @@ typedef struct _MpdData {
 #include "libmpd-player.h"
 #include "libmpd-status.h"
 #include "libmpd-playlist.h"
-
+#include "libmpd-strfsong.h"
 
 
 
@@ -323,7 +330,7 @@ void 		mpd_signal_connect_error                 (MpdObj *mi, ErrorCallback error
  */
 void 		mpd_signal_connect_connection_changed	   (MpdObj *mi, ConnectionChangedCallback connection_changed, void *userdata);
 
-/* old style signal connectors */
+/* old style signal connectors 
 void 		mpd_signal_set_playlist_changed	(MpdObj *mi, void *(* playlist_changed)(MpdObj *mi, int old_playlist_id, int new_playlist_id,void *pointer), void *pointer) __attribute__ ((deprecated)); 
 void 		mpd_signal_set_error			(MpdObj *mi, void *(* error_signal)(MpdObj *mi, int id, char *msg, void *pointer),void *pointer) __attribute__ ((deprecated)); 
 void 		mpd_signal_set_song_changed		(MpdObj *mi, void *(* song_changed)(MpdObj *mi, int old_song_id, int new_song_id,void *pointer), void *pointer) __attribute__ ((deprecated)); 
@@ -333,7 +340,7 @@ void 		mpd_signal_set_disconnect		(MpdObj *mi, void *(* disconnect)(MpdObj *mi, 
 void 		mpd_signal_set_connect		(MpdObj *mi, void *(* connect)(MpdObj *mi, void *pointer),void *connect_pointer) __attribute__ ((deprecated)); 
 void 		mpd_signal_set_database_changed	(MpdObj *mi, void *(* database_changed)(MpdObj *mi, void *pointer), void *pointer) __attribute__ ((deprecated)); 
 void 		mpd_signal_set_updating_changed	(MpdObj *mi, void *(* updating_changed)(MpdObj *mi,int updating, void *pointer), void *pointer) __attribute__ ((deprecated)); 
-
+*/
 
 /* MpdData struct functions */
 /**
