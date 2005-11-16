@@ -237,7 +237,7 @@ static unsigned int _strfsong(char *s,
 	return length;
 }
 
-unsigned int libmpd_strfsong(char *s, unsigned int max,const char *format, mpd_Song *song)
+unsigned int mpd_song_markup(char *s, unsigned int max,const char *format, mpd_Song *song)
 {
 	return _strfsong(s, max, format, song, NULL);
 }
