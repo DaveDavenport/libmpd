@@ -227,7 +227,7 @@ static unsigned int _strfsong(char *s,
 		p += n;
 	}
 
-	for(i=0; i < max;i++)
+	for(i=0; i < length;i++)
 	{
 		if(s[i] == '_') s[i] = ' ';
 	}	
