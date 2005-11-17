@@ -31,7 +31,6 @@ Makefile
 src/Makefile
 doc/Makefile
 example/Makefile
-example/mpdesklet/Makefile
 example/testcase/Makefile
 libmpd.pc
 ])
