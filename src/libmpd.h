@@ -94,6 +94,18 @@ typedef struct _MpdObj MpdObj;
 typedef struct mpd_Song MpdSong;
 
 /**
+ * MpdServerCommand
+ *
+ */
+typedef enum _MpdServerCommand {
+	MPD_SERVER_COMMAND_ALLOWED 		= TRUE,
+	MPD_SERVER_COMMAND_NOT_ALLOWED 		= FALSE,
+	MPD_SERVER_COMMAND_NOT_SUPPORTED 	= -1,
+	MPD_SERVER_COMMAND_ERROR 		= -2
+} MpdServerCommand;
+
+
+/**
  * MpdDataType
  * @MPD_DATA_TYPE_NONE:	 The MpdData structure holds no value 
  * @MPD_DATA_TYPE_TAG: 	Holds an Tag String. value->tag is filled value->tag_type defines what type of tag.

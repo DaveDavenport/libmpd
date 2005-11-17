@@ -56,6 +56,16 @@ typedef struct _MpdServerState {
 	int		elapsedtime;
 } MpdServerState;
 
+
+/* command struct */
+/* internal use only */
+typedef struct _MpdCommand {
+	char *command_name;
+	int enabled;
+} MpdCommand;
+
+
+
 typedef struct _MpdObj {
 	/* defines if we are connected */
 	/* This should be made true if and only if the connection is up and running */
@@ -135,7 +145,7 @@ typedef struct _MpdObj {
 	 * so use commands and notcommands functions
 	 *TODO: Make a callback when a commando isn't allowed, so the client application can actually offer the user to enter password
 	 */
-	char ** commands;
+	MpdCommand * commands;
 }_MpdObj;
 
 
@@ -179,5 +189,6 @@ int mpd_unlock_conn(MpdObj *mi);
 char * 		strndup					(const char *s, size_t n);
 #endif
 
+void mpd_server_get_allowed_commands(MpdObj *mi);
 
 #endif

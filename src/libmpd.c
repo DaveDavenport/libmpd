@@ -30,7 +30,6 @@
 #include "libmpd.h"
 #include "libmpd-internal.h"
 
-void mpd_get_allowed_commands(MpdObj *mi);
 
 #ifndef HAVE_STRNDUP
 char * strndup(const char *s, size_t n)
@@ -328,7 +327,7 @@ void mpd_send_password(MpdObj *mi)
 		mpd_sendPasswordCommand(mi->connection, mi->password);
 		mpd_finishCommand(mi->connection);	
 		mpd_unlock_conn(mi);
-		mpd_get_allowed_commands(mi);
+		mpd_server_get_allowed_commands(mi);
 	}
 }
 
@@ -366,24 +365,33 @@ void mpd_set_connection_timeout(MpdObj *mi, float timeout)
 	}
 }
 
-void mpd_get_allowed_commands(MpdObj *mi)
+static void mpd_server_free_commands(MpdObj *mi)
+{
+	if(mi->commands)
+	{
+		int i=0;
+		while(mi->commands[i].command_name)
+		{                                           	
+		       	free(mi->commands[i].command_name);
+			i++;
+		}
+		free(mi->commands);
+		mi->commands = NULL;
+	}
+
+}
+
+
+void mpd_server_get_allowed_commands(MpdObj *mi)
 {
 	char *temp = NULL;
 	int num_commands = 0;
 	if(!mi) return;
 	if(!mpd_check_connected(mi))return;
 	if(!mpd_server_check_version(mi,0,12,0)) return;
-	if(mi->commands)
-	{
-		int i=0;
-		while(mi->commands[i])
-		{
-		       	free(mi->commands[i]);
-			i++;
-		}
-		free(mi->commands);
-		mi->commands = NULL;
-	}
+
+	mpd_server_free_commands(mi);
+
 	if(mpd_lock_conn(mi))
 	{
 		debug_printf(DEBUG_WARNING, "mpd_server_get_allowed_commands: lock failed");
@@ -393,11 +401,23 @@ void mpd_get_allowed_commands(MpdObj *mi)
 	while((temp = mpd_getNextCommand(mi->connection)))
 	{
 		num_commands++;
-		mi->commands = realloc(mi->commands, (num_commands+1)*sizeof(char *));
-		mi->commands[num_commands-1] = temp;
-		mi->commands[num_commands] = NULL;
+		mi->commands = realloc(mi->commands, (num_commands+1)*sizeof(MpdCommand));
+		mi->commands[num_commands-1].command_name = temp;
+		mi->commands[num_commands-1].enabled = TRUE;
+		mi->commands[num_commands].command_name = NULL;
+		mi->commands[num_commands].enabled = FALSE;
 	}
-
+	mpd_finishCommand(mi->connection);
+	mpd_sendNotCommandsCommand(mi->connection);	
+	while((temp = mpd_getNextCommand(mi->connection)))
+	{
+		num_commands++;
+		mi->commands = realloc(mi->commands, (num_commands+1)*sizeof(MpdCommand));
+		mi->commands[num_commands-1].command_name = temp;
+		mi->commands[num_commands-1].enabled = FALSE;
+		mi->commands[num_commands].command_name = NULL;
+		mi->commands[num_commands].enabled = FALSE;
+	}
 	mpd_finishCommand(mi->connection);
 	
 	mpd_unlock_conn(mi);
@@ -445,32 +465,22 @@ int mpd_disconnect(MpdObj *mi)
 	mi->CurrentState.xfade 	= -1;
 	mi->CurrentState.totaltime = 0;
 	mi->CurrentState.elapsedtime = 0;
-	
+
 	memcpy(&(mi->OldState), &(mi->CurrentState) , sizeof(MpdServerState));
 	/*don't reset errors */
-	
-	
+
+
 	if(mi->the_connection_changed_callback != NULL)
 	{                                                                      		
 		mi->the_connection_changed_callback( mi, FALSE, mi->the_connection_changed_signal_userdata );
 	}                                                                                           		
 	/* deprecated */
-/*	if(mi->disconnect != NULL)
-	{                                                                      		
+	/*	if(mi->disconnect != NULL)
+		{                                                                      		
 		mi->disconnect(mi, mi->disconnect_pointer);
-	}                                                                                           		
-*/
-	if(mi->commands)
-	{
-		int i=0;
-		while(mi->commands[i])
-		{
-			free(mi->commands[i]);
-			i++;
-		}
-		free(mi->commands);
-		mi->commands = NULL;
-	}
+		}                                                                                           		
+		*/
+	mpd_server_free_commands(mi);
 	return FALSE;
 }
 
@@ -542,19 +552,19 @@ int mpd_connect(MpdObj *mi)
 	}
 
 
-	mpd_get_allowed_commands(mi);
+	mpd_server_get_allowed_commands(mi);
 
-	
+
 	if(mi->the_connection_changed_callback != NULL)
 	{                                                                      		
 		mi->the_connection_changed_callback( mi, TRUE, mi->the_connection_changed_signal_userdata );
 	}
 	/* deprecated */
-/*	if(mi->connect != NULL)
-	{                                                                      		
+	/*	if(mi->connect != NULL)
+		{                                                                      		
 		mi->connect(mi, mi->connect_pointer);
-	}
-*/	debug_printf(DEBUG_INFO, "mpd_connect: Connected to mpd");
+		}
+		*/	debug_printf(DEBUG_INFO, "mpd_connect: Connected to mpd");
 	return 0;
 }
 
@@ -568,30 +578,30 @@ int mpd_check_connected(MpdObj *mi)
 }
 
 /*
-void mpd_signal_set_connect (MpdObj *mi, void *(* connect)(MpdObj *mi, void *pointer), void *connect_pointer)
-{
-	if(mi == NULL)
-	{
-		debug_printf(DEBUG_ERROR, "mpd_signal_set_connect: MpdObj *mi == NULL");
-		return;
-	}
-	mi->connect = connect;
-	mi->connect_pointer = connect_pointer;
-}
-*/
+   void mpd_signal_set_connect (MpdObj *mi, void *(* connect)(MpdObj *mi, void *pointer), void *connect_pointer)
+   {
+   if(mi == NULL)
+   {
+   debug_printf(DEBUG_ERROR, "mpd_signal_set_connect: MpdObj *mi == NULL");
+   return;
+   }
+   mi->connect = connect;
+   mi->connect_pointer = connect_pointer;
+   }
+   */
 /* SIGNALS */
 /*
-void mpd_signal_set_disconnect (MpdObj *mi, void *(* disconnect)(MpdObj *mi, void *pointer), void *disconnect_pointer)
-{
-	if(mi == NULL)
-	{
-		debug_printf(DEBUG_ERROR, "mpd_signal_set_disconnect: MpdObj *mi == NULL");
-		return;
-	}
-	mi->disconnect = disconnect;
-	mi->disconnect_pointer = disconnect_pointer;
-}
-*/
+   void mpd_signal_set_disconnect (MpdObj *mi, void *(* disconnect)(MpdObj *mi, void *pointer), void *disconnect_pointer)
+   {
+   if(mi == NULL)
+   {
+   debug_printf(DEBUG_ERROR, "mpd_signal_set_disconnect: MpdObj *mi == NULL");
+   return;
+   }
+   mi->disconnect = disconnect;
+   mi->disconnect_pointer = disconnect_pointer;
+   }
+   */
 /* SIGNALS */
 void	mpd_signal_connect_status_changed        (MpdObj *mi, StatusChangedCallback status_changed, void *userdata)
 {
@@ -626,77 +636,77 @@ void	mpd_signal_connect_connection_changed(MpdObj *mi, ConnectionChangedCallback
 
 
 /*
-void mpd_signal_set_playlist_changed (MpdObj *mi, void *(* playlist_changed)(MpdObj *mi, int old_playlist_id, int new_playlist_id,void *pointer), void *pointer)
-{
-	if(mi == NULL)
-	{
-		debug_printf(DEBUG_ERROR, "mpd_signal_set_playlist_changed: MpdObj *mi == NULL");
-		return;
-	}
-	mi->playlist_changed = playlist_changed;
-	mi->playlist_changed_pointer = pointer;
-}
+   void mpd_signal_set_playlist_changed (MpdObj *mi, void *(* playlist_changed)(MpdObj *mi, int old_playlist_id, int new_playlist_id,void *pointer), void *pointer)
+   {
+   if(mi == NULL)
+   {
+   debug_printf(DEBUG_ERROR, "mpd_signal_set_playlist_changed: MpdObj *mi == NULL");
+   return;
+   }
+   mi->playlist_changed = playlist_changed;
+   mi->playlist_changed_pointer = pointer;
+   }
 
 
-void mpd_signal_set_song_changed (MpdObj *mi, void *(* song_changed)(MpdObj *mi, int old_song_id, int new_song_id, void *pointer),void *pointer)
-{
-	if(mi == NULL)
-	{
-		debug_printf(DEBUG_ERROR, "mpd_signal_set_song_changed: MpdObj *mi == NULL");
-		return;
-	}
-	mi->song_changed = song_changed;
-	mi->song_changed_signal_pointer = pointer;
-}
+   void mpd_signal_set_song_changed (MpdObj *mi, void *(* song_changed)(MpdObj *mi, int old_song_id, int new_song_id, void *pointer),void *pointer)
+   {
+   if(mi == NULL)
+   {
+   debug_printf(DEBUG_ERROR, "mpd_signal_set_song_changed: MpdObj *mi == NULL");
+   return;
+   }
+   mi->song_changed = song_changed;
+   mi->song_changed_signal_pointer = pointer;
+   }
 
 
-void mpd_signal_set_state_changed (MpdObj *mi, void *(* state_changed)(MpdObj *mi, int old_state, int new_state, void *pointer),void *pointer)
-{
-	if(mi == NULL)
-	{
-		debug_printf(DEBUG_ERROR, "mpd_signal_set_state_changed: MpdObj *mi == NULL");
-		return;
-	}
-	mi->state_changed = state_changed;
-	mi->state_changed_signal_pointer = pointer;
-}
+   void mpd_signal_set_state_changed (MpdObj *mi, void *(* state_changed)(MpdObj *mi, int old_state, int new_state, void *pointer),void *pointer)
+   {
+   if(mi == NULL)
+   {
+   debug_printf(DEBUG_ERROR, "mpd_signal_set_state_changed: MpdObj *mi == NULL");
+   return;
+   }
+   mi->state_changed = state_changed;
+   mi->state_changed_signal_pointer = pointer;
+   }
 
-void mpd_signal_set_database_changed (MpdObj *mi, void *(* database_changed)(MpdObj *mi, void *pointer), void *pointer)
-{
-	if(mi == NULL)
-	{
-		debug_printf(DEBUG_ERROR, "mpd_signal_set_database_changed: MpdObj *mi == NULL");
-		return;
-	}
-	mi->database_changed = database_changed;
-	mi->database_changed_signal_pointer = pointer;
-}
-
-
-void mpd_signal_set_updating_changed (MpdObj *mi, void *(* updating_changed)(MpdObj *mi,int updating, void *pointer), void *pointer)
-{
-	if(mi == NULL)
-	{
-		debug_printf(DEBUG_ERROR, "mpd_signal_set_updating_changed: MpdObj *mi == NULL");
-		return;
-	}
-	mi->updating_changed = updating_changed;
-	mi->updating_signal_pointer = pointer;
-}
-
-void mpd_signal_set_status_changed (MpdObj *mi, void *(* status_changed)(MpdObj *mi, void *pointer),void *pointer)
-{
-	if(mi == NULL)
-	{
-		debug_printf(DEBUG_ERROR, "mpd_signal_set_state_changed: MpdObj *mi == NULL");
-		return;
-	}
-	mi->status_changed = status_changed;
-	mi->status_changed_signal_pointer = pointer;
-}
+   void mpd_signal_set_database_changed (MpdObj *mi, void *(* database_changed)(MpdObj *mi, void *pointer), void *pointer)
+   {
+   if(mi == NULL)
+   {
+   debug_printf(DEBUG_ERROR, "mpd_signal_set_database_changed: MpdObj *mi == NULL");
+   return;
+   }
+   mi->database_changed = database_changed;
+   mi->database_changed_signal_pointer = pointer;
+   }
 
 
-void mpd_signal_set_error (MpdObj *mi, void *(* error_signal)(MpdObj *mi, int id, char *msg,void *pointer),void *pointer)
+   void mpd_signal_set_updating_changed (MpdObj *mi, void *(* updating_changed)(MpdObj *mi,int updating, void *pointer), void *pointer)
+   {
+   if(mi == NULL)
+   {
+   debug_printf(DEBUG_ERROR, "mpd_signal_set_updating_changed: MpdObj *mi == NULL");
+   return;
+   }
+   mi->updating_changed = updating_changed;
+   mi->updating_signal_pointer = pointer;
+   }
+
+   void mpd_signal_set_status_changed (MpdObj *mi, void *(* status_changed)(MpdObj *mi, void *pointer),void *pointer)
+   {
+   if(mi == NULL)
+   {
+   debug_printf(DEBUG_ERROR, "mpd_signal_set_state_changed: MpdObj *mi == NULL");
+   return;
+   }
+   mi->status_changed = status_changed;
+   mi->status_changed_signal_pointer = pointer;
+   }
+
+
+   void mpd_signal_set_error (MpdObj *mi, void *(* error_signal)(MpdObj *mi, int id, char *msg,void *pointer),void *pointer)
 {
 	if(mi == NULL)
 	{
@@ -776,7 +786,7 @@ MpdData * mpd_data_get_first(MpdData const * const data)
 	}
 	return NULL;
 }
-	
+
 
 MpdData * mpd_data_get_next(MpdData * const data) 
 {
@@ -825,7 +835,7 @@ MpdData* mpd_data_concatenate( MpdData  * const first, MpdData  * const second)
 	MpdData_head *first_head  = mpd_data_get_head(first);
 	MpdData_head *second_head = mpd_data_get_head(second);
 	MpdDataPool *pool;
-	
+
 	if ( first == NULL ) {
 		if ( second != NULL ) 
 			return (MpdData*)second_real;
@@ -835,20 +845,20 @@ MpdData* mpd_data_concatenate( MpdData  * const first, MpdData  * const second)
 		if ( second == NULL )
 			return (MpdData*)first_real;
 	}
-	
+
 	/* find last element in first data list */	
 	while (!mpd_data_is_last((MpdData*)first_real)) first_real = (MpdData_real*)mpd_data_get_next_real((MpdData*)first_real, FALSE);
 	second_real =(MpdData_real*) mpd_data_get_first((MpdData*)second_real);
-	
+
 	first_real->next = second_real;
 	second_real->prev = first_real;
-	
-        /* I need to set all the -> first correct */
-        while (second_real)
+
+	/* I need to set all the -> first correct */
+	while (second_real)
 	{
-        	second_real->head = first_head;
-                second_real = (MpdData_real*)mpd_data_get_next_real((MpdData*)second_real, FALSE);
-        } 
+		second_real->head = first_head;
+		second_real = (MpdData_real*)mpd_data_get_next_real((MpdData*)second_real, FALSE);
+	} 
 	/* Need to concatenate the list of MpdDataPools 
 	 * Note that this is NOT efficient in any way...
 	 */
@@ -1062,16 +1072,24 @@ int mpd_server_check_version(MpdObj *mi, int major, int minor, int micro)
 int mpd_server_check_command_allowed(MpdObj *mi, const char *command)
 {
 	int i;
-	if(!mi || !command) return FALSE;
-	/* for some reason we don't have ocmmand support, then everything is supported
+	if(!mi || !command) return MPD_SERVER_COMMAND_ERROR;
+	/* when we are connected to a mpd server that doesn't support commands and not commands
+	 * feature. (like mpd 0.11.5) allow everything
 	 */
-	if(mi->commands == NULL) return TRUE;
-	for(i=0;mi->commands[i];i++)
+	if(!mpd_server_check_version(mi, 0,12,0)) return MPD_SERVER_COMMAND_ALLOWED;
+	/*
+	 * Also when somehow we failted to get commands
+	 */
+	if(mi->commands == NULL) return MPD_SERVER_COMMAND_ALLOWED;
+
+
+	
+	for(i=0;mi->commands[i].command_name;i++)
 	{
-		if(!strcasecmp(mi->commands[i], command))
-			return TRUE;
+		if(!strcasecmp(mi->commands[i].command_name, command))
+			return mi->commands[i].enabled;
 	}
-	return FALSE;
+	return MPD_SERVER_COMMAND_NOT_SUPPORTED;
 }
 
 /** MISC **/
