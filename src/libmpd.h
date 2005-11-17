@@ -451,7 +451,7 @@ int 		mpd_server_check_version		(MpdObj *mi, int major, int minor, int micro);
  *
  * Checks if the user is allowed to execute the command and if the server supports it
  * 
- * returns: True if the command is allowed/supported, False if not
+ * returns: Returns #MpdServerCommand 
  */
 int 		mpd_server_check_command_allowed	(MpdObj *mi, const char *command);
 
