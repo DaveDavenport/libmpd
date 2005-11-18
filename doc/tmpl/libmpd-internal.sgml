@@ -45,6 +45,8 @@ libmpd-internal
 @repeat: 
 @volume: 
 @xfade: 
+@totaltime: 
+@elapsedtime: 
 
 <!-- ##### STRUCT _MpdObj ##### -->
 <para>
@@ -68,28 +70,11 @@ libmpd-internal
 @the_status_changed_signal_userdata: 
 @the_connection_changed_callback: 
 @the_connection_changed_signal_userdata: 
-@playlist_changed: 
-@playlist_changed_pointer: 
-@error_signal: 
-@error_signal_pointer: 
-@song_changed: 
-@song_changed_signal_pointer: 
-@status_changed: 
-@status_changed_signal_pointer: 
-@state_changed: 
-@state_changed_signal_pointer: 
-@disconnect: 
-@disconnect_pointer: 
-@connect: 
-@connect_pointer: 
 @error: 
 @error_msg: 
-@database_changed: 
-@database_changed_signal_pointer: 
-@updating_changed: 
-@updating_signal_pointer: 
 @connection_lock: 
 @queue: 
+@commands: 
 
 <!-- ##### STRUCT _MpdQueue ##### -->
 <para>
@@ -108,43 +93,6 @@ libmpd-internal
 
 </para>
 
-@Returns: 
-
-
-<!-- ##### FUNCTION mpd_new_data_struct ##### -->
-<para>
-
-</para>
-
-@Returns: 
-
-
-<!-- ##### FUNCTION mpd_new_data_struct_append ##### -->
-<para>
-
-</para>
-
-@data: 
-@Returns: 
-
-
-<!-- ##### FUNCTION mpd_data_concatenate ##### -->
-<para>
-
-</para>
-
-@first: 
-@second: 
-@Returns: 
-
-
-<!-- ##### FUNCTION mpd_data_get_next_real ##### -->
-<para>
-
-</para>
-
-@data: 
-@kill_list: 
 @Returns: 
 
 

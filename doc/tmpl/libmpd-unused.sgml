@@ -22,3 +22,117 @@
 </para>
 
 
+<!-- ##### FUNCTION mpd_data_concatenate ##### -->
+<para>
+
+</para>
+
+@first: 
+@second: 
+@Returns: 
+
+<!-- ##### FUNCTION mpd_data_get_next_real ##### -->
+<para>
+
+</para>
+
+@data: 
+@kill_list: 
+@Returns: 
+
+<!-- ##### FUNCTION mpd_new_data_struct ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### FUNCTION mpd_new_data_struct_append ##### -->
+<para>
+
+</para>
+
+@data: 
+@Returns: 
+
+<!-- ##### FUNCTION mpd_signal_set_connect ##### -->
+<para>
+
+</para>
+
+@mi: 
+@connect: 
+@connect_pointer: 
+
+<!-- ##### FUNCTION mpd_signal_set_database_changed ##### -->
+<para>
+
+</para>
+
+@mi: 
+@database_changed: 
+@pointer: 
+
+<!-- ##### FUNCTION mpd_signal_set_disconnect ##### -->
+<para>
+
+</para>
+
+@mi: 
+@disconnect: 
+@disconnect_pointer: 
+
+<!-- ##### FUNCTION mpd_signal_set_error ##### -->
+<para>
+
+</para>
+
+@mi: 
+@error_signal: 
+@pointer: 
+
+<!-- ##### FUNCTION mpd_signal_set_playlist_changed ##### -->
+<para>
+
+</para>
+
+@mi: 
+@playlist_changed: 
+@pointer: 
+
+<!-- ##### FUNCTION mpd_signal_set_song_changed ##### -->
+<para>
+
+</para>
+
+@mi: 
+@song_changed: 
+@pointer: 
+
+<!-- ##### FUNCTION mpd_signal_set_state_changed ##### -->
+<para>
+
+</para>
+
+@mi: 
+@state_changed: 
+@pointer: 
+
+<!-- ##### FUNCTION mpd_signal_set_status_changed ##### -->
+<para>
+
+</para>
+
+@mi: 
+@status_changed: 
+@pointer: 
+
+<!-- ##### FUNCTION mpd_signal_set_updating_changed ##### -->
+<para>
+
+</para>
+
+@mi: 
+@updating_changed: 
+@pointer: 
+

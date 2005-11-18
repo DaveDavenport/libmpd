@@ -191,12 +191,11 @@ Basic connection functions and signals
 </para>
 
 @MPD_CST_PLAYLIST: 
-@MPD_CST_SONG: 
 @MPD_CST_SONGID: 
 @MPD_CST_DATABASE: 
 @MPD_CST_UPDATING: 
 @MPD_CST_VOLUME: 
-@MPD_CST_TIME: 
+@MPD_CST_TOTAL_TIME: 
 @MPD_CST_ELAPSED_TIME: 
 @MPD_CST_CROSSFADE: 
 @MPD_CST_RANDOM: 
@@ -265,103 +264,14 @@ Basic connection functions and signals
 @userdata: 
 
 
-<!-- ##### FUNCTION mpd_signal_set_playlist_changed ##### -->
-<para>
-
-</para>
-
-@mi: 
-@playlist_changed: 
-@pointer: 
-
-
-<!-- ##### FUNCTION mpd_signal_set_error ##### -->
-<para>
-
-</para>
-
-@mi: 
-@error_signal: 
-@pointer: 
-
-
-<!-- ##### FUNCTION mpd_signal_set_song_changed ##### -->
-<para>
-
-</para>
-
-@mi: 
-@song_changed: 
-@pointer: 
-
-
-<!-- ##### FUNCTION mpd_signal_set_status_changed ##### -->
-<para>
-
-</para>
-
-@mi: 
-@status_changed: 
-@pointer: 
-
-
-<!-- ##### FUNCTION mpd_signal_set_state_changed ##### -->
-<para>
-
-</para>
-
-@mi: 
-@state_changed: 
-@pointer: 
-
-
-<!-- ##### FUNCTION mpd_signal_set_disconnect ##### -->
-<para>
-
-</para>
-
-@mi: 
-@disconnect: 
-@disconnect_pointer: 
-
-
-<!-- ##### FUNCTION mpd_signal_set_connect ##### -->
-<para>
-
-</para>
-
-@mi: 
-@connect: 
-@connect_pointer: 
-
-
-<!-- ##### FUNCTION mpd_signal_set_database_changed ##### -->
-<para>
-
-</para>
-
-@mi: 
-@database_changed: 
-@pointer: 
-
-
-<!-- ##### FUNCTION mpd_signal_set_updating_changed ##### -->
-<para>
-
-</para>
-
-@mi: 
-@updating_changed: 
-@pointer: 
-
-
 <!-- ##### FUNCTION mpd_data_is_last ##### -->
 <para>
 
 </para>
 
-@data: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@data: 
 
 
 <!-- ##### FUNCTION mpd_data_free ##### -->
