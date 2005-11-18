@@ -1,4 +1,5 @@
 #include "libmpd.h"
+#include "debug_printf.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +13,8 @@
 #define RESET "\x1b[0m"
 #define GREEN "\x1b[32;06m"
 #define YELLOW "\x1b[33;06m"
+
+extern int debug_level;
 
 
 void status_changed(MpdObj *mi, ChangedStatusType what)
@@ -84,12 +87,12 @@ void status_changed(MpdObj *mi, ChangedStatusType what)
 		printf(GREEN"Total song time changed:"RESET" %02i:%02i\n",
 				mpd_status_get_total_song_time(mi)/60,
 				mpd_status_get_total_song_time(mi)%60);
-	}                                             	
+	}
 /*13*/	if(what&MPD_CST_ELAPSED_TIME){
-		printf(GREEN"Time elapsed changed:"RESET" %02i:%02i\n",
+/*		printf(GREEN"Time elapsed changed:"RESET" %02i:%02i\n",
 				mpd_status_get_elapsed_song_time(mi)/60,
 				mpd_status_get_elapsed_song_time(mi)%60);
-	}
+*/	}
 }
 
 int main(int argc, char *argv)
@@ -102,9 +105,9 @@ int main(int argc, char *argv)
 	mpd_signal_connect_status_changed(obj,(StatusChangedCallback)status_changed, NULL);
 	if(!mpd_connect(obj))
 	{
-		char buffer[6];
-		memset(buffer, '\0', 6);
-		do{		
+		char buffer[20];
+		memset(buffer, '\0', 20);
+		do{
 			if(read(fdstdin, buffer, 1) > 0)
 			{
 				switch(buffer[0])
@@ -113,7 +116,7 @@ int main(int argc, char *argv)
 						break;
 					case 'b':
 					       mpd_player_next(obj);
-				       		break;
+					       break;
 					case 'z':
 						mpd_player_prev(obj);
 						break;
@@ -156,12 +159,28 @@ int main(int argc, char *argv)
 							break;
 						}
 					case 'p':
-						memset(buffer, '\0',strlen(buffer));
+						memset(buffer, '\0',20);
 						if(read(fdstdin,buffer, 5))
 						{
 							int id = atoi(buffer);
 							printf(GREEN"Playing:"RESET" %i\n", id);
 							mpd_player_play_id(obj,id);
+						}
+						break;
+					case 'a': /*authentificate */
+						memset(buffer, '\0',20);
+						if(read(fdstdin,buffer, 20))
+						{
+							int i;
+
+							for(i=0;i<20;i++)
+							{
+								if(buffer[i] == '\n')buffer[i] = '\0';
+							}
+							printf(GREEN"Authentificating:"RESET" \"%s\"\n", buffer);
+							mpd_set_password(obj,buffer);
+							mpd_send_password(obj);
+							printf(RED"permisssion:"RESET" %i\n", mpd_server_check_command_allowed(obj, "next"));
 						}
 						break;
 					case '+':
@@ -170,7 +189,9 @@ int main(int argc, char *argv)
 					case '-':
 						mpd_status_set_volume(obj, mpd_status_get_volume(obj)-5);
 						break;
-						
+					case 'd':
+						debug_level = 3;
+						break;
 					default:
 						printf("buffer: %s\n", buffer);
 				}
@@ -178,7 +199,7 @@ int main(int argc, char *argv)
 			}	
 
 			mpd_status_update(obj);
-			memset(buffer, '\0', 6);
+			memset(buffer, '\0', 20);
 		}while(!usleep(100000) &&  run);
 	}
 	mpd_free(obj);
