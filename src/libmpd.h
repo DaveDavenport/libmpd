@@ -25,8 +25,8 @@ extern "C" {
 #ifndef __MPD_LIB__
 #define __MPD_LIB__
 #ifdef WIN32
-	#define __REGEX_IMPORT__ 1
-	#define __W32API_USE_DLLIMPORT__ 1
+#define __REGEX_IMPORT__ 1
+#define __W32API_USE_DLLIMPORT__ 1
 #endif
 
 #include "libmpdclient.h"
@@ -84,25 +84,25 @@ extern "C" {
  *
  *  The Main Mpd Object. Don't access any of the internal values directly, but use the provided functions.
  */
-typedef struct _MpdObj MpdObj;
+	typedef struct _MpdObj MpdObj;
 
 /**
  * MpdSong
  *
  * A structure that holds information about a song
  */
-typedef struct mpd_Song MpdSong;
+	typedef struct mpd_Song MpdSong;
 
 /**
  * MpdServerCommand
  *
  */
-typedef enum _MpdServerCommand {
-	MPD_SERVER_COMMAND_ALLOWED		= TRUE,
-	MPD_SERVER_COMMAND_NOT_ALLOWED		= FALSE,
-	MPD_SERVER_COMMAND_NOT_SUPPORTED	= -1,
-	MPD_SERVER_COMMAND_ERROR		= -2
-} MpdServerCommand;
+	typedef enum _MpdServerCommand {
+		MPD_SERVER_COMMAND_ALLOWED = TRUE,
+		MPD_SERVER_COMMAND_NOT_ALLOWED = FALSE,
+		MPD_SERVER_COMMAND_NOT_SUPPORTED = -1,
+		MPD_SERVER_COMMAND_ERROR = -2
+	} MpdServerCommand;
 
 
 /**
@@ -119,14 +119,14 @@ typedef enum _MpdServerCommand {
  * but a list of MpdData structs can hold structs with different type of values.
  * It's required to check every MpdData Structure.
  */
-typedef enum _MpdDataType {
-	MPD_DATA_TYPE_NONE,
-	MPD_DATA_TYPE_TAG,
-	MPD_DATA_TYPE_DIRECTORY,
-	MPD_DATA_TYPE_SONG,
-	MPD_DATA_TYPE_PLAYLIST,
-	MPD_DATA_TYPE_OUTPUT_DEV
-} MpdDataType;
+	typedef enum _MpdDataType {
+		MPD_DATA_TYPE_NONE,
+		MPD_DATA_TYPE_TAG,
+		MPD_DATA_TYPE_DIRECTORY,
+		MPD_DATA_TYPE_SONG,
+		MPD_DATA_TYPE_PLAYLIST,
+		MPD_DATA_TYPE_OUTPUT_DEV
+	} MpdDataType;
 
 /**
  * MpdData
@@ -135,21 +135,21 @@ typedef enum _MpdDataType {
  *
  * A linked list that is used to pass data from libmpd to the client.
  */
-typedef struct _MpdData {
-	/* MpdDataType */
-	MpdDataType type;
+	typedef struct _MpdData {
+		/* MpdDataType */
+		MpdDataType type;
 
-	union {
-		struct {
-			int tag_type;
-			char *tag;
+		union {
+			struct {
+				int tag_type;
+				char *tag;
+			};
+			char *directory;
+			char *playlist;	/*is a path */
+			mpd_Song *song;
+			mpd_OutputEntity *output_dev;	/* from devices */
 		};
-		char *directory;
-		char *playlist; /*is a path*/
-		mpd_Song *song;
-		mpd_OutputEntity *output_dev; /* from devices */
-	};
-}MpdData;
+	} MpdData;
 
 
 #include "libmpd-player.h"
@@ -169,7 +169,7 @@ typedef struct _MpdData {
  *
  * returns: the new #MpdObj
  */
-MpdObj *	mpd_new_default			();
+	MpdObj *mpd_new_default();
 
 
 
@@ -184,7 +184,7 @@ MpdObj *	mpd_new_default			();
  * returns: the new #MpdObj
  */
 
-MpdObj *	mpd_new		(char *hostname, int port, char *password);
+	MpdObj *mpd_new(char *hostname, int port, char *password);
 /**
  * mpd_set_hostname
  *@mi: a #MpdObj
@@ -192,7 +192,7 @@ MpdObj *	mpd_new		(char *hostname, int port, char *password);
  *
  * set the hostname
  */
-void	mpd_set_hostname	(MpdObj *mi, char *hostname);
+	void mpd_set_hostname(MpdObj * mi, char *hostname);
 /**
  * mpd_set_password
  * @mi: a #MpdObj
@@ -200,7 +200,7 @@ void	mpd_set_hostname	(MpdObj *mi, char *hostname);
  *
  * Set the password
  */
-void	mpd_set_password	(MpdObj *mi, char *password);
+	void mpd_set_password(MpdObj * mi, char *password);
 /**
  * mpd_set_port
  * @mi: a #MpdObj
@@ -208,7 +208,7 @@ void	mpd_set_password	(MpdObj *mi, char *password);
  *
  * Set the Port number
  */
-void	mpd_set_port		(MpdObj *mi, int port);
+	void mpd_set_port(MpdObj * mi, int port);
 /**
  * mpd_set_connection_timeout
  * @mi: a #MpdObj
@@ -217,7 +217,7 @@ void	mpd_set_port		(MpdObj *mi, int port);
  * Set the timeout of the connection.
  * If allready connected the timeout of the running connection
  */
-void	mpd_set_connection_timeout	(MpdObj *mi, float timeout);
+	void mpd_set_connection_timeout(MpdObj * mi, float timeout);
 /**
  * mpd_connect
  * @mi: a #MpdObj
@@ -225,7 +225,7 @@ void	mpd_set_connection_timeout	(MpdObj *mi, float timeout);
  * Connect to the mpd daemon.
  * returns: returns 0 when successful
  */
-int	mpd_connect	(MpdObj *mi);
+	int mpd_connect(MpdObj * mi);
 /**
  * mpd_disconnect
  * @mi: The #MpdObj to disconnect
@@ -233,7 +233,7 @@ int	mpd_connect	(MpdObj *mi);
  * Disconnect the current connection
  * returns: False (always)
  */
-int	mpd_disconnect	(MpdObj *mi);
+	int mpd_disconnect(MpdObj * mi);
 /**
  * mpd_check_connected
  * @mi:	a #MpdObj
@@ -241,7 +241,7 @@ int	mpd_disconnect	(MpdObj *mi);
  * Checks if #MpdObj is connected
  * returns: True when connected
  */
-int	mpd_check_connected	(MpdObj *mi);
+	int mpd_check_connected(MpdObj * mi);
 /**
  * mpd_check_error
  * @mi: a #MpdObj
@@ -249,14 +249,14 @@ int	mpd_check_connected	(MpdObj *mi);
  * Checks if there was an error
  * returns: True when there is an error
  */
-int	mpd_check_error	(MpdObj *mi);
+	int mpd_check_error(MpdObj * mi);
 /**
  * mpd_free
  * @mi: a #MpdObj
  *
  * Free the #MpdObj, when still connected the connection will be disconnected first
  */
-void	mpd_free	(MpdObj *mi);
+	void mpd_free(MpdObj * mi);
 
 /**
  * mpd_send_password
@@ -264,7 +264,7 @@ void	mpd_free	(MpdObj *mi);
  *
  * Forces libmpd to re-authenticate itself.
  */
-void	mpd_send_password	(MpdObj *mi);
+	void mpd_send_password(MpdObj * mi);
 
 /*
  * signals
@@ -275,20 +275,20 @@ void	mpd_send_password	(MpdObj *mi);
  *
  * Bitwise enumeration to determine what triggered the status_changed signals
  */
-typedef enum _ChangedStatusType {
-	MPD_CST_PLAYLIST      = 0x0001,
-	MPD_CST_SONGID        = 0x0004,
-	MPD_CST_DATABASE      = 0x0008,
-	MPD_CST_UPDATING      = 0x0010,
-	MPD_CST_VOLUME        = 0x0020,
-	MPD_CST_TOTAL_TIME    = 0x0040,
-	MPD_CST_ELAPSED_TIME  = 0x0080,
-	MPD_CST_CROSSFADE     = 0x0100,
-	MPD_CST_RANDOM        = 0x0200,
-	MPD_CST_REPEAT        = 0x0400,
-	MPD_CST_AUDIO         = 0x0800,/* not yet implemented */
-	MPD_CST_STATE         = 0x1000
-} ChangedStatusType;
+	typedef enum _ChangedStatusType {
+		MPD_CST_PLAYLIST = 0x0001,
+		MPD_CST_SONGID = 0x0004,
+		MPD_CST_DATABASE = 0x0008,
+		MPD_CST_UPDATING = 0x0010,
+		MPD_CST_VOLUME = 0x0020,
+		MPD_CST_TOTAL_TIME = 0x0040,
+		MPD_CST_ELAPSED_TIME = 0x0080,
+		MPD_CST_CROSSFADE = 0x0100,
+		MPD_CST_RANDOM = 0x0200,
+		MPD_CST_REPEAT = 0x0400,
+		MPD_CST_AUDIO = 0x0800,	/* not yet implemented */
+		MPD_CST_STATE = 0x1000
+	} ChangedStatusType;
 
 
 /* callback typedef's */
@@ -299,7 +299,7 @@ typedef enum _ChangedStatusType {
  * @userdata: user data set when the signal handler was connected.
  * Signal that get's called when the state of mpd changed. Look #ChangedStatusType to see the possible events.
  */
-typedef void (* StatusChangedCallback)(MpdObj *mi, ChangedStatusType what, void *userdata);
+	typedef void (*StatusChangedCallback) (MpdObj * mi, ChangedStatusType what, void *userdata);
 /**
  * ErrorCallback
  * @mi: a #MpdObj
@@ -308,7 +308,7 @@ typedef void (* StatusChangedCallback)(MpdObj *mi, ChangedStatusType what, void 
  * @userdata:  user data set when the signal handler was connected.
  * This signal is called when an error has occured in the communication with mpd.
  */
-typedef void (* ErrorCallback)(MpdObj *mi, int id, char *msg, void *userdata);
+	typedef void (*ErrorCallback) (MpdObj * mi, int id, char *msg, void *userdata);
 /**
  * ConnectionChangedCallback
  * @mi: a #MpdObj
@@ -317,7 +317,7 @@ typedef void (* ErrorCallback)(MpdObj *mi, int id, char *msg, void *userdata);
  * Signal is triggered when the connection state changes.
  */
 
-typedef void (* ConnectionChangedCallback)(MpdObj *mi, int connect, void *userdata);
+	typedef void (*ConnectionChangedCallback) (MpdObj * mi, int connect, void *userdata);
 
 /* new style signal connectors */
 /**
@@ -326,21 +326,24 @@ typedef void (* ConnectionChangedCallback)(MpdObj *mi, int connect, void *userda
  * @status_changed: a #StatusChangedCallback
  * @userdata: user data passed to the callback
  */
-void		mpd_signal_connect_status_changed        (MpdObj *mi, StatusChangedCallback status_changed, void *userdata);
+	void mpd_signal_connect_status_changed(MpdObj * mi, StatusChangedCallback status_changed,
+					       void *userdata);
 /**
  * mpd_signal_connect_error
  * @mi: a #mpdObj
  * @error: a #ErrorCallback
  * @userdata: user data passed to the callback
  */
-void		mpd_signal_connect_error                 (MpdObj *mi, ErrorCallback error, void *userdata);
+	void mpd_signal_connect_error(MpdObj * mi, ErrorCallback error, void *userdata);
 /**
  * mpd_signal_connect_connection_changed
  * @mi: a #mpdObj
  * @connection_changed: a #ConnectionChangedCallback
  * @userdata: user data passed to the callback
  */
-void		mpd_signal_connect_connection_changed	   (MpdObj *mi, ConnectionChangedCallback connection_changed, void *userdata);
+	void mpd_signal_connect_connection_changed(MpdObj * mi,
+						   ConnectionChangedCallback connection_changed,
+						   void *userdata);
 
 /* old style signal connectors
 void	mpd_signal_set_playlist_changed	(MpdObj *mi, void *(* playlist_changed)(MpdObj *mi, int old_playlist_id, int new_playlist_id,void *pointer), void *pointer) __attribute__ ((deprecated));
@@ -363,14 +366,14 @@ void	mpd_signal_set_updating_changed	(MpdObj *mi, void *(* updating_changed)(Mpd
  * Check's if the passed #MpdData is the last in a list
  * returns: TRUE when data is the last in the list.
  */
-int	mpd_data_is_last	(MpdData const * const data);
+	int mpd_data_is_last(MpdData const *data);
 /**
  * mpd_data_free
  * @data: a #MpdData
  *
  * Free's a #MpdData List
  */
-void	mpd_data_free	(MpdData *data);
+	void mpd_data_free(MpdData * data);
 /**
  * mpd_data_get_next
  * @data: a #MpdData
@@ -378,9 +381,9 @@ void	mpd_data_free	(MpdData *data);
  * Returns the next #MpdData in the list.
  * If it's the last item in the list, it will free the list.
  *
- * returns: The next #MpdData or NULL
+ * returns: The next #MpdData or %NULL
  */
-MpdData *	mpd_data_get_next	(MpdData *data);
+	MpdData *mpd_data_get_next(MpdData * data);
 
 /**
  * mpd_data_get_first
@@ -388,9 +391,9 @@ MpdData *	mpd_data_get_next	(MpdData *data);
  *
  * Returns the first #MpdData in the list.
  *
- * returns: The first #MpdData or NULL
+ * returns: The first #MpdData or %NULL
  */
-MpdData *	mpd_data_get_first	(MpdData const *data);
+	MpdData *mpd_data_get_first(MpdData const *data);
 
 /**
  * mpd_data_delete_item
@@ -400,7 +403,7 @@ MpdData *	mpd_data_get_first	(MpdData const *data);
  *
  * returns: a #MpdDatat list
  */
-MpdData *	mpd_data_delete_item	(MpdData *data);
+	MpdData *mpd_data_delete_item(MpdData * data);
 
 
 /* Server Stuff */
@@ -412,7 +415,7 @@ MpdData *	mpd_data_delete_item	(MpdData *data);
  *
  * returns: a #MpdData
  */
-MpdData *	mpd_server_get_output_devices	(MpdObj *mi);
+	MpdData *mpd_server_get_output_devices(MpdObj * mi);
 /**
  * mpd_server_set_output_device
  * @mi: a #MpdObj
@@ -423,7 +426,7 @@ MpdData *	mpd_server_get_output_devices	(MpdObj *mi);
  *
  * returns: 0 if successful
  */
-int	mpd_server_set_output_device	(MpdObj *mi,int device_id,int state);
+	int mpd_server_set_output_device(MpdObj * mi, int device_id, int state);
 /**
  * mpd_server_get_database_update_time
  * @mi: a #MpdObj
@@ -432,7 +435,7 @@ int	mpd_server_set_output_device	(MpdObj *mi,int device_id,int state);
  *
  * returns: unix Timestamp
  */
-long unsigned	mpd_server_get_database_update_time	(MpdObj *mi);
+	long unsigned mpd_server_get_database_update_time(MpdObj * mi);
 /**
  * mpd_server_check_version
  * @mi: a #MpdObj
@@ -444,7 +447,7 @@ long unsigned	mpd_server_get_database_update_time	(MpdObj *mi);
  *
  * returns: True or False
  */
-int	mpd_server_check_version	(MpdObj *mi, int major, int minor, int micro);
+	int mpd_server_check_version(MpdObj * mi, int major, int minor, int micro);
 
 
 /**
@@ -456,7 +459,7 @@ int	mpd_server_check_version	(MpdObj *mi, int major, int minor, int micro);
  *
  * returns: Returns #MpdServerCommand
  */
-int	mpd_server_check_command_allowed	(MpdObj *mi, const char *command);
+	int mpd_server_check_command_allowed(MpdObj * mi, const char *command);
 
 
 
@@ -471,14 +474,14 @@ int	mpd_server_check_command_allowed	(MpdObj *mi, const char *command);
  *
  * returns: An array of regex patterns
  */
-regex_t**	mpd_misc_tokenize	(char *string);
+	regex_t **mpd_misc_tokenize(char *string);
 /**
  * mpd_misc_tokens_free
  * @tokens: an array of regex patterns.
  *
  * Free's a list of regex patterns
  */
-void	mpd_misc_tokens_free(regex_t ** tokens);
+	void mpd_misc_tokens_free(regex_t ** tokens);
 /**
  * mpd_misc_get_tag_by_name
  * @name: a NULL terminated string
@@ -487,7 +490,7 @@ void	mpd_misc_tokens_free(regex_t ** tokens);
  *
  * returns: a #MpdDataType
  */
-int	mpd_misc_get_tag_by_name	(char *name);
+	int mpd_misc_get_tag_by_name(char *name);
 #endif
 
 #ifdef __cplusplus

@@ -9,10 +9,10 @@
  * @song:	A #MpdSong
  *
  * printfs a formatted string of a MpdSong
- * 
+ *
  * returns: The length of the new formatted string
  */
 
-unsigned int mpd_song_markup(char *s, unsigned int max, const char *format, mpd_Song *song);
+unsigned int mpd_song_markup(char *s, unsigned int max, const char *format, mpd_Song * song);
 
 #endif

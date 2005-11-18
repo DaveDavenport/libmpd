@@ -73,7 +73,7 @@ void mpd_playlist_add(MpdObj *mi, char *path)
 }
 
 /*******************************************************************************
- * PLAYLIST 
+ * PLAYLIST
  */
 mpd_Song * mpd_playlist_get_song(MpdObj *mi, int songid)
 {
@@ -98,7 +98,7 @@ mpd_Song * mpd_playlist_get_song(MpdObj *mi, int songid)
 	{
 		/*TODO free entity. for now this can never happen */
 		return NULL;
-	}                         	
+	}
 
 	if(ent == NULL)
 	{
@@ -133,7 +133,7 @@ mpd_Song * mpd_playlist_get_current_song(MpdObj *mi)
 	if(!mpd_status_check(mi))
 	{
 		debug_printf(DEBUG_ERROR, "mpd_playlist_get_current_song: Failed to check status\n");
-		return NULL; 
+		return NULL;
 	}
 
 	if(mi->CurrentSong != NULL && mi->CurrentSong->id != mi->status->songid)
@@ -251,12 +251,12 @@ int mpd_playlist_save(MpdObj *mi, char *name)
 	if(mi->connection->error == MPD_ERROR_ACK && mi->connection->errorCode == MPD_ACK_ERROR_EXIST)
 	{
 		mpd_clearError(mi->connection);
-		mpd_unlock_conn(mi);	
-		return MPD_PLAYLIST_EXIST; 
+		mpd_unlock_conn(mi);
+		return MPD_PLAYLIST_EXIST;
 
 	}
 
-	/* unlock */                                               	
+	/* unlock */
 	mpd_unlock_conn(mi);
 	return FALSE;
 }
@@ -286,11 +286,11 @@ void mpd_playlist_update_dir(MpdObj *mi, char *path)
 	mi->CurrentState.updatingDb = mpd_getUpdateId(mi->connection);
 	*/
 
-	/* unlock */                                               	
+	/* unlock */
 	mpd_unlock_conn(mi);
 	/* What I think you should do is to force a direct status updated
 	 */
-	mpd_status_update(mi);                                           	
+	mpd_status_update(mi);
 	return;
 }
 
@@ -311,7 +311,7 @@ void mpd_playlist_move_pos(MpdObj *mi, int old_pos, int new_pos)
 	mpd_sendMoveCommand(mi->connection,old_pos, new_pos);
 	mpd_finishCommand(mi->connection);
 
-	/* unlock */                                               	
+	/* unlock */
 	mpd_unlock_conn(mi);
 	return;
 }
@@ -337,7 +337,7 @@ MpdData * mpd_playlist_get_unique_tags(MpdObj *mi, int table,...)
 	{
 		debug_printf(DEBUG_ERROR, "mpd_playlist_get_unique_tag: Undefined table defined");
 		return NULL;
-	}	
+	}
 	if(mpd_lock_conn(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_playlist_get_artists: lock failed\n");
@@ -347,9 +347,9 @@ MpdData * mpd_playlist_get_unique_tags(MpdObj *mi, int table,...)
 	mpd_sendVListTagCommand(mi->connection,table,arglist);
 	va_end(arglist);
 	while (( string = mpd_getNextTag(mi->connection,table)) != NULL)
-	{	
+	{
 		data = mpd_new_data_struct_append(data);
-		data->type = MPD_DATA_TYPE_TAG; 
+		data->type = MPD_DATA_TYPE_TAG;
 		data->tag = string;
 	}
 	mpd_finishCommand(mi->connection);
@@ -357,7 +357,7 @@ MpdData * mpd_playlist_get_unique_tags(MpdObj *mi, int table,...)
 	data = mpd_playlist_sort_tag_list(data);
 	/* unlock */
 	mpd_unlock_conn(mi);
-	if(data == NULL) 
+	if(data == NULL)
 	{
 		return NULL;
 	}
@@ -382,7 +382,7 @@ MpdData * mpd_playlist_get_artists(MpdObj *mi)
 	mpd_sendListCommand(mi->connection,MPD_TABLE_ARTIST,NULL);
 	while (( string = mpd_getNextArtist(mi->connection)) != NULL)
 	{
-		data = mpd_new_data_struct_append(data);	
+		data = mpd_new_data_struct_append(data);
 		data->type = MPD_DATA_TYPE_TAG;
 		data->tag_type = MPD_TAG_ITEM_ARTIST;
 		data->tag = string;
@@ -391,7 +391,7 @@ MpdData * mpd_playlist_get_artists(MpdObj *mi)
 
 	/* unlock */
 	mpd_unlock_conn(mi);
-	if(data == NULL) 
+	if(data == NULL)
 	{
 		return NULL;
 	}
@@ -415,7 +415,7 @@ static int compa(char **a, char **b)
 		d = &d[4];
 	}
 #endif
-	
+
 	return strcasecmp(c,d);
 }
 MpdData *mpd_playlist_sort_artist_list(MpdData *data)
@@ -432,11 +432,11 @@ MpdData *mpd_playlist_sort_artist_list(MpdData *data)
 	}while(test != NULL);
 	array = malloc(length*sizeof(char*));
 	test = mpd_data_get_first(data);
-	
+
 	do
 	{
-		array[i] = test->tag;	
-		
+		array[i] = test->tag;
+
 		test = mpd_data_get_next_real(test, FALSE);
 		i++;
 	}while(test != NULL);
@@ -450,8 +450,8 @@ MpdData *mpd_playlist_sort_artist_list(MpdData *data)
 	{
 		test->tag = array[i];
 		test = mpd_data_get_next_real(test, FALSE);
-		i++;                            	
-	}while(test != NULL);             	
+		i++;
+	}while(test != NULL);
 	free(array);
 	return mpd_data_get_first(data);
 }
@@ -470,10 +470,10 @@ MpdData *mpd_playlist_sort_tag_list(MpdData *data)
 	}while(test != NULL);
 	array = malloc(length*sizeof(char*));
 	test = data;
-	
+
 	do
 	{
-		array[i] = test->tag;	
+		array[i] = test->tag;
 		test = mpd_data_get_next_real(test, FALSE);
 		i++;
 	}while(test != NULL);
@@ -487,72 +487,14 @@ MpdData *mpd_playlist_sort_tag_list(MpdData *data)
 	{
 		test->tag = array[i];
 		test = mpd_data_get_next_real(test, FALSE);
-		i++;                            	
-	}while(test != NULL);             	
+		i++;
+	}while(test != NULL);
 	free(array);
 	return mpd_data_get_first(data);
 }
 
 
-/*
 
-
-
-
-
-
-
-MpdData * mpd_playlist_sort_tag_list(MpdData *data)
-{
-	int changed = 0;
-	MpdData *temp = NULL;
-	MpdData *pldata = NULL, *first = NULL;
-	if(data == NULL) return NULL;
-	first = pldata = data->first;
-	do
-	{
-		changed = 0;
-		while(pldata != NULL && pldata->next != NULL)	
-		{
-			pldata->first = first;
-			if(pldata->next->type != MPD_DATA_TYPE_TAG)
-			{
-
-			}
-			else if((pldata->type != MPD_DATA_TYPE_TAG && pldata->next->type == MPD_DATA_TYPE_TAG)||
-					(pldata->next != NULL && strcasecmp(pldata->next->tag,pldata->tag) < 0 ))
-			{
-
-				temp = pldata->next;
-				if(temp->next != NULL)
-				{
-					temp->next->prev = pldata;
-				}
-				pldata->next = temp->next;
-				temp->next = pldata;
-				if(pldata->prev)
-				{
-					pldata->prev->next = temp;				
-				}   
-				temp->prev = pldata->prev;
-				pldata->prev = temp;
-
-				if(first == pldata)
-				{
-					first = temp;		
-				}
-				changed = TRUE;
-			}
-			pldata = pldata->next;
-		}
-		pldata = first;
-	}
-	while(changed);
-	return pldata;
-}
-
-
-*/
 MpdData * mpd_playlist_get_albums(MpdObj *mi,char *artist)
 {
 	char *string = NULL;
@@ -570,7 +512,7 @@ MpdData * mpd_playlist_get_albums(MpdObj *mi,char *artist)
 
 	mpd_sendListCommand(mi->connection,MPD_TABLE_ALBUM,artist);
 	while (( string = mpd_getNextAlbum(mi->connection)) != NULL)
-	{	
+	{
 		data = mpd_new_data_struct_append(data);
 		data->type = MPD_DATA_TYPE_TAG;
 		data->tag_type = MPD_TAG_ITEM_ALBUM;
@@ -580,7 +522,7 @@ MpdData * mpd_playlist_get_albums(MpdObj *mi,char *artist)
 
 	/* unlock */
 	mpd_unlock_conn(mi);
-	if(data == NULL) 
+	if(data == NULL)
 	{
 		return NULL;
 	}
@@ -608,7 +550,7 @@ MpdData * mpd_playlist_get_directory(MpdObj *mi,char *path)
 
 	mpd_sendLsInfoCommand(mi->connection,path);
 	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
-	{	
+	{
 		data = mpd_new_data_struct_append(data);
 		if(ent->type == MPD_INFO_ENTITY_TYPE_DIRECTORY)
 		{
@@ -644,7 +586,7 @@ MpdData * mpd_playlist_get_directory(MpdObj *mi,char *path)
 
 	/* unlock */
 	mpd_unlock_conn(mi);
-	if(data == NULL) 
+	if(data == NULL)
 	{
 		return NULL;
 	}
@@ -675,7 +617,7 @@ MpdData *mpd_playlist_token_find(MpdObj *mi , char *string)
 	}
 	else{
 		strdata = mpd_misc_tokenize(string);
-	}	
+	}
 	if(strdata == NULL)
 	{
 		mpd_unlock_conn(mi);
@@ -685,7 +627,7 @@ MpdData *mpd_playlist_token_find(MpdObj *mi , char *string)
 
 	mpd_sendListallInfoCommand(mi->connection, "/");
 	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
-	{	
+	{
 		if (ent->type == MPD_INFO_ENTITY_TYPE_SONG)
 		{
 			int i = 0;
@@ -708,7 +650,7 @@ MpdData *mpd_playlist_token_find(MpdObj *mi , char *string)
 				}
 				else if(ent->info.song->album && !regexec(strdata[i],ent->info.song->album, 0, NULL, 0))
 				{
-					match = 1;                                                   				
+					match = 1;
 				}
 				if(!match)
 				{
@@ -721,7 +663,7 @@ MpdData *mpd_playlist_token_find(MpdObj *mi , char *string)
 				data = mpd_new_data_struct_append(data);
 				data->type = MPD_DATA_TYPE_SONG;
 				/*
-				data->song = mpd_songDup(ent->info.song);				
+				data->song = mpd_songDup(ent->info.song);
 				*/
 				data->song = ent->info.song;
 				ent->info.song = NULL;
@@ -774,7 +716,7 @@ MpdData *mpd_playlist_find_adv(MpdObj *mi,int exact, ...)
 	}
 	va_end(arglist);
 	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
-	{	
+	{
 		data = mpd_new_data_struct_append( data );
 		if(ent->type == MPD_INFO_ENTITY_TYPE_DIRECTORY)
 		{
@@ -787,7 +729,7 @@ MpdData *mpd_playlist_find_adv(MpdObj *mi,int exact, ...)
 		}
 		else if (ent->type == MPD_INFO_ENTITY_TYPE_SONG)
 		{
-			data->type = MPD_DATA_TYPE_SONG;                            	
+			data->type = MPD_DATA_TYPE_SONG;
 			/*
 			data->song = mpd_songDup(ent->info.song);
 			*/
@@ -810,7 +752,7 @@ MpdData *mpd_playlist_find_adv(MpdObj *mi,int exact, ...)
 
 	/* unlock */
 	mpd_unlock_conn(mi);
-	if(data == NULL) 
+	if(data == NULL)
 	{
 		return NULL;
 	}
@@ -843,7 +785,7 @@ MpdData * mpd_playlist_find(MpdObj *mi, int table, char *string, int exact)
 	}
 	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
 	{
-		data = mpd_new_data_struct_append(data);	
+		data = mpd_new_data_struct_append(data);
 		if(ent->type == MPD_INFO_ENTITY_TYPE_DIRECTORY)
 		{
 			data->type = MPD_DATA_TYPE_DIRECTORY;
@@ -881,7 +823,7 @@ MpdData * mpd_playlist_find(MpdObj *mi, int table, char *string, int exact)
 						}
 						fartist = mpd_data_get_next_real(fartist, FALSE);
 					}while(fartist && !found);
-				}	
+				}
 				if(!found)
 				{
 					artist= mpd_new_data_struct_append(artist);
@@ -910,7 +852,7 @@ MpdData * mpd_playlist_find(MpdObj *mi, int table, char *string, int exact)
 						}
 						falbum = mpd_data_get_next_real(falbum, FALSE);
 					}while(falbum && !found);
-				}	
+				}
 				if(!found)
 				{
 					album = mpd_new_data_struct_append(album);
@@ -937,7 +879,7 @@ MpdData * mpd_playlist_find(MpdObj *mi, int table, char *string, int exact)
 
 	/* unlock */
 	mpd_unlock_conn(mi);
-	if(data == NULL) 
+	if(data == NULL)
 	{
 		return NULL;
 	}
@@ -945,7 +887,7 @@ MpdData * mpd_playlist_find(MpdObj *mi, int table, char *string, int exact)
 	/* prepend the album then artists*/
 	album = mpd_data_concatenate( album, artist );
 	data  = mpd_data_concatenate( album, data);
-	
+
 	return mpd_data_get_first(data);
 }
 
@@ -976,9 +918,9 @@ MpdData * mpd_playlist_get_changes(MpdObj *mi,int old_playlist_id)
 	}
 
 	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
-	{	
+	{
 		if(ent->type == MPD_INFO_ENTITY_TYPE_SONG)
-		{	
+		{
 			data = mpd_new_data_struct_append(data);
 			data->type = MPD_DATA_TYPE_SONG;
 			/*
@@ -998,7 +940,7 @@ MpdData * mpd_playlist_get_changes(MpdObj *mi,int old_playlist_id)
 		mpd_data_free(data);
 		return NULL;
 	}
-	if(data == NULL) 
+	if(data == NULL)
 	{
 		return NULL;
 	}
@@ -1024,7 +966,7 @@ void mpd_playlist_queue_add(MpdObj *mi,char *path)
 		mi->queue->first = mi->queue;
 		mi->queue->next = NULL;
 		mi->queue->prev = NULL;
-	}	
+	}
 	else
 	{
 		mi->queue->next = mpd_new_queue_struct();
@@ -1033,7 +975,7 @@ void mpd_playlist_queue_add(MpdObj *mi,char *path)
 		mi->queue = mi->queue->next;
 		mi->queue->next = NULL;
 	}
-	mi->queue->type = MPD_QUEUE_ADD; 
+	mi->queue->type = MPD_QUEUE_ADD;
 	mi->queue->path = strdup(path);
 }
 
@@ -1055,7 +997,7 @@ void mpd_playlist_queue_load(MpdObj *mi,char *path)
 		mi->queue->first = mi->queue;
 		mi->queue->next = NULL;
 		mi->queue->prev = NULL;
-	}	
+	}
 	else
 	{
 		mi->queue->next = mpd_new_queue_struct();
@@ -1064,7 +1006,7 @@ void mpd_playlist_queue_load(MpdObj *mi,char *path)
 		mi->queue = mi->queue->next;
 		mi->queue->next = NULL;
 	}
-	mi->queue->type = MPD_QUEUE_LOAD; 
+	mi->queue->type = MPD_QUEUE_LOAD;
 	mi->queue->path = strdup(path);
 }
 
@@ -1079,13 +1021,13 @@ void mpd_playlist_queue_commit(MpdObj *mi)
 	{
 		debug_printf(DEBUG_WARNING,"mpd_playlist_add: not connected\n");
 		return;
-	}                                                      	
+	}
 	if(mpd_lock_conn(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_playlist_find: lock failed\n");
 		return ;
-	}                                
-	mpd_sendCommandListBegin(mi->connection);		
+	}
+	mpd_sendCommandListBegin(mi->connection);
 	/* get first item */
 	mi->queue = mi->queue->first;
 	while(mi->queue != NULL)
@@ -1096,20 +1038,20 @@ void mpd_playlist_queue_commit(MpdObj *mi)
 			{
 				mpd_sendAddCommand(mi->connection, mi->queue->path);
 			}
-		}	
+		}
 		else if(mi->queue->type == MPD_QUEUE_LOAD)
 		{
 			if(mi->queue->path != NULL)
-			{                                                           			
-				mpd_sendLoadCommand(mi->connection, mi->queue->path);			
+			{
+				mpd_sendLoadCommand(mi->connection, mi->queue->path);
 			}
 		}
 		else if (mi->queue->type == MPD_QUEUE_DELETE_ID)
 		{
 			if(mi->queue->id >= 0)
-			{                                                           						
-				mpd_sendDeleteIdCommand(mi->connection, mi->queue->id);			
-			}                                                                               		
+			{
+				mpd_sendDeleteIdCommand(mi->connection, mi->queue->id);
+			}
 		}
 		mpd_queue_get_next(mi);
 	}
@@ -1131,7 +1073,7 @@ void mpd_playlist_queue_delete_id(MpdObj *mi,int id)
 		mi->queue->first = mi->queue;
 		mi->queue->next = NULL;
 		mi->queue->prev = NULL;
-	}	
+	}
 	else
 	{
 		mi->queue->next = mpd_new_queue_struct();
@@ -1162,7 +1104,7 @@ MpdData * mpd_database_get_complete(MpdObj *mi)
 	}
 	mpd_sendListallInfoCommand(mi->connection, "/");
 	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
-	{	
+	{
 
 		if (ent->type == MPD_INFO_ENTITY_TYPE_SONG)
 		{
@@ -1180,7 +1122,7 @@ MpdData * mpd_database_get_complete(MpdObj *mi)
 
 	/* unlock */
 	mpd_unlock_conn(mi);
-	if(data == NULL) 
+	if(data == NULL)
 	{
 		return NULL;
 	}

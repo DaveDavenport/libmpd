@@ -29,130 +29,110 @@
 #include "libmpd.h"
 #include "libmpd-internal.h"
 
-/*******************************************************************************************
- * PLAYER
- */
-
-int mpd_player_get_state(MpdObj *mi)
+int mpd_player_get_state(MpdObj * mi)
 {
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_get_state: not connected\n");
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_get_state: not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(!mpd_status_check(mi))
-	{                                        	
-		debug_printf(DEBUG_WARNING,"mpd_ob-player_get_state: Failed to get status\n");
+	if (!mpd_status_check(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_ob-player_get_state: Failed to get status\n");
 		return MPD_FAILED_STATUS;
-	}                                        
+	}
 
-	switch(mi->status->state)
-	{
-		case MPD_STATUS_STATE_PLAY:
-			return MPD_PLAYER_PLAY;
-		case MPD_STATUS_STATE_STOP:
-			return MPD_PLAYER_STOP;
-		case MPD_STATUS_STATE_PAUSE:
-			return MPD_PLAYER_PAUSE;
-		default:
-			return MPD_PLAYER_UNKNOWN;
+	switch (mi->status->state) {
+	case MPD_STATUS_STATE_PLAY:
+		return MPD_PLAYER_PLAY;
+	case MPD_STATUS_STATE_STOP:
+		return MPD_PLAYER_STOP;
+	case MPD_STATUS_STATE_PAUSE:
+		return MPD_PLAYER_PAUSE;
+	default:
+		return MPD_PLAYER_UNKNOWN;
 	}
 	return MPD_PLAYER_UNKNOWN;
 }
 
-int mpd_player_get_current_song_id(MpdObj *mi)
+int mpd_player_get_current_song_id(MpdObj * mi)
 {
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_get_state: not connected\n");
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_get_state: not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(!mpd_status_check(mi))
-	{                                        	          	
-		debug_printf(DEBUG_ERROR,"Failed to get status\n");
+	if (!mpd_status_check(mi)) {
+		debug_printf(DEBUG_ERROR, "Failed to get status\n");
 		return MPD_FAILED_STATUS;
-	}                
-	/* check if in valid state */	
-	if(mpd_player_get_state(mi) != MPD_PLAYER_PLAY &&
-			mpd_player_get_state(mi) != MPD_PLAYER_PAUSE)
-	{
+	}
+	/* check if in valid state */
+	if (mpd_player_get_state(mi) != MPD_PLAYER_PLAY &&
+	    mpd_player_get_state(mi) != MPD_PLAYER_PAUSE) {
 		return -1;
 	}
-	/* just to be sure check */	
-	if(!mi->status->playlistLength)
-	{
+	/* just to be sure check */
+	if (!mi->status->playlistLength) {
 		return -1;
 	}
 	return mi->status->songid;
 }
 
-int mpd_player_get_current_song_pos(MpdObj *mi)
+int mpd_player_get_current_song_pos(MpdObj * mi)
 {
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_get_state: not connected\n");
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_get_state: not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(!mpd_status_check(mi))
-	{                                        	          	
-		debug_printf(DEBUG_ERROR,"Failed to get status\n");
+	if (!mpd_status_check(mi)) {
+		debug_printf(DEBUG_ERROR, "Failed to get status\n");
 		return MPD_FAILED_STATUS;
-	}                
-	/* check if in valid state */	
-	if(mpd_player_get_state(mi) != MPD_PLAYER_PLAY &&
-			mpd_player_get_state(mi) != MPD_PLAYER_PAUSE)
-	{
+	}
+	/* check if in valid state */
+	if (mpd_player_get_state(mi) != MPD_PLAYER_PLAY &&
+	    mpd_player_get_state(mi) != MPD_PLAYER_PAUSE) {
 		return -1;
 	}
-	/* just to be sure check */	
-	if(!mi->status->playlistLength)
-	{
+	/* just to be sure check */
+	if (!mi->status->playlistLength) {
 		return -1;
 	}
 	return mi->status->song;
 }
 
-int mpd_player_play_id(MpdObj *mi, int id)
+int mpd_player_play_id(MpdObj * mi, int id)
 {
 	debug_printf(DEBUG_INFO, "mpd_player_play_id: trying to play id: %i\n", id);
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_play: not connected\n");
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_play: not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(mpd_lock_conn(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_play: lock failed\n");
+	if (mpd_lock_conn(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_play: lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 
-	mpd_sendPlayIdCommand(mi->connection,id);
+	mpd_sendPlayIdCommand(mi->connection, id);
 	mpd_finishCommand(mi->connection);
 
 
 	mpd_unlock_conn(mi);
-	if(mpd_status_update(mi))
-	{
+	if (mpd_status_update(mi)) {
 		return MPD_FAILED_STATUS;
 	}
 	return FALSE;
 }
 
-int mpd_player_play(MpdObj *mi)
+int mpd_player_play(MpdObj * mi)
 {
 	return mpd_player_play_id(mi, -1);
 }
 
-int mpd_player_stop(MpdObj *mi)
+int mpd_player_stop(MpdObj * mi)
 {
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_play: not connected\n");
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_play: not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(mpd_lock_conn(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_play: lock failed\n");
+	if (mpd_lock_conn(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_play: lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 
@@ -161,23 +141,20 @@ int mpd_player_stop(MpdObj *mi)
 
 
 	mpd_unlock_conn(mi);
-	if(mpd_status_update(mi))
-	{
+	if (mpd_status_update(mi)) {
 		return MPD_FAILED_STATUS;
 	}
 	return FALSE;
 }
 
-int mpd_player_next(MpdObj *mi)
+int mpd_player_next(MpdObj * mi)
 {
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_play: not connected\n");
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_play: not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(mpd_lock_conn(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_play: lock failed\n");
+	if (mpd_lock_conn(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_play: lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 
@@ -186,23 +163,20 @@ int mpd_player_next(MpdObj *mi)
 
 
 	mpd_unlock_conn(mi);
-	if(mpd_status_update(mi))
-	{
+	if (mpd_status_update(mi)) {
 		return MPD_FAILED_STATUS;
 	}
 	return FALSE;
 }
 
-int mpd_player_prev(MpdObj *mi)
+int mpd_player_prev(MpdObj * mi)
 {
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_play: not connected\n");
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_play: not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(mpd_lock_conn(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_play: lock failed\n");
+	if (mpd_lock_conn(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_play: lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 
@@ -211,106 +185,91 @@ int mpd_player_prev(MpdObj *mi)
 
 
 	mpd_unlock_conn(mi);
-	if(mpd_status_update(mi))
-	{
+	if (mpd_status_update(mi)) {
 		return MPD_FAILED_STATUS;
 	}
 	return FALSE;
 }
 
 
-int mpd_player_pause(MpdObj *mi)
+int mpd_player_pause(MpdObj * mi)
 {
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_play: not connected\n");
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_play: not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(mpd_lock_conn(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_play: lock failed\n");
+	if (mpd_lock_conn(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_play: lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 
-	if(mpd_player_get_state(mi) == MPD_PLAYER_PAUSE)
-	{
-		mpd_sendPauseCommand(mi->connection,0);
+	if (mpd_player_get_state(mi) == MPD_PLAYER_PAUSE) {
+		mpd_sendPauseCommand(mi->connection, 0);
 		mpd_finishCommand(mi->connection);
-	}
-	else if (mpd_player_get_state(mi) == MPD_PLAYER_PLAY)
-	{
-		mpd_sendPauseCommand(mi->connection,1);
+	} else if (mpd_player_get_state(mi) == MPD_PLAYER_PLAY) {
+		mpd_sendPauseCommand(mi->connection, 1);
 		mpd_finishCommand(mi->connection);
 	}
 
 
 	mpd_unlock_conn(mi);
-	if(mpd_status_update(mi))
-	{
+	if (mpd_status_update(mi)) {
 		return MPD_FAILED_STATUS;
 	}
 	return FALSE;
 }
 
-int mpd_player_seek(MpdObj *mi, int sec)
+int mpd_player_seek(MpdObj * mi, int sec)
 {
-	int cur_song  = mpd_player_get_current_song_pos(mi);
-	if( cur_song < 0 )
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_seek: failed to get current song pos\n");
+	int cur_song = mpd_player_get_current_song_pos(mi);
+	if (cur_song < 0) {
+		debug_printf(DEBUG_WARNING, "mpd_player_seek: failed to get current song pos\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_play: not connected\n");
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_play: not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(mpd_lock_conn(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_play: lock failed\n");
+	if (mpd_lock_conn(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_play: lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 
-	debug_printf(DEBUG_INFO, "mpd_player_seek: seeking in song %i to %i sec\n", cur_song,sec);
+	debug_printf(DEBUG_INFO, "mpd_player_seek: seeking in song %i to %i sec\n", cur_song, sec);
 
-	mpd_sendSeekCommand(mi->connection, cur_song,sec);
+	mpd_sendSeekCommand(mi->connection, cur_song, sec);
 	mpd_finishCommand(mi->connection);
 
 
 	mpd_unlock_conn(mi);
-	if(mpd_status_update(mi))
-	{
+	if (mpd_status_update(mi)) {
 		return MPD_FAILED_STATUS;
 	}
 	return FALSE;
 }
 
-int mpd_player_get_repeat(MpdObj *mi)
+int mpd_player_get_repeat(MpdObj * mi)
 {
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_get_repeat: not connected\n");
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_get_repeat: not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(!mpd_status_check(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_get_repeat: Failed grabbing status\n");
+	if (!mpd_status_check(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_get_repeat: Failed grabbing status\n");
 		return MPD_NOT_CONNECTED;
 	}
 	return mi->status->repeat;
 }
 
 
-int mpd_player_set_repeat(MpdObj *mi,int repeat)
+int mpd_player_set_repeat(MpdObj * mi, int repeat)
 {
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_set_repeat: not connected\n");	
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_set_repeat: not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(mpd_lock_conn(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_set_repeat: lock failed\n");
+	if (mpd_lock_conn(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_set_repeat: lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 	mpd_sendRepeatCommand(mi->connection, repeat);
@@ -323,32 +282,28 @@ int mpd_player_set_repeat(MpdObj *mi,int repeat)
 
 
 
-int mpd_player_get_random(MpdObj *mi)
+int mpd_player_get_random(MpdObj * mi)
 {
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_get_random: not connected\n");
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_get_random: not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(!mpd_status_check(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_get_random: Failed grabbing status\n");
+	if (!mpd_status_check(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_get_random: Failed grabbing status\n");
 		return MPD_NOT_CONNECTED;
 	}
 	return mi->status->random;
 }
 
 
-int mpd_player_set_random(MpdObj *mi,int random)
+int mpd_player_set_random(MpdObj * mi, int random)
 {
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_set_random: not connected\n");	
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_set_random: not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(mpd_lock_conn(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_player_set_random: lock failed\n");
+	if (mpd_lock_conn(mi)) {
+		debug_printf(DEBUG_WARNING, "mpd_player_set_random: lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 	mpd_sendRandomCommand(mi->connection, random);
