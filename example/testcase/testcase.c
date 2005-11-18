@@ -93,6 +93,9 @@ void status_changed(MpdObj *mi, ChangedStatusType what)
 				mpd_status_get_elapsed_song_time(mi)/60,
 				mpd_status_get_elapsed_song_time(mi)%60);
 */	}
+	if(what&MPD_CST_PERMISSION){
+		printf(YELLOW"Permission:"RESET" Changed\n");
+	}
 }
 
 int main(int argc, char **argv)

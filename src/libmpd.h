@@ -287,7 +287,8 @@ extern "C" {
 		MPD_CST_RANDOM = 0x0200,
 		MPD_CST_REPEAT = 0x0400,
 		MPD_CST_AUDIO = 0x0800,	/* not yet implemented */
-		MPD_CST_STATE = 0x1000
+		MPD_CST_STATE = 0x1000,
+		MPD_CST_PERMISSION = 0x2000
 	} ChangedStatusType;
 
 

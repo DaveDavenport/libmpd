@@ -53,8 +53,6 @@ char * strndup(const char *s, size_t n)
 #endif
 
 
-
-/*************************************************************************************/
 static MpdObj * mpd_create()
 {
 	MpdObj * mi = malloc(sizeof(MpdObj));
@@ -114,7 +112,7 @@ static MpdObj * mpd_create()
 	mi->disconnect_pointer = NULL;
 */	/* connect signal */
 /*	mi->connect = NULL;
-	mi->connect_pointer = NULL;	
+	mi->connect_pointer = NULL;
 */	/* updating db */
 /*	mi->updating_changed = NULL;
 	mi->updating_signal_pointer = NULL;
@@ -122,14 +120,14 @@ static MpdObj * mpd_create()
 /*	mi->error_signal = NULL;
 	mi->error_signal_pointer = NULL;
 */
-	
+
 	/* connection changed signal */
 	mi->the_connection_changed_callback = NULL;
 	mi->the_connection_changed_signal_userdata = NULL;
 
 	/* status changed */
 	mi->the_status_changed_callback = NULL;
-	mi->the_status_changed_signal_userdata = NULL;	
+	mi->the_status_changed_signal_userdata = NULL;
 
 	/* error callback */
 	mi->the_error_callback = NULL;
@@ -345,13 +343,21 @@ void mpd_send_password(MpdObj *mi)
 			return;
 		}
 		mpd_sendPasswordCommand(mi->connection, mi->password);
-		mpd_finishCommand(mi->connection);	
+		mpd_finishCommand(mi->connection);
 		if(mpd_unlock_conn(mi))
 		{
 			debug_printf(DEBUG_ERROR, "mpd_send_password: Failed to unlock connection\n");
 			return;
 		}
 		mpd_server_get_allowed_commands(mi);
+		/*TODO: should I do it here, or in the
+		 * mpd_server_get_allowed_command, so it also get's executed on
+		 * connect
+		 */
+		if((mi->the_status_changed_callback != NULL))
+		{
+			mi->the_status_changed_callback( mi, MPD_CST_PERMISSION, mi->the_status_changed_signal_userdata );
+		}
 	}
 }
 
@@ -395,7 +401,7 @@ static void mpd_server_free_commands(MpdObj *mi)
 	{
 		int i=0;
 		while(mi->commands[i].command_name)
-		{                                           	
+		{
 			free(mi->commands[i].command_name);
 			i++;
 		}
