@@ -96,22 +96,22 @@ typedef struct _MpdObj {
 	/* (dis)connect signal */
 	ConnectionChangedCallback the_connection_changed_callback;
 	void *the_connection_changed_signal_userdata;
-        
+
 	/* old style signals */
-/*	void *(* playlist_changed)(struct _MpdObj *mi, int old_playlist_id, int new_playlist_id, void *pointer);	
+/*	void *(* playlist_changed)(struct _MpdObj *mi, int old_playlist_id, int new_playlist_id, void *pointer);
 	void *playlist_changed_pointer;
 */	/* error signal */
-/*	void *(* error_signal)(struct _MpdObj *mi, int id, char *msg, void *pointer);	
+/*	void *(* error_signal)(struct _MpdObj *mi, int id, char *msg, void *pointer);
 	void *error_signal_pointer;
 */	/* song change */
-/*	void *(* song_changed)(struct _MpdObj *mi, int old_song_id, int new_song_id, void *pointer);	
-	void *song_changed_signal_pointer;                                                     	
+/*	void *(* song_changed)(struct _MpdObj *mi, int old_song_id, int new_song_id, void *pointer);
+	void *song_changed_signal_pointer;
 */	/* song status changed */
-/*	void *(* status_changed)(struct _MpdObj *mi, void *pointer);	
-	void *status_changed_signal_pointer;                                                     	
+/*	void *(* status_changed)(struct _MpdObj *mi, void *pointer);
+	void *status_changed_signal_pointer;
 */	/* song status changed */
-/*	void *(* state_changed)(struct _MpdObj *mi,int old_state,int new_state, void *pointer);	
-	void *state_changed_signal_pointer;                                                     	
+/*	void *(* state_changed)(struct _MpdObj *mi,int old_state,int new_state, void *pointer);
+	void *state_changed_signal_pointer;
 
 */	/* disconnect signal */
 /*	void *(* disconnect) (struct _MpdObj *mi, void *pointer);
@@ -123,11 +123,12 @@ typedef struct _MpdObj {
 */
 	/* error message */
 	int error;
-	char *error_msg;	
+	int error_mpd_code;
+	char *error_msg;
 
 	/* song datab update */
-/*	void *(* database_changed)(struct _MpdObj *mi,void *pointer);	
-	void *database_changed_signal_pointer;                                                     	
+/*	void *(* database_changed)(struct _MpdObj *mi,void *pointer);
+	void *database_changed_signal_pointer;
 
 	void *(* updating_changed)(struct _MpdObj *mi, int updating,void *pointer);
 	void *updating_signal_pointer;

@@ -38,9 +38,9 @@ int mpd_status_queue_update(MpdObj *mi)
 	{
 		debug_printf(DEBUG_INFO,"mpd_status_queue_update: Where not connected\n");
 		return TRUE;
-	}                                       	
+	}
 	if(mi->status != NULL)
-	{                                  	
+	{
 		mpd_freeStatus(mi->status);
 		mi->status = NULL;
 	}
@@ -126,9 +126,9 @@ int mpd_status_update(MpdObj *mi)
 	{
 		/* deprecated */
 /*		if(mi->state_changed != NULL)
-		{                                                                      		
+		{
 			mi->state_changed(mi, mi->OldState.state,mi->status->state,mi->state_changed_signal_pointer);
-		}                                                                                           		
+		}
 */		what_changed |= MPD_CST_STATE;
 		mi->CurrentState.state = mi->status->state;
 	}

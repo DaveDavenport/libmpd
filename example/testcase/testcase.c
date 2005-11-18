@@ -95,7 +95,7 @@ void status_changed(MpdObj *mi, ChangedStatusType what)
 */	}
 }
 
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
 	int fdstdin = 0;
 	int run = 1;
@@ -204,4 +204,5 @@ int main(int argc, char *argv)
 	}
 	mpd_free(obj);
 	close(fdstdin);
+	return 1;
 }

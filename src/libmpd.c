@@ -75,6 +75,7 @@ static MpdObj * mpd_create()
 	mi->status = NULL;
 	mi->stats = NULL;
 	mi->error = 0;
+	mi->error_mpd_code = 0;
 	mi->error_msg = NULL;
 	mi->CurrentSong = NULL;
 	/* info */
@@ -84,11 +85,11 @@ static MpdObj * mpd_create()
 	mi->CurrentState.dbUpdateTime = 0;
 	mi->CurrentState.updatingDb = 0;
 	mi->CurrentState.repeat = -1;
-       	mi->CurrentState.random = -1;
+	mi->CurrentState.random = -1;
 	mi->CurrentState.volume = -2;
-	mi->CurrentState.xfade 	= -1;
-      	mi->CurrentState.totaltime = 0;
-	mi->CurrentState.elapsedtime = 0;	
+	mi->CurrentState.xfade	= -1;
+	mi->CurrentState.totaltime = 0;
+	mi->CurrentState.elapsedtime = 0;
 
 	memcpy(&(mi->OldState), &(mi->CurrentState), sizeof(MpdServerState));
 
@@ -175,7 +176,7 @@ void mpd_free(MpdObj *mi)
 	if(mi->stats)
 	{
 		mpd_freeStats(mi->stats);
-	}	
+	}
 	if(mi->CurrentSong)
 	{
 		mpd_freeSong(mi->CurrentSong);
@@ -189,34 +190,53 @@ int mpd_check_error(MpdObj *mi)
 	{
 		return FALSE;
 	}
-
+/*
 	if(mi->error)
 	{
 		return TRUE;
-	}	
-
+	}
+*/
 	/* this shouldn't happen, ever */
 	if(mi->connection == NULL)
 	{
 		debug_printf(DEBUG_WARNING, "mpd_check_error: should this happen, mi->connection == NULL?");
-		return FALSE;
+		return TRUE;
 	}
-	if(mi->connection->error)
-	{
-		/* TODO: map these errors in the future */
-		mi->error = mi->connection->error;
-		mi->error_msg = strdup(mi->connection->errorStr);	
 
-		debug_printf(DEBUG_ERROR, "mpd_check_error: Following error occured: code: %i msg: %s", mi->error, mi->error_msg);
+	/* TODO: map these errors in the future */
+	mi->error = mi->connection->error;
+	mi->error_mpd_code = mi->connection->errorCode;
+	mi->error_msg = strdup(mi->connection->errorStr);
+
+	/* Check for permission */
+	/* First check for an error reported by MPD
+	 * Then check what type of error mpd reported
+	 */
+	if(mi->error == MPD_ERROR_ACK)
+	{
+
+		debug_printf(DEBUG_ERROR,"mpd_check_error: clearing errors in mpd_Connection");
+		mpd_clearError(mi->connection);
+		if (mi->the_error_callback)
+		{
+			mi->the_error_callback(mi, mi->error_mpd_code, mi->error_msg, mi->the_error_signal_userdata );
+		}
+		return TRUE;
+	}
+	if(mi->error)
+	{
+
+		debug_printf(DEBUG_ERROR, "mpd_check_error: Following error occured: %i: code: %i msg: %s", mi->error,mi->connection->errorCode, mi->error_msg);
 		mpd_disconnect(mi);
 		/* deprecated */
-/*		if(mi->error_signal)
+		/*		if(mi->error_signal)
+				{
+				mi->error_signal(mi, mi->error, mi->error_msg,mi->error_signal_pointer);
+				}
+				*/
+		if (mi->the_error_callback)
 		{
-			mi->error_signal(mi, mi->error, mi->error_msg,mi->error_signal_pointer);
-		}
-*/		if (mi->the_error_callback)
-		{
-			mi->the_error_callback( mi, mi->error, mi->error_msg, mi->the_error_signal_userdata );
+			mi->the_error_callback(mi, mi->error, mi->error_msg, mi->the_error_signal_userdata );
 		}
 		return TRUE;
 	}
@@ -326,7 +346,11 @@ void mpd_send_password(MpdObj *mi)
 		}
 		mpd_sendPasswordCommand(mi->connection, mi->password);
 		mpd_finishCommand(mi->connection);	
-		mpd_unlock_conn(mi);
+		if(mpd_unlock_conn(mi))
+		{
+			debug_printf(DEBUG_ERROR, "mpd_send_password: Failed to unlock connection\n");
+			return;
+		}
 		mpd_server_get_allowed_commands(mi);
 	}
 }
@@ -372,7 +396,7 @@ static void mpd_server_free_commands(MpdObj *mi)
 		int i=0;
 		while(mi->commands[i].command_name)
 		{                                           	
-		       	free(mi->commands[i].command_name);
+			free(mi->commands[i].command_name);
 			i++;
 		}
 		free(mi->commands);
@@ -397,7 +421,7 @@ void mpd_server_get_allowed_commands(MpdObj *mi)
 		debug_printf(DEBUG_WARNING, "mpd_server_get_allowed_commands: lock failed");
 		return;
 	}
-	mpd_sendCommandsCommand(mi->connection);	
+	mpd_sendCommandsCommand(mi->connection);
 	while((temp = mpd_getNextCommand(mi->connection)))
 	{
 		num_commands++;
@@ -408,7 +432,7 @@ void mpd_server_get_allowed_commands(MpdObj *mi)
 		mi->commands[num_commands].enabled = FALSE;
 	}
 	mpd_finishCommand(mi->connection);
-	mpd_sendNotCommandsCommand(mi->connection);	
+	mpd_sendNotCommandsCommand(mi->connection);
 	while((temp = mpd_getNextCommand(mi->connection)))
 	{
 		num_commands++;
@@ -419,7 +443,7 @@ void mpd_server_get_allowed_commands(MpdObj *mi)
 		mi->commands[num_commands].enabled = FALSE;
 	}
 	mpd_finishCommand(mi->connection);
-	
+
 	mpd_unlock_conn(mi);
 	return;
 }
@@ -462,7 +486,7 @@ int mpd_disconnect(MpdObj *mi)
 	mi->CurrentState.repeat = -1;
 	mi->CurrentState.random = -1;
 	mi->CurrentState.volume = -2;
-	mi->CurrentState.xfade 	= -1;
+	mi->CurrentState.xfade	= -1;
 	mi->CurrentState.totaltime = 0;
 	mi->CurrentState.elapsedtime = 0;
 
@@ -471,14 +495,14 @@ int mpd_disconnect(MpdObj *mi)
 
 
 	if(mi->the_connection_changed_callback != NULL)
-	{                                                                      		
+	{
 		mi->the_connection_changed_callback( mi, FALSE, mi->the_connection_changed_signal_userdata );
-	}                                                                                           		
+	}
 	/* deprecated */
 	/*	if(mi->disconnect != NULL)
-		{                                                                      		
+		{
 		mi->disconnect(mi, mi->disconnect_pointer);
-		}                                                                                           		
+		}
 		*/
 	mpd_server_free_commands(mi);
 	return FALSE;
@@ -493,6 +517,7 @@ int mpd_connect(MpdObj *mi)
 	}
 	/* reset errors */
 	mi->error = 0;
+	mi->error_mpd_code = 0;
 	if(mi->error_msg != NULL)
 	{
 		free(mi->error_msg);
@@ -508,7 +533,7 @@ int mpd_connect(MpdObj *mi)
 	mi->CurrentState.repeat = -1;
 	mi->CurrentState.random = -1;
 	mi->CurrentState.volume = -2;
-	mi->CurrentState.xfade 	= -1;
+	mi->CurrentState.xfade	= -1;
 	mi->CurrentState.totaltime = 0;
 	mi->CurrentState.elapsedtime = 0;
 
@@ -536,13 +561,17 @@ int mpd_connect(MpdObj *mi)
 		/* again spiffy error here */
 		return -1;
 	}
-	if(mi->password != NULL && strlen(mi->password) > 0)
-	{
-		mpd_sendPasswordCommand(mi->connection, mi->password);	
-		mpd_finishCommand(mi->connection);
-		/* TODO: check if succesfull */
-	}	
+	/*
+	 * We always connect anonymous
+	 */
+	/*
+	   if(mi->password != NULL && strlen(mi->password) > 0)
+	   {
+	   mpd_sendPasswordCommand(mi->connection, mi->password);
+	   mpd_finishCommand(mi->connection);
 
+	   }
+	   */
 
 	/* set connected state */
 	mi->connected = TRUE;
@@ -551,20 +580,21 @@ int mpd_connect(MpdObj *mi)
 		return -1;
 	}
 
-
+	/* get the commands we are allowed to use */
 	mpd_server_get_allowed_commands(mi);
 
 
 	if(mi->the_connection_changed_callback != NULL)
-	{                                                                      		
+	{
 		mi->the_connection_changed_callback( mi, TRUE, mi->the_connection_changed_signal_userdata );
 	}
 	/* deprecated */
 	/*	if(mi->connect != NULL)
-		{                                                                      		
+		{
 		mi->connect(mi, mi->connect_pointer);
 		}
-		*/	debug_printf(DEBUG_INFO, "mpd_connect: Connected to mpd");
+		*/
+	debug_printf(DEBUG_INFO, "mpd_connect: Connected to mpd");
 	return 0;
 }
 
@@ -1083,7 +1113,7 @@ int mpd_server_check_command_allowed(MpdObj *mi, const char *command)
 	if(mi->commands == NULL) return MPD_SERVER_COMMAND_ALLOWED;
 
 
-	
+
 	for(i=0;mi->commands[i].command_name;i++)
 	{
 		if(!strcasecmp(mi->commands[i].command_name, command))
