@@ -465,7 +465,9 @@ int	mpd_server_check_command_allowed	(MpdObj *mi, const char *command);
  * mpd_misc_tokenize
  * @string: A NULL terminated string
  *
- * Splits a string in tokens while keeping ()[] in tact. This can be used to match a string tokenized and with regex support agains a user defined string.
+ * Splits a string in tokens while keeping ()[] in tact.
+ * This can be used to match a string tokenized
+ * and with regex support agains a user defined string.
  *
  * returns: An array of regex patterns
  */
