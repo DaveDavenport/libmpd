@@ -54,6 +54,10 @@ typedef struct _MpdServerState {
 	int		xfade;
 	int 		totaltime;
 	int		elapsedtime;
+	int		bitrate;
+	unsigned int	samplerate;
+	int		bits;
+	int		channels;
 } MpdServerState;
 
 

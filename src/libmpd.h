@@ -276,19 +276,21 @@ extern "C" {
  * Bitwise enumeration to determine what triggered the status_changed signals
  */
 	typedef enum _ChangedStatusType {
-		MPD_CST_PLAYLIST = 0x0001,
-		MPD_CST_SONGID = 0x0004,
-		MPD_CST_DATABASE = 0x0008,
-		MPD_CST_UPDATING = 0x0010,
-		MPD_CST_VOLUME = 0x0020,
-		MPD_CST_TOTAL_TIME = 0x0040,
-		MPD_CST_ELAPSED_TIME = 0x0080,
-		MPD_CST_CROSSFADE = 0x0100,
-		MPD_CST_RANDOM = 0x0200,
-		MPD_CST_REPEAT = 0x0400,
-		MPD_CST_AUDIO = 0x0800,	/* not yet implemented */
-		MPD_CST_STATE = 0x1000,
-		MPD_CST_PERMISSION = 0x2000
+		MPD_CST_PLAYLIST      = 0x0001, /* The playlist has changed */
+		MPD_CST_SONGID        = 0x0004, /* The current song's id changed */
+		MPD_CST_DATABASE      = 0x0008, /* The database has changed (been updated) */
+		MPD_CST_UPDATING      = 0x0010, /* The database has started/stopped updating */
+		MPD_CST_VOLUME        = 0x0020, /* The volume has changed */
+		MPD_CST_TOTAL_TIME    = 0x0040, /* The length of the current song has changed */
+		MPD_CST_ELAPSED_TIME  = 0x0080, /* The elapsed time of the current song has changed */
+		MPD_CST_CROSSFADE     = 0x0100, /* Corssfading is enabled or disabled */
+		MPD_CST_RANDOM        = 0x0200, /* Random is enabled or disabled */
+		MPD_CST_REPEAT        = 0x0400, /* Repeat is enabled or disabled */
+		MPD_CST_AUDIO         = 0x0800,	/* not yet implemented */
+		MPD_CST_STATE         = 0x1000, /* The play state has changed (play,pause,...) */
+		MPD_CST_PERMISSION    = 0x2000, /* Permissions have changed (which commands can/can't be executed) */
+		MPD_CST_BITRATE       = 0x4000, /* The bitrate of the song being decoded has changed */
+		MPD_CST_AUDIOFORMAT   = 0x8000  /* The audio format of the song being decoded has changed */
 	} ChangedStatusType;
 
 

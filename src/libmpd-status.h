@@ -95,6 +95,33 @@ int 		mpd_status_get_volume			(MpdObj *mi);
  * returns: bitrate in kbs
  */
 int 		mpd_status_get_bitrate			(MpdObj *mi);
+/**
+ * mpd_status_get_samplerate
+ * @mi: a #MpdObj
+ *
+ * get the samplerate of the current playing song in bps. 
+ *
+ * returns: samplerate in bps
+ */
+unsigned int 	mpd_status_get_samplerate			(MpdObj *mi);
+/**
+ * mpd_status_get_channels
+ * @mi: a #MpdObj
+ *
+ * get the number of channels in the current playing song. This is usually only 1(mono) or 2(stereo), but this might change in the future.
+ *
+ * returns: number of channels
+ */
+int 		mpd_status_get_channels			(MpdObj *mi);
+/**
+ * mpd_status_get_bits
+ * @mi: a #MpdObj
+ *
+ * get the number of bits per sample of the current playing song. 
+ *
+ * returns: bits per sample 
+ */
+int 		mpd_status_get_bits			(MpdObj *mi);
 /** mpd_status_get_total_song_time
  * @mi: a #MpdObj
  *

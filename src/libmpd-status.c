@@ -177,7 +177,27 @@ int mpd_status_update(MpdObj *mi)
 	{
 		what_changed |= MPD_CST_ELAPSED_TIME;             	
 		mi->CurrentState.elapsedtime = mi->status->elapsedTime;
-	}                                                          	
+	}
+	if(mi->CurrentState.bitrate != mi->status->bitRate)
+	{
+		what_changed |= MPD_CST_BITRATE;             	
+		mi->CurrentState.bitrate = mi->status->bitRate;
+	}
+	if(mi->CurrentState.samplerate != mi->status->sampleRate)
+	{
+		what_changed |= MPD_CST_AUDIOFORMAT;             	
+		mi->CurrentState.samplerate = mi->status->sampleRate;
+	}
+	if(mi->CurrentState.bits != mi->status->bits)
+	{
+		what_changed |= MPD_CST_AUDIOFORMAT;             	
+		mi->CurrentState.bits = mi->status->bits;
+	}
+	if(mi->CurrentState.channels != mi->status->channels)
+	{
+		what_changed |= MPD_CST_AUDIOFORMAT;             	
+		mi->CurrentState.channels = mi->status->channels;
+	}
 	/* deprecated */
 /*	if(mi->status_changed != NULL)
 	{                                                                      		
@@ -336,8 +356,54 @@ int mpd_status_get_bitrate(MpdObj *mi)
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
 		return MPD_FAILED_STATUS;
 	}
-	return mi->status->bitRate;
+	return mi->CurrentState.bitrate;
 }
+
+int mpd_status_get_channels(MpdObj *mi)
+{
+	if(mi == NULL)
+	{
+		debug_printf(DEBUG_WARNING,"mpd_status_get_channels: failed to check mi == NULL\n");
+		return -2;
+	}
+	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING, "Failed to get status\n");
+		return MPD_FAILED_STATUS;
+	}
+	return mi->CurrentState.channels;
+}
+
+unsigned int mpd_status_get_samplerate(MpdObj *mi)
+{
+	if(mi == NULL)
+	{
+		debug_printf(DEBUG_WARNING,"mpd_status_get_samplerate: failed to check mi == NULL\n");
+		return -2;
+	}
+	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING, "Failed to get status\n");
+		return MPD_FAILED_STATUS;
+	}
+	return mi->CurrentState.samplerate;
+}
+
+int mpd_status_get_bits(MpdObj *mi)
+{
+	if(mi == NULL)
+	{
+		debug_printf(DEBUG_WARNING,"mpd_status_get_bits: failed to check mi == NULL\n");
+		return -2;
+	}
+	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING, "Failed to get status\n");
+		return MPD_FAILED_STATUS;
+	}
+	return mi->CurrentState.bits;
+}
+
 /* TODO: error checking might be nice? */
 int mpd_status_db_is_updating(MpdObj *mi)
 {
