@@ -1,6 +1,7 @@
 #ifndef __STRFSONG_H__
 #define __STRFSONG_H__
 
+#include "libmpd.h"
 /**
  * mpd_song_markup
  * @s:		A buffer to write the string in
