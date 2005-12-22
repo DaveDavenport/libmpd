@@ -261,7 +261,7 @@ int mpd_playlist_save(MpdObj *mi, char *name)
 	return FALSE;
 }
 
-void mpd_playlist_update_dir(MpdObj *mi, char *path)
+void mpd_database_update_dir(MpdObj *mi, char *path)
 {
 	if(path == NULL || !strlen(path))
 	{
@@ -364,7 +364,7 @@ MpdData * mpd_playlist_get_unique_tags(MpdObj *mi, int table,...)
 	return mpd_data_get_first(data);
 }
 
-MpdData * mpd_playlist_get_artists(MpdObj *mi)
+MpdData * mpd_database_get_artists(MpdObj *mi)
 {
 	char *string = NULL;
 	MpdData *data = NULL;
@@ -495,7 +495,7 @@ MpdData *mpd_playlist_sort_tag_list(MpdData *data)
 
 
 
-MpdData * mpd_playlist_get_albums(MpdObj *mi,char *artist)
+MpdData * mpd_database_get_albums(MpdObj *mi,char *artist)
 {
 	char *string = NULL;
 	MpdData *data = NULL;
@@ -1128,3 +1128,8 @@ MpdData * mpd_database_get_complete(MpdObj *mi)
 	}
 	return mpd_data_get_first(data);
 }
+
+/* deprecated stuff */
+void mpd_playlist_update_dir(MpdObj *mi, char *path){ mpd_database_update_dir(mi,path);}
+MpdData * mpd_playlist_get_albums(MpdObj *mi, char *artist) { return mpd_database_get_albums(mi,artist);}
+MpdData * mpd_playlist_get_artists(MpdObj *mi) { return mpd_database_get_artists(mi);}

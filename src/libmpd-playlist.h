@@ -26,12 +26,12 @@ mpd_Song *	mpd_playlist_get_current_song		(MpdObj *mi);
 int		mpd_playlist_clear			(MpdObj *mi);
 int		mpd_playlist_shuffle			(MpdObj *mi);
 int		mpd_playlist_save			(MpdObj *mi, char *name);
-void		mpd_playlist_update_dir		(MpdObj *mi, char *path);
+
 void		mpd_playlist_move_pos		(MpdObj *mi, int old_pos, int new_pos);
-MpdData *	mpd_playlist_get_artists		(MpdObj *mi);
-MpdData *	mpd_playlist_get_albums		(MpdObj *mi, char *artist);
-MpdData *	mpd_playlist_get_directory		(MpdObj *mi,char *path);
-MpdData *	mpd_playlist_find			(MpdObj *mi, int table, char *string, int exact);
+
+
+
+
 
 MpdData *	mpd_playlist_get_changes		(MpdObj *mi,int old_playlist_id);
 int		mpd_playlist_get_playlist_length	(MpdObj *mi);
@@ -68,6 +68,51 @@ void	mpd_playlist_queue_load		(MpdObj *mi,char *path);
 void	mpd_playlist_queue_delete_id		(MpdObj *mi,int id);
 /* use these to commit the changes */
 void	mpd_playlist_queue_commit		(MpdObj *mi);
+
+
+/* database functions */
+
+/**
+ * mpd_atabase_update_dir
+ *@mi: A #MpdObj
+ *@path: The path mpd should update.
+ *
+ * Force mpd to update (parts of )the database.
+ *
+ */
+void		mpd_database_update_dir		(MpdObj *mi, char *path);
+/* for backward compatibility */
+void mpd_playlist_update_dir(MpdObj *mi, char *path) __attribute__((deprecated));
+
+/**
+ * mpd_database_get_albums
+ * @mi: A #MpdObj
+ * @artist: an artist name
+ *
+ * Grab's a list of albums of a certain artist from mpd.
+ * if artist is %NULL it grabs all albums
+ *
+ * returns: A #MpdData list.
+ */
+MpdData *	mpd_database_get_albums		(MpdObj *mi, char *artist);
+MpdData *	mpd_playlist_get_albums		(MpdObj *mi, char *artist) __attribute__((deprecated));
+
+
+MpdData *	mpd_database_get_artists		(MpdObj *mi);
+MpdData *	mpd_playlist_get_artists		(MpdObj *mi) __attribute__((deprecated));
+
+
+
+
+
+
+
+
+
+MpdData *	mpd_playlist_get_directory		(MpdObj *mi,char *path);
+MpdData *	mpd_playlist_find			(MpdObj *mi, int table, char *string, int exact);
+
+
 
 
 
