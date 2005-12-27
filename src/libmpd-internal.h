@@ -183,7 +183,7 @@ inline	MpdData *	mpd_new_data_struct			(MpdData_head * const head);
 inline	MpdData *	mpd_new_data_struct_append		(MpdData * const data);
 inline	MpdData_head *	mpd_data_get_head			(MpdData const * const data);
 inline	MpdData *	mpd_data_concatenate			(MpdData * const first, MpdData * const second);
-inline	MpdData * 	mpd_data_get_next_real			(MpdData * const data, int kill_list);
+inline	MpdData *	mpd_data_get_next_real			(MpdData * const data, int kill_list);
 /* more internal stuff*/
 int mpd_stats_check(MpdObj *mi);
 int mpd_lock_conn(MpdObj *mi);

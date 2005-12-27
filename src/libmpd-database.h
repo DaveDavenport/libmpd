@@ -64,10 +64,17 @@ MpdData * mpd_database_get_complete(MpdObj *mi);
  */
 void		mpd_database_update_dir		(MpdObj *mi, char *path);
 
-/* client side search function with best "match" option..
+/**
+ * mpd_database_token_find
+ * @mi: A #MpdObj
+ * @string: The search string
+ *
+ * client side search function with best "match" option..
  * It splits the search string into tokens. (on the ' ')  every token is then matched using regex.
  * So f.e. Murder Hooker|Davis  matches songs where title/filename/artist/album contains murder and hooker or murder davis in any order.
  * Warning: This function can be slow.
+ *
+ * returns: a #MpdData list
  */
 MpdData *	mpd_database_token_find		(MpdObj *mi , char *string);
 

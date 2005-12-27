@@ -147,12 +147,12 @@ static MpdObj * mpd_create()
 
 void mpd_free(MpdObj *mi)
 {
-	debug_printf(DEBUG_INFO, "mpd_free: destroying MpdObj object\n");
+	debug_printf(DEBUG_INFO, "destroying MpdObj object\n");
 	if(mi->connected)
 	{
 		/* disconnect */
 		mpd_disconnect(mi);
-		debug_printf(DEBUG_WARNING, "mpd_free: Connection still running, disconnecting\n");
+		debug_printf(DEBUG_WARNING, "Connection still running, disconnecting\n");
 	}
 	if(mi->hostname)
 	{
@@ -201,7 +201,7 @@ int mpd_check_error(MpdObj *mi)
 	/* this shouldn't happen, ever */
 	if(mi->connection == NULL)
 	{
-		debug_printf(DEBUG_WARNING, "mpd_check_error: should this happen, mi->connection == NULL?");
+		debug_printf(DEBUG_WARNING, "should this happen, mi->connection == NULL?");
 		return TRUE;
 	}
 
@@ -217,7 +217,7 @@ int mpd_check_error(MpdObj *mi)
 	if(mi->error == MPD_ERROR_ACK)
 	{
 
-		debug_printf(DEBUG_ERROR,"mpd_check_error: clearing errors in mpd_Connection");
+		debug_printf(DEBUG_ERROR,"clearing errors in mpd_Connection");
 		mpd_clearError(mi->connection);
 		if (mi->the_error_callback)
 		{
@@ -228,7 +228,7 @@ int mpd_check_error(MpdObj *mi)
 	if(mi->error)
 	{
 
-		debug_printf(DEBUG_ERROR, "mpd_check_error: Following error occured: %i: code: %i msg: %s", mi->error,mi->connection->errorCode, mi->error_msg);
+		debug_printf(DEBUG_ERROR, "Following error occured: %i: code: %i msg: %s", mi->error,mi->connection->errorCode, mi->error_msg);
 		mpd_disconnect(mi);
 		/* deprecated */
 		/*		if(mi->error_signal)
@@ -249,11 +249,11 @@ int mpd_check_error(MpdObj *mi)
 
 int mpd_lock_conn(MpdObj *mi)
 {
-	/*	debug_printf(DEBUG_INFO, "mpd_lock_conn: Locking connection\n");
+	/*	debug_printf(DEBUG_INFO, "Locking connection\n");
 	*/
 	if(mi->connection_lock)
 	{
-		debug_printf(DEBUG_WARNING, "mpd_lock_conn: Failed to lock connection, already locked\n");
+		debug_printf(DEBUG_WARNING, "Failed to lock connection, already locked\n");
 		return TRUE;
 	}
 	mi->connection_lock = TRUE;
@@ -266,7 +266,7 @@ int mpd_unlock_conn(MpdObj *mi)
 	*/
 	if(!mi->connection_lock)
 	{
-		debug_printf(DEBUG_WARNING, "mpd_unlock_conn: Failed to unlock connection, already unlocked\n");
+		debug_printf(DEBUG_WARNING, "Failed to unlock connection, already unlocked\n");
 		return FALSE;
 	}
 
@@ -277,7 +277,7 @@ int mpd_unlock_conn(MpdObj *mi)
 
 MpdObj * mpd_new_default()
 {
-	debug_printf(DEBUG_INFO, "mpd_new_default: creating a new mpdInt object\n");
+	debug_printf(DEBUG_INFO, "creating a new mpdInt object\n");
 	return mpd_create();
 }
 
@@ -307,7 +307,7 @@ void mpd_set_hostname(MpdObj *mi, char *hostname)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_ERROR, "mpd_set_hostname: mi == NULL\n");
+		debug_printf(DEBUG_ERROR, "mi == NULL\n");
 		return;
 	}
 
@@ -323,7 +323,7 @@ void mpd_set_password(MpdObj *mi, char *password)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_ERROR, "mpd_set_password: mi == NULL\n");
+		debug_printf(DEBUG_ERROR, "mi == NULL\n");
 		return;
 	}
 
@@ -343,14 +343,14 @@ void mpd_send_password(MpdObj *mi)
 	{
 		if(mpd_lock_conn(mi))
 		{
-			debug_printf(DEBUG_WARNING, "mpd_set_password: failed to lock connection");
+			debug_printf(DEBUG_WARNING, "failed to lock connection");
 			return;
 		}
 		mpd_sendPasswordCommand(mi->connection, mi->password);
 		mpd_finishCommand(mi->connection);
 		if(mpd_unlock_conn(mi))
 		{
-			debug_printf(DEBUG_ERROR, "mpd_send_password: Failed to unlock connection\n");
+			debug_printf(DEBUG_ERROR, "Failed to unlock connection\n");
 			return;
 		}
 		mpd_server_get_allowed_commands(mi);
@@ -360,7 +360,8 @@ void mpd_send_password(MpdObj *mi)
 		 */
 		if((mi->the_status_changed_callback != NULL))
 		{
-			mi->the_status_changed_callback( mi, MPD_CST_PERMISSION, mi->the_status_changed_signal_userdata );
+			mi->the_status_changed_callback( mi,
+					MPD_CST_PERMISSION, mi->the_status_changed_signal_userdata );
 		}
 	}
 }
@@ -369,7 +370,7 @@ void mpd_set_port(MpdObj *mi, int port)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_ERROR, "mpd_set_port: mi == NULL\n");
+		debug_printf(DEBUG_ERROR, "mi == NULL\n");
 		return;
 	}
 	mi->port = port;
@@ -379,7 +380,7 @@ void mpd_set_connection_timeout(MpdObj *mi, float timeout)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_ERROR, "mpd_set_connection_timeout: mi == NULL\n");
+		debug_printf(DEBUG_ERROR, "mi == NULL\n");
 		return;
 	}
 	mi->connection_timeout = timeout;
@@ -388,7 +389,7 @@ void mpd_set_connection_timeout(MpdObj *mi, float timeout)
 		/*TODO: set timeout */	
 		if(mpd_lock_conn(mi))
 		{
-			debug_printf(DEBUG_WARNING,"mpd_set_connection_timeout: lock failed\n");
+			debug_printf(DEBUG_WARNING,"lock failed\n");
 			return;
 		}
 		mpd_setConnectionTimeout(mi->connection, timeout);
@@ -428,7 +429,7 @@ void mpd_server_get_allowed_commands(MpdObj *mi)
 
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING, "mpd_server_get_allowed_commands: lock failed");
+		debug_printf(DEBUG_WARNING, "lock failed");
 		return;
 	}
 	mpd_sendCommandsCommand(mi->connection);
@@ -466,7 +467,7 @@ int mpd_disconnect(MpdObj *mi)
 	mi->connected = 0;
 	/* lock */
 	mpd_lock_conn(mi);
-	debug_printf(DEBUG_INFO, "mpd_disconnect: disconnecting\n");
+	debug_printf(DEBUG_INFO, "disconnecting\n");
 
 	if(mi->connection)
 	{
@@ -538,7 +539,7 @@ int mpd_connect(MpdObj *mi)
 	}
 	mi->error_msg = NULL;
 
-	debug_printf(DEBUG_INFO, "mpd_connect: connecting\n");
+	debug_printf(DEBUG_INFO, "connecting\n");
 	mi->CurrentState.playlistid = -1;
 	mi->CurrentState.state = -1;
 	mi->CurrentState.songid = -1;
@@ -612,7 +613,7 @@ int mpd_connect(MpdObj *mi)
 		mi->connect(mi, mi->connect_pointer);
 		}
 		*/
-	debug_printf(DEBUG_INFO, "mpd_connect: Connected to mpd");
+	debug_printf(DEBUG_INFO, "Connected to mpd");
 	return 0;
 }
 
@@ -1028,12 +1029,12 @@ long unsigned mpd_server_get_database_update_time(MpdObj *mi)
 {
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_server_get_database_update: not connected\n");
+		debug_printf(DEBUG_WARNING,"not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
 	if(!mpd_stats_check(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_server_get_database_update: Failed grabbing status\n");
+		debug_printf(DEBUG_WARNING,"Failed grabbing status\n");
 		return MPD_FAILED_STATS;
 	}
 	return mi->stats->dbUpdateTime;
@@ -1046,13 +1047,13 @@ MpdData * mpd_server_get_output_devices(MpdObj *mi)
 	MpdData *data = NULL;
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_server_get_output_device: not connected\n");
+		debug_printf(DEBUG_WARNING,"not connected\n");
 		return NULL;
 	}
 	/* TODO: Check version */
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_server_output_devic: lock failed\n");
+		debug_printf(DEBUG_WARNING,"lock failed\n");
 		return NULL;
 	}
 
@@ -1078,12 +1079,12 @@ int mpd_server_set_output_device(MpdObj *mi,int device_id,int state)
 {
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_server_set_output_device: not connected\n");	
+		debug_printf(DEBUG_WARNING,"not connected\n");	
 		return MPD_NOT_CONNECTED;
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_server_set_output_device: lock failed\n");
+		debug_printf(DEBUG_WARNING,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 	if(state)
@@ -1105,8 +1106,8 @@ int mpd_server_check_version(MpdObj *mi, int major, int minor, int micro)
 {
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_server_check_version: not connected\n");	
-		return FALSE;                                     	
+		debug_printf(DEBUG_WARNING,"not connected\n");
+		return FALSE;
 	}
 	if(major > mi->connection->version[0]) return FALSE;
 	if(mi->connection->version[0] > major) return TRUE;
@@ -1174,7 +1175,7 @@ regex_t ** mpd_misc_tokenize(char *string)
 			}
 			free(temp);
 			result[tokens+1] = NULL;
-			bpos = i+1;                                         
+			bpos = i+1;
 			tokens++;
 		}
 

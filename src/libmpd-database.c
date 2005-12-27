@@ -176,12 +176,12 @@ MpdData *mpd_database_token_find(MpdObj *mi , char *string)
 	regex_t ** strdata = NULL;
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_playlist_find: not connected\n");
+		debug_printf(DEBUG_WARNING,"not connected\n");
 		return NULL;
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_playlist_find: lock failed\n");
+		debug_printf(DEBUG_WARNING,"lock failed\n");
 		return NULL;
 	}
 

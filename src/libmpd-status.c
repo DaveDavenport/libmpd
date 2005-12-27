@@ -36,7 +36,7 @@ int mpd_status_queue_update(MpdObj *mi)
 
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_INFO,"mpd_status_queue_update: Where not connected\n");
+		debug_printf(DEBUG_INFO,"Where not connected\n");
 		return TRUE;
 	}
 	if(mi->status != NULL)
@@ -53,12 +53,12 @@ int mpd_status_update(MpdObj *mi)
 	ChangedStatusType what_changed=0;
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_INFO,"mpd_status_update: Where not connected\n");
+		debug_printf(DEBUG_INFO,"Where not connected\n");
 		return TRUE;
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_status_update: lock failed\n");
+		debug_printf(DEBUG_WARNING,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 
@@ -72,13 +72,13 @@ int mpd_status_update(MpdObj *mi)
 	mi->status = mpd_getStatus(mi->connection);
 	if(mi->status == NULL)
 	{
-		debug_printf(DEBUG_ERROR,"mpd_status_update: Failed to grab status from mpd\n");
+		debug_printf(DEBUG_ERROR,"Failed to grab status from mpd\n");
 		mpd_unlock_conn(mi);
 		return TRUE;
 	}
 	if(mpd_unlock_conn(mi))
 	{
-		debug_printf(DEBUG_ERROR, "mpd_status_update: Failed to unlock");
+		debug_printf(DEBUG_ERROR, "Failed to unlock");
 		return TRUE;
 	}
 	/*
@@ -91,7 +91,7 @@ int mpd_status_update(MpdObj *mi)
 	if(mi->CurrentState.playlistid != mi->status->playlist)
 	{
 		/* print debug message */
-		debug_printf(DEBUG_INFO, "mpd_status_update: Playlist has changed!");
+		debug_printf(DEBUG_INFO, "Playlist has changed!");
 
 		/* deprecated */
 /*		if(mi->playlist_changed != NULL)
@@ -136,11 +136,11 @@ int mpd_status_update(MpdObj *mi)
 	if(mi->CurrentState.songid != mi->status->songid)
 	{
 		/* print debug message */
-		debug_printf(DEBUG_INFO, "mpd_status_update: Song has changed %i %i!", mi->OldState.songid, mi->status->songid);
+		debug_printf(DEBUG_INFO, "Song has changed %i %i!", mi->OldState.songid, mi->status->songid);
 
 		/* deprecated */
 /*		if(mi->song_changed != NULL)
-		{                                                                      		
+		{
 			mi->song_changed(mi, mi->OldState.songid,mi->status->songid,mi->song_changed_signal_pointer);
 		}
 */		what_changed |= MPD_CST_SONGID;
@@ -157,12 +157,12 @@ int mpd_status_update(MpdObj *mi)
 	{
 		what_changed |= MPD_CST_RANDOM;
 		mi->CurrentState.random = mi->status->random;
-	}                                                    	
+	}
 	if(mi->CurrentState.volume != mi->status->volume)
 	{
 		what_changed |= MPD_CST_VOLUME;
 		mi->CurrentState.volume = mi->status->volume;
-	}                                                    	
+	}
 	if(mi->CurrentState.xfade != mi->status->crossfade)
 	{
 		what_changed |= MPD_CST_CROSSFADE;
@@ -170,38 +170,38 @@ int mpd_status_update(MpdObj *mi)
 	}
 	if(mi->CurrentState.totaltime != mi->status->totalTime)
 	{
-		what_changed |= MPD_CST_TOTAL_TIME;             	
+		what_changed |= MPD_CST_TOTAL_TIME;
 		mi->CurrentState.totaltime = mi->status->totalTime;
 	}
 	if(mi->CurrentState.elapsedtime != mi->status->elapsedTime)
 	{
-		what_changed |= MPD_CST_ELAPSED_TIME;             	
+		what_changed |= MPD_CST_ELAPSED_TIME;
 		mi->CurrentState.elapsedtime = mi->status->elapsedTime;
 	}
 	if(mi->CurrentState.bitrate != mi->status->bitRate)
 	{
-		what_changed |= MPD_CST_BITRATE;             	
+		what_changed |= MPD_CST_BITRATE;
 		mi->CurrentState.bitrate = mi->status->bitRate;
 	}
 	if(mi->CurrentState.samplerate != mi->status->sampleRate)
 	{
-		what_changed |= MPD_CST_AUDIOFORMAT;             	
+		what_changed |= MPD_CST_AUDIOFORMAT;
 		mi->CurrentState.samplerate = mi->status->sampleRate;
 	}
 	if(mi->CurrentState.bits != mi->status->bits)
 	{
-		what_changed |= MPD_CST_AUDIOFORMAT;             	
+		what_changed |= MPD_CST_AUDIOFORMAT;
 		mi->CurrentState.bits = mi->status->bits;
 	}
 	if(mi->CurrentState.channels != mi->status->channels)
 	{
-		what_changed |= MPD_CST_AUDIOFORMAT;             	
+		what_changed |= MPD_CST_AUDIOFORMAT;
 		mi->CurrentState.channels = mi->status->channels;
 	}
 	/* deprecated */
 /*	if(mi->status_changed != NULL)
-	{                                                                      		
-		mi->status_changed(mi, mi->status_changed_signal_pointer);		
+	{u
+		mi->status_changed(mi, mi->status_changed_signal_pointer);
 	}
 */
 
@@ -237,7 +237,7 @@ int mpd_status_check(MpdObj *mi)
 {
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_INFO,"mpd_status_check: not connected\n");
+		debug_printf(DEBUG_INFO,"not connected\n");
 		return FALSE;
 	}
 	if(mi->status == NULL)
@@ -245,7 +245,7 @@ int mpd_status_check(MpdObj *mi)
 		/* try to update */
 		if(mpd_status_update(mi))
 		{
-			debug_printf(DEBUG_INFO, "mpd_status_check: failed to update status\n");
+			debug_printf(DEBUG_INFO, "failed to update status\n");
 			return FALSE;
 		}
 	}
@@ -257,7 +257,7 @@ int mpd_stats_get_total_songs(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING, "mpd_stats_get_total_songs: failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING, "failed to check mi == NULL\n");
 		return -2;
 	}
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
@@ -272,7 +272,7 @@ int mpd_stats_get_total_artists(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING, "mpd_stats_get_total_artists: failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING, "failed to check mi == NULL\n");
 		return -2;
 	}
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
@@ -287,12 +287,12 @@ int mpd_stats_get_total_albums(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING,"mpd_stats_get_total_albums: failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING,"failed to check mi == NULL\n");
 		return -2;
 	}
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_stats_get_total_albums: Failed to get status\n");
+		debug_printf(DEBUG_WARNING,"Failed to get status\n");
 		return MPD_FAILED_STATUS;
 	}
 	return mi->stats->numberOfAlbums;
@@ -303,12 +303,12 @@ int mpd_stats_get_uptime(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING,"mpd_stats_get_uptime: failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING,"failed to check mi == NULL\n");
 		return -2;
 	}
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_stats_get_uptime: Failed to get status\n");
+		debug_printf(DEBUG_WARNING,"Failed to get status\n");
 		return MPD_FAILED_STATUS;
 	}
 	return mi->stats->uptime;
@@ -318,12 +318,12 @@ int mpd_stats_get_playtime(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING, "mpd_stats_get_playtime: failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING, "failed to check mi == NULL\n");
 		return -2;
 	}
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_stats_get_playtime: Failed to get status\n");
+		debug_printf(DEBUG_WARNING,"Failed to get status\n");
 		return MPD_FAILED_STATUS;
 	}
 	return mi->stats->playTime;
@@ -332,12 +332,12 @@ int mpd_status_get_volume(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING, "mpd_status_get_volume: failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING, "failed to check mi == NULL\n");
 		return -2;
 	}
 	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING, "mpd_status_get_volume: Failed to get status\n");
+		debug_printf(DEBUG_WARNING, "Failed to get status\n");
 		return MPD_FAILED_STATUS;
 	}
 	return mi->status->volume;
@@ -348,7 +348,7 @@ int mpd_status_get_bitrate(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING,"mpd_status_get_bitrate: failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING,"failed to check mi == NULL\n");
 		return -2;
 	}
 	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
@@ -363,7 +363,7 @@ int mpd_status_get_channels(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING,"mpd_status_get_channels: failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING,"failed to check mi == NULL\n");
 		return -2;
 	}
 	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
@@ -378,7 +378,7 @@ unsigned int mpd_status_get_samplerate(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING,"mpd_status_get_samplerate: failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING,"failed to check mi == NULL\n");
 		return -2;
 	}
 	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
@@ -393,7 +393,7 @@ int mpd_status_get_bits(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING,"mpd_status_get_bits: failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING,"failed to check mi == NULL\n");
 		return -2;
 	}
 	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
@@ -415,17 +415,17 @@ int mpd_status_get_total_song_time(MpdObj *mi)
 {
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING, "mpd_status_get_total_song_time: failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING, "failed to check mi == NULL\n");
 		return -2;
 	}
 	if(!mpd_status_check(mi))
 	{
-		debug_printf(DEBUG_WARNING, "mpd_status_get_total_song_time: Failed to get status\n");
+		debug_printf(DEBUG_WARNING, "Failed to get status\n");
 		return MPD_FAILED_STATUS;
 	}
 	if(mi->status == NULL)
 	{
-		debug_printf(DEBUG_ERROR, "mpd_status_get_total_song_time: mi->status is NULL even after check\n");
+		debug_printf(DEBUG_ERROR, "mi->status is NULL even after check\n");
 		return -2;
 	}
 	return mi->status->totalTime;
@@ -436,12 +436,12 @@ int mpd_status_get_elapsed_song_time(MpdObj *mi)
 {
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_status_get_elapsed_song_time: failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING,"failed to check mi == NULL\n");
 		return -2;
 	}
 	if(!mpd_status_check(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_status_get_elapsed_song_time: Failed to get status\n");
+		debug_printf(DEBUG_WARNING,"Failed to get status\n");
 		return MPD_FAILED_STATUS;
 	}
 	return mi->status->elapsedTime;
@@ -451,7 +451,7 @@ int mpd_status_set_volume(MpdObj *mi,int volume)
 {
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_status_set_volume: not connected\n");
+		debug_printf(DEBUG_WARNING,"not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
 	/* making sure volume is between 0 and 100 */
@@ -459,7 +459,7 @@ int mpd_status_set_volume(MpdObj *mi,int volume)
 
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_status_set_volume: lock failed\n");
+		debug_printf(DEBUG_WARNING,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 
@@ -479,12 +479,12 @@ int mpd_status_get_crossfade(MpdObj *mi)
 {
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_status_get_crossfade: not connected\n");
+		debug_printf(DEBUG_WARNING,"not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
 	if(!mpd_status_check(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_status_get_crossfade: Failed grabbing status\n");
+		debug_printf(DEBUG_WARNING,"Failed grabbing status\n");
 		return MPD_NOT_CONNECTED;
 	}
 	return mi->status->crossfade;
@@ -494,12 +494,12 @@ int mpd_status_set_crossfade(MpdObj *mi,int crossfade_time)
 {
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_status_set_crossfade: not connected\n");	
+		debug_printf(DEBUG_WARNING,"not connected\n");	
 		return MPD_NOT_CONNECTED;
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_status_set_crossfade: lock failed\n");
+		debug_printf(DEBUG_WARNING,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 	mpd_sendCrossfadeCommand(mi->connection, crossfade_time);
@@ -521,25 +521,6 @@ float mpd_status_set_volume_as_float(MpdObj *mi, float fvol)
 	return (float)volume;
 }
 
-/*
- * this isn't used anywhere, should we delete it?
-static int mpd_stats_queue_update(MpdObj *mi)
-{
-
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_INFO,"mpd_stats_queue_update: Where not connected\n");
-		return TRUE;
-	}                                       	
-	if(mi->stats != NULL)
-	{                                  	
-		mpd_freeStats(mi->stats);
-		mi->stats = NULL;
-	}
-	return FALSE;
-}
-*/
-
 int mpd_stats_update(MpdObj *mi)
 {
 	return mpd_stats_update_real(mi, NULL);
@@ -555,12 +536,12 @@ int mpd_stats_update_real(MpdObj *mi, ChangedStatusType* what_changed)
 
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_INFO,"mpd_stats_update: Where not connected\n");
+		debug_printf(DEBUG_INFO,"Where not connected\n");
 		return TRUE;
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_stats_update: lock failed\n");
+		debug_printf(DEBUG_WARNING,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 
@@ -572,17 +553,12 @@ int mpd_stats_update_real(MpdObj *mi, ChangedStatusType* what_changed)
 	mi->stats = mpd_getStats(mi->connection);
 	if(mi->stats == NULL)
 	{
-		debug_printf(DEBUG_ERROR,"mpd_stats_update: Failed to grab stats from mpd\n");
+		debug_printf(DEBUG_ERROR,"Failed to grab stats from mpd\n");
 	}
 	else if(mi->stats->dbUpdateTime != mi->OldState.dbUpdateTime)
 	{
-		debug_printf(DEBUG_INFO, "mpd_stats_update: database updated\n");
-		/* deprecated */
-/*		if(mi->database_changed != NULL)
-		{                                                                      		
-			mi->database_changed(mi, mi->database_changed_signal_pointer);
-		}
-*/		what_changed_here |= MPD_CST_DATABASE;
+		debug_printf(DEBUG_INFO, "database updated\n");
+		what_changed_here |= MPD_CST_DATABASE;
 
 		mi->CurrentState.dbUpdateTime = mi->stats->dbUpdateTime;
 	}
@@ -591,8 +567,8 @@ int mpd_stats_update_real(MpdObj *mi, ChangedStatusType* what_changed)
 		(*what_changed) |= what_changed_here;
 	} else {
 		if((mi->the_status_changed_callback != NULL) & what_changed_here)
-		{                                                                      		
-			mi->the_status_changed_callback(mi, what_changed_here, mi->the_status_changed_signal_userdata);		
+		{
+			mi->the_status_changed_callback(mi, what_changed_here, mi->the_status_changed_signal_userdata);
 		}
 	}
 
@@ -608,7 +584,7 @@ int mpd_stats_check(MpdObj *mi)
 {
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_stats_check: not connected\n");
+		debug_printf(DEBUG_WARNING,"not connected\n");
 		return FALSE;
 	}
 	if(mi->stats == NULL)
@@ -616,7 +592,7 @@ int mpd_stats_check(MpdObj *mi)
 		/* try to update */
 		if(mpd_stats_update(mi))
 		{
-			debug_printf(DEBUG_ERROR,"mpd_stats_check: failed to update status\n");
+			debug_printf(DEBUG_ERROR,"failed to update status\n");
 			return FALSE;
 		}
 	}

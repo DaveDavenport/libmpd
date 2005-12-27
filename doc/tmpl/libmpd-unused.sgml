@@ -142,6 +142,12 @@
 @MPD_PLAYER_STOP: 
 @MPD_PLAYER_UNKNOWN: 
 
+<!-- ##### MACRO NO_DEBUG_OUTPUT ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### USER_FUNCTION StatusChangedCallback ##### -->
 <para>
 
