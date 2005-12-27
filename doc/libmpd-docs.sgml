@@ -8,7 +8,6 @@
 
   <chapter>
     <title>LibMpd - High level signal based wrapper around libmpdclient </title>
-    <xi:include href="xml/libmpdclient.xml"/>
     <xi:include href="xml/libmpd-internal.xml"/>
     <xi:include href="xml/libmpd-playlist.xml"/>
     <xi:include href="xml/libmpd-status.xml"/>

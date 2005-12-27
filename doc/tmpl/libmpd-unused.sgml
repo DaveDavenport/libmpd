@@ -1,3 +1,70 @@
+<!-- ##### ENUM ChangedStatusType ##### -->
+<para>
+
+</para>
+
+@MPD_CST_PLAYLIST: 
+@MPD_CST_SONGID: 
+@MPD_CST_DATABASE: 
+@MPD_CST_UPDATING: 
+@MPD_CST_VOLUME: 
+@MPD_CST_TOTAL_TIME: 
+@MPD_CST_ELAPSED_TIME: 
+@MPD_CST_CROSSFADE: 
+@MPD_CST_RANDOM: 
+@MPD_CST_REPEAT: 
+@MPD_CST_AUDIO: 
+@MPD_CST_STATE: 
+
+<!-- ##### USER_FUNCTION ConnectionChangedCallback ##### -->
+<para>
+
+</para>
+
+@mi: 
+@connect: 
+@userdata: 
+
+<!-- ##### USER_FUNCTION ErrorCallback ##### -->
+<para>
+
+</para>
+
+@mi: 
+@id: 
+@msg: 
+@userdata: 
+
+<!-- ##### MACRO MPD_ERROR ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO MPD_FAILED_STATS ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO MPD_FAILED_STATUS ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO MPD_LOCK_FAILED ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO MPD_NOT_CONNECTED ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### MACRO MPD_PLAYER_PAUSE ##### -->
 <para>
 
@@ -22,6 +89,108 @@
 </para>
 
 
+<!-- ##### MACRO MPD_PLAYLIST_EXIST ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM MpdDataType ##### -->
+<para>
+
+</para>
+
+@MPD_DATA_TYPE_NONE: 
+@MPD_DATA_TYPE_TAG: 
+@MPD_DATA_TYPE_DIRECTORY: 
+@MPD_DATA_TYPE_SONG: 
+@MPD_DATA_TYPE_PLAYLIST: 
+@MPD_DATA_TYPE_OUTPUT_DEV: 
+
+<!-- ##### STRUCT MpdData_real ##### -->
+<para>
+
+</para>
+
+@type: 
+@tag_type: 
+@tag: 
+
+<!-- ##### STRUCT MpdServerState ##### -->
+<para>
+
+</para>
+
+@songid: 
+@state: 
+@dbUpdateTime: 
+@updatingDb: 
+@random: 
+@repeat: 
+@volume: 
+@xfade: 
+@totaltime: 
+@elapsedtime: 
+
+<!-- ##### ENUM MpdState ##### -->
+<para>
+
+</para>
+
+@MPD_PLAYER_PAUSE: 
+@MPD_PLAYER_PLAY: 
+@MPD_PLAYER_STOP: 
+@MPD_PLAYER_UNKNOWN: 
+
+<!-- ##### USER_FUNCTION StatusChangedCallback ##### -->
+<para>
+
+</para>
+
+@mi: 
+@what: 
+@userdata: 
+
+<!-- ##### STRUCT _MpdObj ##### -->
+<para>
+
+</para>
+
+@connected: 
+@hostname: 
+@port: 
+@password: 
+@connection_timeout: 
+@connection: 
+@status: 
+@stats: 
+@CurrentSong: 
+@CurrentState: 
+@OldState: 
+@the_error_callback: 
+@the_error_signal_userdata: 
+@the_status_changed_callback: 
+@the_status_changed_signal_userdata: 
+@the_connection_changed_callback: 
+@the_connection_changed_signal_userdata: 
+@error: 
+@error_msg: 
+@connection_lock: 
+@queue: 
+@commands: 
+
+<!-- ##### STRUCT _MpdQueue ##### -->
+<para>
+
+</para>
+
+@next: 
+@prev: 
+@first: 
+@type: 
+@path: 
+@id: 
+
 <!-- ##### FUNCTION mpd_data_concatenate ##### -->
 <para>
 
@@ -31,6 +200,14 @@
 @second: 
 @Returns: 
 
+<!-- ##### FUNCTION mpd_data_get_first ##### -->
+<para>
+
+</para>
+
+@data: 
+@Returns: 
+
 <!-- ##### FUNCTION mpd_data_get_next_real ##### -->
 <para>
 
@@ -38,6 +215,14 @@
 
 @data: 
 @kill_list: 
+@Returns: 
+
+<!-- ##### FUNCTION mpd_lock_conn ##### -->
+<para>
+
+</para>
+
+@mi: 
 @Returns: 
 
 <!-- ##### FUNCTION mpd_new_data_struct ##### -->
@@ -54,6 +239,33 @@
 
 @data: 
 @Returns: 
+
+<!-- ##### FUNCTION mpd_signal_connect_connection_changed ##### -->
+<para>
+
+</para>
+
+@mi: 
+@connection_changed: 
+@userdata: 
+
+<!-- ##### FUNCTION mpd_signal_connect_error ##### -->
+<para>
+
+</para>
+
+@mi: 
+@error: 
+@userdata: 
+
+<!-- ##### FUNCTION mpd_signal_connect_status_changed ##### -->
+<para>
+
+</para>
+
+@mi: 
+@status_changed: 
+@userdata: 
 
 <!-- ##### FUNCTION mpd_signal_set_connect ##### -->
 <para>
@@ -135,4 +347,20 @@
 @mi: 
 @updating_changed: 
 @pointer: 
+
+<!-- ##### FUNCTION mpd_stats_check ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+<!-- ##### FUNCTION mpd_unlock_conn ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
 

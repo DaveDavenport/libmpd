@@ -17,109 +17,17 @@ libmpd-internal
 <!-- ##### SECTION Stability_Level ##### -->
 
 
-<!-- ##### STRUCT MpdData_real ##### -->
-<para>
-
-</para>
-
-@type: 
-@tag_type: 
-@tag: 
-
 <!-- ##### STRUCT MpdQueue ##### -->
 <para>
 
 </para>
 
 
-<!-- ##### STRUCT MpdServerState ##### -->
-<para>
-
-</para>
-
-@songid: 
-@state: 
-@dbUpdateTime: 
-@updatingDb: 
-@random: 
-@repeat: 
-@volume: 
-@xfade: 
-@totaltime: 
-@elapsedtime: 
-
-<!-- ##### STRUCT _MpdObj ##### -->
-<para>
-
-</para>
-
-@connected: 
-@hostname: 
-@port: 
-@password: 
-@connection_timeout: 
-@connection: 
-@status: 
-@stats: 
-@CurrentSong: 
-@CurrentState: 
-@OldState: 
-@the_error_callback: 
-@the_error_signal_userdata: 
-@the_status_changed_callback: 
-@the_status_changed_signal_userdata: 
-@the_connection_changed_callback: 
-@the_connection_changed_signal_userdata: 
-@error: 
-@error_msg: 
-@connection_lock: 
-@queue: 
-@commands: 
-
-<!-- ##### STRUCT _MpdQueue ##### -->
-<para>
-
-</para>
-
-@next: 
-@prev: 
-@first: 
-@type: 
-@path: 
-@id: 
-
 <!-- ##### FUNCTION mpd_new_queue_struct ##### -->
 <para>
 
 </para>
 
-@Returns: 
-
-
-<!-- ##### FUNCTION mpd_stats_check ##### -->
-<para>
-
-</para>
-
-@mi: 
-@Returns: 
-
-
-<!-- ##### FUNCTION mpd_lock_conn ##### -->
-<para>
-
-</para>
-
-@mi: 
-@Returns: 
-
-
-<!-- ##### FUNCTION mpd_unlock_conn ##### -->
-<para>
-
-</para>
-
-@mi: 
 @Returns: 
 
 

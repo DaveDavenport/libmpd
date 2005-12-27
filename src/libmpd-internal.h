@@ -188,6 +188,8 @@ inline	MpdData * 	mpd_data_get_next_real			(MpdData * const data, int kill_list)
 int mpd_stats_check(MpdObj *mi);
 int mpd_lock_conn(MpdObj *mi);
 int mpd_unlock_conn(MpdObj *mi);
+/*MpdData * mpd_playlist_sort_artist_list(MpdData *data);*/
+MpdData * mpd_playlist_sort_tag_list(MpdData *data);
 
 
 #ifndef HAVE_STRNDUP

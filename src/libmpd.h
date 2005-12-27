@@ -154,6 +154,7 @@ extern "C" {
 
 #include "libmpd-player.h"
 #include "libmpd-status.h"
+#include "libmpd-database.h"
 #include "libmpd-playlist.h"
 #include "libmpd-strfsong.h"
 

@@ -30,37 +30,15 @@ int		mpd_playlist_save			(MpdObj *mi, char *name);
 void		mpd_playlist_move_pos		(MpdObj *mi, int old_pos, int new_pos);
 
 
-
-
-
 MpdData *	mpd_playlist_get_changes		(MpdObj *mi,int old_playlist_id);
 int		mpd_playlist_get_playlist_length	(MpdObj *mi);
 void		mpd_playlist_add			(MpdObj *mi, char *path);
 int		mpd_playlist_delete			(MpdObj *mi,char *path);
 
 /* mpd svn only functions 0.12.0 */
+/* TODO: rewrite this */
 MpdData *	mpd_playlist_get_unique_tags		(MpdObj *mi, int table,...);
 MpdData *	mpd_playlist_find_adv		(MpdObj *mi,int exact, ...);
-/* client side search function with best "match" option..
- * It splits the search string into tokens. (on the ' ')  every token is then matched using regex.
- * So f.e. Murder Hooker|Davis  matches songs where title/filename/artist/album contains murder and hooker or murder davis in any order.
- * Warning: This function can be slow.
- */
-MpdData *	mpd_playlist_token_find		(MpdObj *mi , char *string);
-
-/* mpd ob data next will return NULL when there are no more items. it will also call free when called on the last item. */
-/* if you don't want this check with mpd_data_is_last before calling get_next
- * this allows you to make this construction:
- *	MpdData * mpd_playlist_get_artists(..);
- *	while(data != NULL)
- *	{
- *
- *
- *		data = mpd_data_next(data);
- *	}
- */
- /* withouth leaking memory  */
-
 
 /* queing stuff */
 void	mpd_playlist_queue_add		(MpdObj *mi,char *path);
@@ -72,59 +50,15 @@ void	mpd_playlist_queue_commit		(MpdObj *mi);
 
 /* database functions */
 
-/**
- * mpd_atabase_update_dir
- *@mi: A #MpdObj
- *@path: The path mpd should update.
- *
- * Force mpd to update (parts of )the database.
- *
- */
-void		mpd_database_update_dir		(MpdObj *mi, char *path);
 /* for backward compatibility */
 void mpd_playlist_update_dir(MpdObj *mi, char *path) __attribute__((deprecated));
 
-/**
- * mpd_database_get_albums
- * @mi: A #MpdObj
- * @artist: an artist name
- *
- * Grab's a list of albums of a certain artist from mpd.
- * if artist is %NULL it grabs all albums
- *
- * returns: A #MpdData list.
- */
-MpdData *	mpd_database_get_albums		(MpdObj *mi, char *artist);
 MpdData *	mpd_playlist_get_albums		(MpdObj *mi, char *artist) __attribute__((deprecated));
 
-
-MpdData *	mpd_database_get_artists		(MpdObj *mi);
 MpdData *	mpd_playlist_get_artists		(MpdObj *mi) __attribute__((deprecated));
-
-
-
-
-
-
-
-
 
 MpdData *	mpd_playlist_get_directory		(MpdObj *mi,char *path);
 MpdData *	mpd_playlist_find			(MpdObj *mi, int table, char *string, int exact);
-
-
-
-
-
-/**
- * mpd_database_get_complete
- * @mi: a #MpdObj
- *
- * Get's the complete datababse, only returns songs
- *
- * returns: a #MpdData list with songs
- */
-
-MpdData * mpd_database_get_complete(MpdObj *mi);
+MpdData *	mpd_playlist_token_find			(MpdObj *mi, char *string) __attribute__((deprecated));
 
 #endif

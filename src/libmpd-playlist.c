@@ -29,8 +29,8 @@
 #include "libmpd.h"
 #include "libmpd-internal.h"
 
-MpdData * mpd_playlist_sort_artist_list(MpdData *data);
-MpdData * mpd_playlist_sort_tag_list(MpdData *data);
+
+
 
 int mpd_playlist_get_playlist_length(MpdObj *mi)
 {
@@ -261,40 +261,6 @@ int mpd_playlist_save(MpdObj *mi, char *name)
 	return FALSE;
 }
 
-void mpd_database_update_dir(MpdObj *mi, char *path)
-{
-	if(path == NULL || !strlen(path))
-	{
-		debug_printf(DEBUG_WARNING, "mpd_playlist_update_dir: path != NULL  and strlen(path) > 0 failed");
-		return;
-	}
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_playlist_update_dir: not connected\n");
-		return;
-	}
-	if(mpd_lock_conn(mi))
-	{
-		debug_printf(DEBUG_ERROR,"mpd_playlist_update_dir: lock failed\n");
-		return;
-	}
-
-	mpd_sendUpdateCommand(mi->connection,path);
-	mpd_finishCommand(mi->connection);
-	/* I have no idea why do this ?? it even makes gmpc very very unhappy.
-	 * Because it doesnt trigger an signal anymore when updating starts
-	mi->CurrentState.updatingDb = mpd_getUpdateId(mi->connection);
-	*/
-
-	/* unlock */
-	mpd_unlock_conn(mi);
-	/* What I think you should do is to force a direct status updated
-	 */
-	mpd_status_update(mi);
-	return;
-}
-
-
 void mpd_playlist_move_pos(MpdObj *mi, int old_pos, int new_pos)
 {
 	if(!mpd_check_connected(mi))
@@ -364,40 +330,6 @@ MpdData * mpd_playlist_get_unique_tags(MpdObj *mi, int table,...)
 	return mpd_data_get_first(data);
 }
 
-MpdData * mpd_database_get_artists(MpdObj *mi)
-{
-	char *string = NULL;
-	MpdData *data = NULL;
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_playlist_get_artists: not connected\n");
-		return NULL;
-	}
-	if(mpd_lock_conn(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_playlist_get_artists: lock failed\n");
-		return NULL;
-	}
-
-	mpd_sendListCommand(mi->connection,MPD_TABLE_ARTIST,NULL);
-	while (( string = mpd_getNextArtist(mi->connection)) != NULL)
-	{
-		data = mpd_new_data_struct_append(data);
-		data->type = MPD_DATA_TYPE_TAG;
-		data->tag_type = MPD_TAG_ITEM_ARTIST;
-		data->tag = string;
-	}
-	mpd_finishCommand(mi->connection);
-
-	/* unlock */
-	mpd_unlock_conn(mi);
-	if(data == NULL)
-	{
-		return NULL;
-	}
-	data = mpd_playlist_sort_artist_list(data);
-	return mpd_data_get_first(data);
-}
 /* "hack" to keep the compiler happy */
 typedef int (* QsortCompare)(const void *a, const void *b);
 
@@ -418,8 +350,10 @@ static int compa(char **a, char **b)
 
 	return strcasecmp(c,d);
 }
+/*
 MpdData *mpd_playlist_sort_artist_list(MpdData *data)
 {
+	return  mpd_playlist_sort_tag_list(data);
 	char **array;
 	MpdData *test;
 	int i=0;
@@ -443,7 +377,6 @@ MpdData *mpd_playlist_sort_artist_list(MpdData *data)
 
 	qsort(array,length,sizeof(char *),(QsortCompare)compa);
 
-	/* reset list */
 	test = mpd_data_get_first(data);
 	i=0;
 	do
@@ -455,7 +388,7 @@ MpdData *mpd_playlist_sort_artist_list(MpdData *data)
 	free(array);
 	return mpd_data_get_first(data);
 }
-
+*/
 MpdData *mpd_playlist_sort_tag_list(MpdData *data)
 {
 	char **array;
@@ -493,41 +426,6 @@ MpdData *mpd_playlist_sort_tag_list(MpdData *data)
 	return mpd_data_get_first(data);
 }
 
-
-
-MpdData * mpd_database_get_albums(MpdObj *mi,char *artist)
-{
-	char *string = NULL;
-	MpdData *data = NULL;
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_playlist_get_albums: not connected\n");
-		return NULL;
-	}
-	if(mpd_lock_conn(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_playlist_get_albums: lock failed\n");
-		return NULL;
-	}
-
-	mpd_sendListCommand(mi->connection,MPD_TABLE_ALBUM,artist);
-	while (( string = mpd_getNextAlbum(mi->connection)) != NULL)
-	{
-		data = mpd_new_data_struct_append(data);
-		data->type = MPD_DATA_TYPE_TAG;
-		data->tag_type = MPD_TAG_ITEM_ALBUM;
-		data->tag = string;
-	}
-	mpd_finishCommand(mi->connection);
-
-	/* unlock */
-	mpd_unlock_conn(mi);
-	if(data == NULL)
-	{
-		return NULL;
-	}
-	return mpd_data_get_first(data);
-}
 
 MpdData * mpd_playlist_get_directory(MpdObj *mi,char *path)
 {
@@ -592,99 +490,7 @@ MpdData * mpd_playlist_get_directory(MpdObj *mi,char *path)
 	}
 	return mpd_data_get_first(data);
 }
-
-MpdData *mpd_playlist_token_find(MpdObj *mi , char *string)
-{
-	MpdData *data = NULL;
-	mpd_InfoEntity *ent = NULL;
-	regex_t ** strdata = NULL;
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_playlist_find: not connected\n");
-		return NULL;
-	}
-	if(mpd_lock_conn(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_playlist_find: lock failed\n");
-		return NULL;
-	}
-
-	if(string == NULL || !strlen(string) )
-	{
-		debug_printf(DEBUG_INFO, "no string found");
-		mpd_unlock_conn(mi);
-		return NULL;
-	}
-	else{
-		strdata = mpd_misc_tokenize(string);
-	}
-	if(strdata == NULL)
-	{
-		mpd_unlock_conn(mi);
-		debug_printf(DEBUG_INFO, "no split string found");
-		return NULL;
-	}
-
-	mpd_sendListallInfoCommand(mi->connection, "/");
-	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
-	{
-		if (ent->type == MPD_INFO_ENTITY_TYPE_SONG)
-		{
-			int i = 0;
-			int match = 0;
-			int loop = 1;
-			for(i=0; strdata[i] != NULL && loop; i++)
-			{
-				match = 0;
-				if(ent->info.song->file && !regexec(strdata[i],ent->info.song->file, 0, NULL, 0))
-				{
-					match = 1;
-				}
-				else if(ent->info.song->artist && !regexec(strdata[i],ent->info.song->artist, 0, NULL, 0))
-				{
-					match = 1;
-				}
-				else if(ent->info.song->title && !regexec(strdata[i],ent->info.song->title, 0, NULL, 0)) 
-				{
-					match = 1;
-				}
-				else if(ent->info.song->album && !regexec(strdata[i],ent->info.song->album, 0, NULL, 0))
-				{
-					match = 1;
-				}
-				if(!match)
-				{
-					loop = 0;
-				}
-			}
-
-			if(match)
-			{
-				data = mpd_new_data_struct_append(data);
-				data->type = MPD_DATA_TYPE_SONG;
-				/*
-				data->song = mpd_songDup(ent->info.song);
-				*/
-				data->song = ent->info.song;
-				ent->info.song = NULL;
-			}
-		}
-		mpd_freeInfoEntity(ent);
-	}
-	mpd_finishCommand(mi->connection);
-	mpd_misc_tokens_free(strdata);
-
-
-
-
-	mpd_unlock_conn(mi);
-	if(data == NULL)
-	{
-		return NULL;
-	}
-	return mpd_data_get_first(data);
-}
-
+/* TODO need a rewrite */
 MpdData *mpd_playlist_find_adv(MpdObj *mi,int exact, ...)
 {
 	MpdData *data = NULL;
@@ -1088,48 +894,8 @@ void mpd_playlist_queue_delete_id(MpdObj *mi,int id)
 }
 
 
-MpdData * mpd_database_get_complete(MpdObj *mi)
-{
-	MpdData *data = NULL;
-	mpd_InfoEntity *ent = NULL;
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_database_get_complete: not connected\n");
-		return NULL;
-	}
-	if(mpd_lock_conn(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_database_get_complete: lock failed\n");
-		return NULL;
-	}
-	mpd_sendListallInfoCommand(mi->connection, "/");
-	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
-	{
-
-		if (ent->type == MPD_INFO_ENTITY_TYPE_SONG)
-		{
-			data = mpd_new_data_struct_append(data);
-			data->type = MPD_DATA_TYPE_SONG;
-			/*
-			data->song = mpd_songDup(ent->info.song);
-			*/
-			data->song = ent->info.song;
-			ent->info.song = NULL;
-		}
-		mpd_freeInfoEntity(ent);
-	}
-	mpd_finishCommand(mi->connection);
-
-	/* unlock */
-	mpd_unlock_conn(mi);
-	if(data == NULL)
-	{
-		return NULL;
-	}
-	return mpd_data_get_first(data);
-}
-
 /* deprecated stuff */
 void mpd_playlist_update_dir(MpdObj *mi, char *path){ mpd_database_update_dir(mi,path);}
 MpdData * mpd_playlist_get_albums(MpdObj *mi, char *artist) { return mpd_database_get_albums(mi,artist);}
 MpdData * mpd_playlist_get_artists(MpdObj *mi) { return mpd_database_get_artists(mi);}
+MpdData * mpd_playlist_token_find(MpdObj *mi, char *string) {return mpd_database_token_find(mi,string);}

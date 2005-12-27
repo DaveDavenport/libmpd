@@ -17,46 +17,10 @@ Basic connection functions and signals
 <!-- ##### SECTION Stability_Level ##### -->
 
 
-<!-- ##### MACRO MPD_NOT_CONNECTED ##### -->
+<!-- ##### STRUCT MpdQueue ##### -->
 <para>
 
 </para>
-
-
-
-<!-- ##### MACRO MPD_FAILED_STATUS ##### -->
-<para>
-
-</para>
-
-
-
-<!-- ##### MACRO MPD_LOCK_FAILED ##### -->
-<para>
-
-</para>
-
-
-
-<!-- ##### MACRO MPD_FAILED_STATS ##### -->
-<para>
-
-</para>
-
-
-
-<!-- ##### MACRO MPD_ERROR ##### -->
-<para>
-
-</para>
-
-
-
-<!-- ##### MACRO MPD_PLAYLIST_EXIST ##### -->
-<para>
-
-</para>
-
 
 
 <!-- ##### STRUCT MpdObj ##### -->
@@ -64,18 +28,6 @@ Basic connection functions and signals
 
 </para>
 
-
-<!-- ##### ENUM MpdDataType ##### -->
-<para>
-
-</para>
-
-@MPD_DATA_TYPE_NONE: 
-@MPD_DATA_TYPE_TAG: 
-@MPD_DATA_TYPE_DIRECTORY: 
-@MPD_DATA_TYPE_SONG: 
-@MPD_DATA_TYPE_PLAYLIST: 
-@MPD_DATA_TYPE_OUTPUT_DEV: 
 
 <!-- ##### STRUCT MpdData ##### -->
 <para>
@@ -185,93 +137,13 @@ Basic connection functions and signals
 @mi: 
 
 
-<!-- ##### ENUM ChangedStatusType ##### -->
-<para>
-
-</para>
-
-@MPD_CST_PLAYLIST: 
-@MPD_CST_SONGID: 
-@MPD_CST_DATABASE: 
-@MPD_CST_UPDATING: 
-@MPD_CST_VOLUME: 
-@MPD_CST_TOTAL_TIME: 
-@MPD_CST_ELAPSED_TIME: 
-@MPD_CST_CROSSFADE: 
-@MPD_CST_RANDOM: 
-@MPD_CST_REPEAT: 
-@MPD_CST_AUDIO: 
-@MPD_CST_STATE: 
-
-<!-- ##### USER_FUNCTION StatusChangedCallback ##### -->
-<para>
-
-</para>
-
-@mi: 
-@what: 
-@userdata: 
-
-
-<!-- ##### USER_FUNCTION ErrorCallback ##### -->
-<para>
-
-</para>
-
-@mi: 
-@id: 
-@msg: 
-@userdata: 
-
-
-<!-- ##### USER_FUNCTION ConnectionChangedCallback ##### -->
-<para>
-
-</para>
-
-@mi: 
-@connect: 
-@userdata: 
-
-
-<!-- ##### FUNCTION mpd_signal_connect_status_changed ##### -->
-<para>
-
-</para>
-
-@mi: 
-@status_changed: 
-@userdata: 
-
-
-<!-- ##### FUNCTION mpd_signal_connect_error ##### -->
-<para>
-
-</para>
-
-@mi: 
-@error: 
-@userdata: 
-
-
-<!-- ##### FUNCTION mpd_signal_connect_connection_changed ##### -->
-<para>
-
-</para>
-
-@mi: 
-@connection_changed: 
-@userdata: 
-
-
 <!-- ##### FUNCTION mpd_data_is_last ##### -->
 <para>
 
 </para>
 
-@Returns: 
-<!-- # Unused Parameters # -->
 @data: 
+@Returns: 
 
 
 <!-- ##### FUNCTION mpd_data_free ##### -->
@@ -283,15 +155,6 @@ Basic connection functions and signals
 
 
 <!-- ##### FUNCTION mpd_data_get_next ##### -->
-<para>
-
-</para>
-
-@data: 
-@Returns: 
-
-
-<!-- ##### FUNCTION mpd_data_get_first ##### -->
 <para>
 
 </para>
