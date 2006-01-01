@@ -208,6 +208,7 @@ int mpd_check_error(MpdObj *mi)
 	/* TODO: map these errors in the future */
 	mi->error = mi->connection->error;
 	mi->error_mpd_code = mi->connection->errorCode;
+	/*TODO: do I need to strdup this? */
 	mi->error_msg = strdup(mi->connection->errorStr);
 
 	/* Check for permission */
@@ -223,6 +224,8 @@ int mpd_check_error(MpdObj *mi)
 		{
 			mi->the_error_callback(mi, mi->error_mpd_code, mi->error_msg, mi->the_error_signal_userdata );
 		}
+		free(mi->error_msg);
+		mi->error_msg = NULL;
 		return TRUE;
 	}
 	if(mi->error)
@@ -240,8 +243,13 @@ int mpd_check_error(MpdObj *mi)
 		{
 			mi->the_error_callback(mi, mi->error, mi->error_msg, mi->the_error_signal_userdata );
 		}
+		free(mi->error_msg);
+		mi->error_msg = NULL;
+		
 		return TRUE;
 	}
+	free(mi->error_msg);
+	mi->error_msg = NULL;	
 	return FALSE;
 }
 
