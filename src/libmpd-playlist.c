@@ -142,8 +142,9 @@ mpd_Song * mpd_playlist_get_current_song(MpdObj *mi)
 		mpd_freeSong(mi->CurrentSong);
 		mi->CurrentSong = NULL;
 	}
-
-	if(mi->CurrentSong == NULL)
+	/* only update song when playing/pasing */
+	if(mi->CurrentSong == NULL && 
+			(mpd_player_get_state(mi) != MPD_STATUS_STATE_STOP || mpd_player_get_state(mi) != MPD_STATUS_STATE_UNKNOWN))
 	{
 		/* TODO: this to use the geT_current_song_id function */
 		mi->CurrentSong = mpd_playlist_get_song(mi, mpd_player_get_current_song_id(mi));
