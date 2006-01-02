@@ -4,11 +4,11 @@
 
 int main(int argc, char *argv)
 {
-	MpdObj *obj = mpd_new("192.150.0.111", 6600, NULL);
+	MpdObj *obj = mpd_new("localhost", 6600, NULL);
 	if(!mpd_connect(obj))
 //	for(i=0;i<1000;i++)
 	{
-		MpdData * data = mpd_database_get_complete(obj);
+		MpdData * data = mpd_playlist_find(obj, MPD_TABLE_ARTIST,"(General)", TRUE);
 		while(data != NULL)
 		{
 			char buffer[1024];

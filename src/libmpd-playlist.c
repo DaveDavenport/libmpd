@@ -692,8 +692,14 @@ MpdData * mpd_playlist_find(MpdObj *mi, int table, char *string, int exact)
 	}
 	data = mpd_data_get_first(data);
 	/* prepend the album then artists*/
-	album = mpd_data_concatenate( album, artist );
-	data  = mpd_data_concatenate( album, data);
+	if(album != NULL)
+	{
+		data  = mpd_data_concatenate( album, data);
+	}
+	if(artist != NULL)
+	{
+		album = mpd_data_concatenate( artist, data );
+	}                                                     	
 
 	return mpd_data_get_first(data);
 }
@@ -731,8 +737,8 @@ MpdData * mpd_playlist_get_changes(MpdObj *mi,int old_playlist_id)
 			data = mpd_new_data_struct_append(data);
 			data->type = MPD_DATA_TYPE_SONG;
 			/*
-			data->song = mpd_songDup(ent->info.song);
-			*/
+			   data->song = mpd_songDup(ent->info.song);
+			   */
 			data->song = ent->info.song;
 			ent->info.song = NULL;
 		}
