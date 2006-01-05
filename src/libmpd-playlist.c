@@ -694,11 +694,19 @@ MpdData * mpd_playlist_find(MpdObj *mi, int table, char *string, int exact)
 	/* prepend the album then artists*/
 	if(album != NULL)
 	{
-		data  = mpd_data_concatenate( album, data);
+		if(data){
+			data  = mpd_data_concatenate( album, data);
+		}else{
+			data = album;
+		}
 	}
 	if(artist != NULL)
 	{
-		album = mpd_data_concatenate( artist, data );
+		if(data) {
+			album = mpd_data_concatenate( artist, data );
+		}else{
+			data = artist;
+		}
 	}                                                     	
 
 	return mpd_data_get_first(data);
