@@ -7,12 +7,14 @@
   </bookinfo>
 
   <chapter>
-    <title>LibMpd - High level signal based wrapper around libmpdclient </title>
-    <xi:include href="xml/libmpd-internal.xml"/>
+    <title>LibMpd</title>
+    <xi:include href="xml/libmpd.xml"/>
+    <xi:include href="xml/libmpd-database.xml"/>
+    <xi:include href="xml/libmpd-strfsong.xml"/>
     <xi:include href="xml/libmpd-playlist.xml"/>
     <xi:include href="xml/libmpd-status.xml"/>
     <xi:include href="xml/libmpd-player.xml"/>
-    <xi:include href="xml/libmpd.xml"/>
+    
     <xi:include href="xml/debug_printf.xml"/>
   </chapter>
 </book>

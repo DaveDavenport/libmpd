@@ -79,12 +79,4 @@ void		mpd_database_update_dir		(MpdObj *mi, char *path);
 MpdData *	mpd_database_token_find		(MpdObj *mi , char *string);
 
 
-
-
-
-
-
-
-
-
 #endif

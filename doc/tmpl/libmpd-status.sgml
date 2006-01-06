@@ -82,6 +82,33 @@ Read out the state of mpd
 @Returns: 
 
 
+<!-- ##### FUNCTION mpd_status_get_samplerate ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_status_get_channels ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_status_get_bits ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
 <!-- ##### FUNCTION mpd_status_get_total_song_time ##### -->
 <para>
 

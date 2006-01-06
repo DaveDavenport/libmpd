@@ -2,7 +2,7 @@
 debug_printf
 
 <!-- ##### SECTION Short_Description ##### -->
-
+Function to use and control the printing of debug information in libmpd
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
@@ -15,6 +15,43 @@ debug_printf
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO DEBUG_NO_OUTPUT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### ENUM DebugLevel ##### -->
+<para>
+
+</para>
+
+@DEBUG_ERROR: 
+@DEBUG_WARNING: 
+@DEBUG_INFO: 
+
+<!-- ##### FUNCTION debug_set_level ##### -->
+<para>
+
+</para>
+
+@dl: 
+
+
+<!-- ##### FUNCTION debug_printf_real ##### -->
+<para>
+
+</para>
+
+@dp: 
+@file: 
+@line: 
+@function: 
+@format: 
+@Varargs: 
 
 
 <!-- ##### MACRO debug_printf ##### -->

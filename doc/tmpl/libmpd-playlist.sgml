@@ -2,7 +2,7 @@
 libmpd-playlist
 
 <!-- ##### SECTION Short_Description ##### -->
-
+Interface to the current playlist
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
@@ -64,15 +64,6 @@ libmpd-playlist
 @Returns: 
 
 
-<!-- ##### FUNCTION mpd_playlist_update_dir ##### -->
-<para>
-
-</para>
-
-@mi: 
-@path: 
-
-
 <!-- ##### FUNCTION mpd_playlist_move_pos ##### -->
 <para>
 
@@ -81,47 +72,6 @@ libmpd-playlist
 @mi: 
 @old_pos: 
 @new_pos: 
-
-
-<!-- ##### FUNCTION mpd_playlist_get_artists ##### -->
-<para>
-
-</para>
-
-@mi: 
-@Returns: 
-
-
-<!-- ##### FUNCTION mpd_playlist_get_albums ##### -->
-<para>
-
-</para>
-
-@mi: 
-@artist: 
-@Returns: 
-
-
-<!-- ##### FUNCTION mpd_playlist_get_directory ##### -->
-<para>
-
-</para>
-
-@mi: 
-@path: 
-@Returns: 
-
-
-<!-- ##### FUNCTION mpd_playlist_find ##### -->
-<para>
-
-</para>
-
-@mi: 
-@table: 
-@string: 
-@exact: 
-@Returns: 
 
 
 <!-- ##### FUNCTION mpd_playlist_get_changes ##### -->
@@ -184,16 +134,6 @@ libmpd-playlist
 @Returns: 
 
 
-<!-- ##### FUNCTION mpd_playlist_token_find ##### -->
-<para>
-
-</para>
-
-@mi: 
-@string: 
-@Returns: 
-
-
 <!-- ##### FUNCTION mpd_playlist_queue_add ##### -->
 <para>
 
@@ -227,5 +167,65 @@ libmpd-playlist
 </para>
 
 @mi: 
+
+
+<!-- ##### FUNCTION mpd_playlist_update_dir ##### -->
+<para>
+
+</para>
+
+@mi: 
+@path: 
+
+
+<!-- ##### FUNCTION mpd_playlist_get_albums ##### -->
+<para>
+
+</para>
+
+@mi: 
+@artist: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_playlist_get_artists ##### -->
+<para>
+
+</para>
+
+@mi: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_playlist_get_directory ##### -->
+<para>
+
+</para>
+
+@mi: 
+@path: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_playlist_find ##### -->
+<para>
+
+</para>
+
+@mi: 
+@table: 
+@string: 
+@exact: 
+@Returns: 
+
+
+<!-- ##### FUNCTION mpd_playlist_token_find ##### -->
+<para>
+
+</para>
+
+@mi: 
+@string: 
+@Returns: 
 
 

@@ -199,6 +199,24 @@ libmpdclient
 
 
 
+<!-- ##### ENUM mpd_TagItems ##### -->
+<para>
+
+</para>
+
+@MPD_TAG_ITEM_ARTIST: 
+@MPD_TAG_ITEM_ALBUM: 
+@MPD_TAG_ITEM_TITLE: 
+@MPD_TAG_ITEM_TRACK: 
+@MPD_TAG_ITEM_NAME: 
+@MPD_TAG_ITEM_GENRE: 
+@MPD_TAG_ITEM_DATE: 
+@MPD_TAG_ITEM_COMPOSER: 
+@MPD_TAG_ITEM_PERFORMER: 
+@MPD_TAG_ITEM_COMMENT: 
+@MPD_TAG_ITEM_FILENAME: 
+@MPD_TAG_NUM_OF_ITEM_TYPES: 
+
 <!-- ##### STRUCT mpd_ReturnElement ##### -->
 <para>
 
@@ -1120,5 +1138,30 @@ libmpdclient
 </para>
 
 @output: 
+
+
+<!-- ##### FUNCTION mpd_sendCommandsCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+
+
+<!-- ##### FUNCTION mpd_sendNotCommandsCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+
+
+<!-- ##### FUNCTION mpd_getNextCommand ##### -->
+<para>
+
+</para>
+
+@connection: 
+@Returns: 
 
 
