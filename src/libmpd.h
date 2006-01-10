@@ -224,6 +224,7 @@ extern "C" {
  * @mi: a #MpdObj
  *
  * Connect to the mpd daemon.
+ * Warning: mpd_connect connects anonymous, to authentificate use mpd_send_password
  * returns: returns 0 when successful
  */
 	int mpd_connect(MpdObj * mi);
