@@ -969,7 +969,7 @@ void mpd_data_free(MpdData *data)
 		for (i = 0; i < MPD_DATA_POOL_SIZE - pool->space_left; i++) {
 			data_real = &(pool->pool[i]);
 			if (data_real->type == MPD_DATA_TYPE_SONG) {
-				mpd_freeSong(data_real->song);
+				if(data_real->song) mpd_freeSong(data_real->song);
 			} else if (data_real->type == MPD_DATA_TYPE_OUTPUT_DEV) {
 				mpd_freeOutputElement(data_real->output_dev);
 			} else {
