@@ -148,6 +148,22 @@ int mpd_status_update(MpdObj *mi)
 		mi->CurrentState.songid = mi->status->songid;
 
 	}
+	if(mi->CurrentState.songpos != mi->status->song)
+	{
+		/* print debug message */
+		debug_printf(DEBUG_INFO, "Song has changed %i %i!", mi->OldState.songpos, mi->status->song);
+
+		/* deprecated */
+/*		if(mi->song_changed != NULL)
+		{
+			mi->song_changed(mi, mi->OldState.songid,mi->status->songid,mi->song_changed_signal_pointer);
+		}
+*/		what_changed |= MPD_CST_SONGPOS;
+		/* save new songid */
+		mi->CurrentState.songpos = mi->status->song;
+
+	}
+	
 	if(mi->CurrentState.repeat != mi->status->repeat)
 	{
 		what_changed |= MPD_CST_REPEAT;

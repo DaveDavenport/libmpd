@@ -275,6 +275,7 @@ extern "C" {
 /**
  * ChangedStatusType
  * @MPD_CST_PLAYLIST: The playlist has changed
+ * @MPD_CST_SONGPOS: The song position of the playing song has changed
  * @MPD_CST_SONGID: The songid of the playing song has changed
  * @MPD_CST_DATABASE: The database has changed.
  * @MPD_CST_UPDATING: the state of updating the database has changed.
@@ -293,6 +294,7 @@ extern "C" {
  */
 	typedef enum _ChangedStatusType {
 		MPD_CST_PLAYLIST      = 0x0001,
+		MPD_CST_SONGPOS       = 0x0002,
 		MPD_CST_SONGID        = 0x0004,
 		MPD_CST_DATABASE      = 0x0008,
 		MPD_CST_UPDATING      = 0x0010,

@@ -80,6 +80,7 @@ static MpdObj * mpd_create()
 	mi->CurrentState.playlistid = -1;
 	mi->CurrentState.state = -1;
 	mi->CurrentState.songid = -1;
+	mi->CurrentState.songpos = -1;
 	mi->CurrentState.dbUpdateTime = 0;
 	mi->CurrentState.updatingDb = 0;
 	mi->CurrentState.repeat = -1;
@@ -500,6 +501,7 @@ int mpd_disconnect(MpdObj *mi)
 	mi->CurrentState.playlistid = -1;
 	mi->CurrentState.state = -1;
 	mi->CurrentState.songid = -1;
+	mi->CurrentState.songpos = -1;
 	mi->CurrentState.dbUpdateTime = 0;
 	mi->CurrentState.updatingDb = 0;
 	mi->CurrentState.repeat = -1;
@@ -551,6 +553,7 @@ int mpd_connect(MpdObj *mi)
 	mi->CurrentState.playlistid = -1;
 	mi->CurrentState.state = -1;
 	mi->CurrentState.songid = -1;
+	mi->CurrentState.songpos = -1;
 	mi->CurrentState.dbUpdateTime = 0;
 	mi->CurrentState.updatingDb = 0;
 	mi->CurrentState.repeat = -1;

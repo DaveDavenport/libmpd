@@ -177,9 +177,9 @@ static unsigned int _strfsong(char *s,
 			temp = song->date ? strdup(song->date) : NULL;		
 		else if (memcmp("%genre%", p, n) == 0)
 			temp = song->genre ? strdup(song->genre) : NULL;		
-		else if (memcmp("%plpos%", p, n) == 0){
+		else if (memcmp("%plpos%", p, n) == 0 || memcmp("%songpos%",p,n) == 0){
 			temp = NULL;
-			if(song->pos > 0){
+			if(song->pos >= 0){
 				char str[32];
 				int length;
 				if((length = snprintf(str,32, "%i", song->pos)) >=0)
