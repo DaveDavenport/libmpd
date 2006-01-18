@@ -72,6 +72,12 @@ void mpd_playlist_add(MpdObj *mi, char *path)
 	mpd_playlist_queue_commit(mi);
 }
 
+void mpd_playlist_delete_id(MpdObj *mi, int songid)
+{
+	mpd_playlist_queue_delete_id(mi, songid);
+	mpd_playlist_queue_commit(mi);
+}
+
 /*******************************************************************************
  * PLAYLIST
  */
@@ -157,31 +163,31 @@ mpd_Song * mpd_playlist_get_current_song(MpdObj *mi)
 	return mi->CurrentSong;
 }
 
-int mpd_playlist_delete(MpdObj *mi,char *path)
-{
-	if(path == NULL)
-	{
-		debug_printf(DEBUG_WARNING, "mpd_playlist_delete: path == NULL");
-		return MPD_ERROR;
-	}
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_playlist_delete: not connected\n");
-		return MPD_NOT_CONNECTED;
-	}
-	if(mpd_lock_conn(mi))
-	{
-		debug_printf(DEBUG_WARNING,"mpd_playlist_delete: lock failed\n");
-		return MPD_LOCK_FAILED;
-	}
 
-	mpd_sendRmCommand(mi->connection,path);
-	mpd_finishCommand(mi->connection);
 
-	/* unlock */
-	mpd_unlock_conn(mi);
-	return FALSE;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -914,3 +920,4 @@ void mpd_playlist_update_dir(MpdObj *mi, char *path){ mpd_database_update_dir(mi
 MpdData * mpd_playlist_get_albums(MpdObj *mi, char *artist) { return mpd_database_get_albums(mi,artist);}
 MpdData * mpd_playlist_get_artists(MpdObj *mi) { return mpd_database_get_artists(mi);}
 MpdData * mpd_playlist_token_find(MpdObj *mi, char *string) {return mpd_database_token_find(mi,string);}
+int mpd_playlist_delete(MpdObj *mi, char  *path) {return mpd_database_delete_playlist(mi, path);}

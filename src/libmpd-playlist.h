@@ -124,16 +124,15 @@ int		mpd_playlist_get_playlist_length	(MpdObj *mi);
  * Add's a song to the playlist, use #mpd_playlist_queue_add to add multiple songs.
  */
 void		mpd_playlist_add			(MpdObj *mi, char *path);
+
 /**
- * mpd_playlist_delete
  * @mi: a #MpdObj
- * @path: the path of the playlist to be deleted.
+ * @songid: a song id.
  *
- * Deletes a playlist.
- *
- * returns: 
+ * Delete's a single song by it's id.
  */
-int		mpd_playlist_delete			(MpdObj *mi,char *path);
+void mpd_playlist_delete_id(MpdObj *mi, int songid);
+
 
 /* mpd svn only functions 0.12.0 */
 /* TODO: rewrite this */
@@ -188,4 +187,5 @@ MpdData *	mpd_playlist_get_directory	(MpdObj *mi,char *path);
 MpdData *	mpd_playlist_find		(MpdObj *mi, int table, char *string, int exact);
 MpdData *	mpd_playlist_token_find		(MpdObj *mi, char *string) __attribute__((deprecated));
 
+int		mpd_playlist_delete			(MpdObj *mi,char *path) __attribute__((deprecated));
 #endif

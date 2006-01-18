@@ -122,7 +122,9 @@ int 		mpd_status_get_channels			(MpdObj *mi);
  * returns: bits per sample 
  */
 int 		mpd_status_get_bits			(MpdObj *mi);
-/** mpd_status_get_total_song_time
+
+/**
+ * mpd_status_get_total_song_time
  * @mi: a #MpdObj
  *
  * get the total length of the currently playing song.

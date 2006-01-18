@@ -260,3 +260,29 @@ MpdData *mpd_database_token_find(MpdObj *mi , char *string)
 	}
 	return mpd_data_get_first(data);
 }
+
+int mpd_database_delete_playlist(MpdObj *mi,char *path)
+{
+	if(path == NULL)
+	{
+		debug_printf(DEBUG_WARNING, "mpd_playlist_delete: path == NULL");
+		return MPD_ERROR;
+	}
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"mpd_playlist_delete: not connected\n");
+		return MPD_NOT_CONNECTED;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		debug_printf(DEBUG_WARNING,"mpd_playlist_delete: lock failed\n");
+		return MPD_LOCK_FAILED;
+	}
+
+	mpd_sendRmCommand(mi->connection,path);
+	mpd_finishCommand(mi->connection);
+
+	/* unlock */
+	mpd_unlock_conn(mi);
+	return FALSE;
+}

@@ -78,5 +78,14 @@ void		mpd_database_update_dir		(MpdObj *mi, char *path);
  */
 MpdData *	mpd_database_token_find		(MpdObj *mi , char *string);
 
+/**
+ * mpd_database_delete_playlist
+ * @mi: A #MpdObj
+ * @path: path of the playlist
+ *
+ * Deletes a playlist.
+ * returns:
+ */
 
+int mpd_database_delete_playlist(MpdObj *mi,char *path);
 #endif
