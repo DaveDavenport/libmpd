@@ -288,6 +288,7 @@ extern "C" {
  * @MPD_CST_AUDIO: Not implemented
  * @MPD_CST_STATE: The state of the player has changed.
  * @MPD_CST_PERMISSION: The permissions the client has, has changed.
+ * @MPD_CST_BITRATE: The bitrate of the playing song has changed. 
  * @MPD_CST_AUDIOFORMAT: the audio format of the playing song changed.
  *
  * Bitwise enumeration to determine what triggered the status_changed signals

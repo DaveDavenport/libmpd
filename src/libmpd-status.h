@@ -132,15 +132,88 @@ int 		mpd_status_get_bits			(MpdObj *mi);
  * returns: time in seconds or <0 when failed.
  */
 int		mpd_status_get_total_song_time		(MpdObj *mi);
+
+/**
+ * mpd_status_get_elapsed_song_time
+ * @mi: a #MpdObj 
+ *
+ * Gets the elapsed time of the currently playing song.
+ *
+ * returns: Time in seconds
+ */
 int		mpd_status_get_elapsed_song_time	(MpdObj *mi);
+
+/**
+ * mpd_status_get_crossfade
+ * @mi: a #MpdObj
+ * 
+ * Get the crossfade time. 0 is disabled.
+ *
+ * returns: The crossfade time in seconds
+ */
 int		mpd_status_get_crossfade		(MpdObj *mi);
+/**
+ * mpd_status_set_crossfade
+ * @mi: a #MpdObj
+ *
+ * Sets the crossfade time. 0 is disabled
+ *
+ * returns:
+ */
 int		mpd_status_set_crossfade		(MpdObj *mi, int crossfade_time);
+/**
+ * mpd_stats_update
+ * @mi: a #MpdObj
+ *
+ * Shouldn't be used from the program.
+ */
 int		mpd_stats_update			(MpdObj *mi);
 
+/**
+ * mpd_stats_get_total_songs
+ * @mi: a #MpdObj
+ *
+ * Gets the total number of songs in the database
+ *
+ * returns: The total number of songs
+ */
 int		mpd_stats_get_total_songs		(MpdObj *mi);
+/**
+ * mpd_stats_get_total_artists
+ * @mi: a #MpdObj
+ *
+ * Gets the total number of artists in the database.
+ *
+ * returns: The number of artists in the database
+ */
 int		mpd_stats_get_total_artists		(MpdObj *mi);
+/**
+ * mpd_stats_get_total_albums
+ * @mi: a #MpdObj
+ *
+ * Gets the total number of albums in the database
+ *
+ * returns: The number of albums in the database
+ */
 int		mpd_stats_get_total_albums		(MpdObj *mi);
+/**
+ * mpd_stats_get_uptime
+ * @mi: a #MpdObj
+ *
+ * Gets the time mpd is running
+ * 
+ * returns: time that mpd is running in seconds
+ */
 int		mpd_stats_get_uptime			(MpdObj *mi);
+/**
+ * mpd_stats_get_playtime
+ * @mi: a #MpdObj
+ *
+ * Gets the time mpd is playing
+ * 
+ * returns: time that mpd is playing in seconds
+ */
+
 int		mpd_stats_get_playtime			(MpdObj *mi);
 /**
  * mpd_status_db_is_updating
