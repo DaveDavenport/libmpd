@@ -2,7 +2,7 @@
 libmpd-playlist
 
 <!-- ##### SECTION Short_Description ##### -->
-Interface to the current playlist
+
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
@@ -62,8 +62,6 @@ Interface to the current playlist
 @mi: 
 @path: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@name: 
 
 
 <!-- ##### FUNCTION mpd_playlist_move_pos ##### -->

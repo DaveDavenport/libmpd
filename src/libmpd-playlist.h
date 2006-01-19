@@ -79,7 +79,7 @@ int		mpd_playlist_clear			(MpdObj *mi);
 int		mpd_playlist_shuffle			(MpdObj *mi);
 
 /**
- * mp_playlist_move_pos
+ * mpd_playlist_move_pos
  * @mi: a #MpdObj
  * @old_pos: The current position in the playlist
  * @new_pos: The new position in the playlist.
@@ -91,7 +91,7 @@ int		mpd_playlist_shuffle			(MpdObj *mi);
 void		mpd_playlist_move_pos		(MpdObj *mi, int old_pos, int new_pos);
 
 /**
- * mp_playlist_move_id
+ * mpd_playlist_move_id
  * @mi: a #MpdObj
  * @old_id: The id of the song to move
  * @new_id: The id of the song to move too.

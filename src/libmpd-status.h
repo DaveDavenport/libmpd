@@ -20,13 +20,6 @@
 
 #ifndef __MPD_LIB_STATUS__
 #define __MPD_LIB_STATUS__
-/**
- * Get different state's of mpd. 
- * There is a signal (#StateChangedCallback) that indicates changed status.
- * To get this signal triggered correctly run mpd_status_update every 0.x seconds from the main loop of the program
- */
-
-
 
 /**
  * mpd_status_check
