@@ -88,4 +88,17 @@ MpdData *	mpd_database_token_find		(MpdObj *mi , char *string);
  */
 
 int mpd_database_delete_playlist(MpdObj *mi,char *path);
+
+/**
+ * mpd_database_save_playlist
+ * @mi: a #MpdObj
+ * @name: The name of the playlist
+ *
+ * Saves the current playlist to a file.
+ *
+ * returns: 0 if succesfull, #MPD_PLAYLIST_EXIST when the playlist allready exists, <0 when failed.
+ */ 
+int		mpd_database_save_playlist			(MpdObj *mi, char *name);
+
+
 #endif

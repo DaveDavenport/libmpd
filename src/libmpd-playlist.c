@@ -78,6 +78,11 @@ void mpd_playlist_delete_id(MpdObj *mi, int songid)
 	mpd_playlist_queue_commit(mi);
 }
 
+void mpd_playlist_delete_pos(MpdObj *mi, int songpos)
+{
+	mpd_playlist_queue_delete_pos(mi, songpos);
+	mpd_playlist_queue_commit(mi);
+}
 /*******************************************************************************
  * PLAYLIST
  */
@@ -235,37 +240,26 @@ int mpd_playlist_shuffle(MpdObj *mi)
 
 }
 
-int mpd_playlist_save(MpdObj *mi, char *name)
+
+void mpd_playlist_move_id(MpdObj *mi, int old_id, int new_id)
 {
-	if(name == NULL || !strlen(name))
-	{
-		debug_printf(DEBUG_WARNING, "mpd_playlist_save: name != NULL  and strlen(name) > 0 failed");
-		return MPD_ERROR;
-	}
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_playlist_save: not connected\n");
-		return MPD_NOT_CONNECTED;
+		debug_printf(DEBUG_WARNING,"not connected\n");
+		return;
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_ERROR,"mpd_playlist_save: lock failed\n");
-		return MPD_LOCK_FAILED;
+		debug_printf(DEBUG_ERROR,"lock failed\n");
+		return;
 	}
 
-	mpd_sendSaveCommand(mi->connection,name);
+	mpd_sendMoveIdCommand(mi->connection,old_id, new_id);
 	mpd_finishCommand(mi->connection);
-	if(mi->connection->error == MPD_ERROR_ACK && mi->connection->errorCode == MPD_ACK_ERROR_EXIST)
-	{
-		mpd_clearError(mi->connection);
-		mpd_unlock_conn(mi);
-		return MPD_PLAYLIST_EXIST;
-
-	}
 
 	/* unlock */
 	mpd_unlock_conn(mi);
-	return FALSE;
+	return;
 }
 
 void mpd_playlist_move_pos(MpdObj *mi, int old_pos, int new_pos)
@@ -880,6 +874,15 @@ void mpd_playlist_queue_commit(MpdObj *mi)
 				mpd_sendDeleteIdCommand(mi->connection, mi->queue->id);
 			}
 		}
+		else if (mi->queue->type == MPD_QUEUE_DELETE_POS)
+		{                                                                      		
+			if(mi->queue->id >= 0)
+			{
+				mpd_sendDeleteCommand(mi->connection, mi->queue->id);
+			}
+		}
+
+
 		mpd_queue_get_next(mi);
 	}
 	mpd_sendCommandListEnd(mi->connection);
@@ -914,6 +917,52 @@ void mpd_playlist_queue_delete_id(MpdObj *mi,int id)
 	mi->queue->path = NULL;
 }
 
+void mpd_playlist_queue_delete_pos(MpdObj *mi,int songpos)
+{
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"mpd_playlist_add: not connected\n");
+		return;
+	}
+
+	if(mi->queue == NULL)
+	{
+		mi->queue = mpd_new_queue_struct();
+		mi->queue->first = mi->queue;
+		mi->queue->next = NULL;
+		mi->queue->prev = NULL;
+	}
+	else
+	{
+		mi->queue->next = mpd_new_queue_struct();
+		mi->queue->next->first = mi->queue->first;
+		mi->queue->next->prev = mi->queue;
+		mi->queue = mi->queue->next;
+		mi->queue->next = NULL;
+	}
+	mi->queue->type = MPD_QUEUE_DELETE_POS;
+	mi->queue->id = songpos;
+	mi->queue->path = NULL;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* deprecated stuff */
 void mpd_playlist_update_dir(MpdObj *mi, char *path){ mpd_database_update_dir(mi,path);}
@@ -921,3 +970,4 @@ MpdData * mpd_playlist_get_albums(MpdObj *mi, char *artist) { return mpd_databas
 MpdData * mpd_playlist_get_artists(MpdObj *mi) { return mpd_database_get_artists(mi);}
 MpdData * mpd_playlist_token_find(MpdObj *mi, char *string) {return mpd_database_token_find(mi,string);}
 int mpd_playlist_delete(MpdObj *mi, char  *path) {return mpd_database_delete_playlist(mi, path);}
+int mpd_playlist_save(MpdObj *mi, char  *path) {return mpd_database_save_playlist(mi, path);}

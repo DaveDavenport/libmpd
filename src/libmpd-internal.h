@@ -159,6 +159,7 @@ typedef enum MpdQueueType {
 	MPD_QUEUE_ADD,
 	MPD_QUEUE_LOAD,
 	MPD_QUEUE_DELETE_ID,
+	MPD_QUEUE_DELETE_POS,
 	MPD_QUEUE_COMMAND /* abuse!!! */
 } MpdQueueType;
 

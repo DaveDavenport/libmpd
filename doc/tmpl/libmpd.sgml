@@ -215,6 +215,7 @@ Basic connection functions and signals
 </para>
 
 @MPD_CST_PLAYLIST: 
+@MPD_CST_SONGPOS: 
 @MPD_CST_SONGID: 
 @MPD_CST_DATABASE: 
 @MPD_CST_UPDATING: 

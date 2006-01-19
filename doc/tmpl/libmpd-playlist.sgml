@@ -60,8 +60,10 @@ Interface to the current playlist
 </para>
 
 @mi: 
-@name: 
+@path: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@name: 
 
 
 <!-- ##### FUNCTION mpd_playlist_move_pos ##### -->

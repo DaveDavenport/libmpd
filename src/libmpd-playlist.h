@@ -77,16 +77,7 @@ int		mpd_playlist_clear			(MpdObj *mi);
  * returns: 
  */
 int		mpd_playlist_shuffle			(MpdObj *mi);
-/**
- * mpd_playlist_save
- * @mi: a #MpdObj
- * @name: The name of the playlist
- *
- * Saves the current playlist to a file.
- *
- * returns: 0 if succesfull, #MPD_PLAYLIST_EXIST when the playlist allready exists, <0 when failed.
- */ 
-int		mpd_playlist_save			(MpdObj *mi, char *name);
+
 /**
  * mp_playlist_move_pos
  * @mi: a #MpdObj
@@ -96,7 +87,22 @@ int		mpd_playlist_save			(MpdObj *mi, char *name);
  * Moves a song in the playlist. This uses the position of the song, not the id
  *
  */
+
 void		mpd_playlist_move_pos		(MpdObj *mi, int old_pos, int new_pos);
+
+/**
+ * mp_playlist_move_id
+ * @mi: a #MpdObj
+ * @old_id: The id of the song to move
+ * @new_id: The id of the song to move too.
+ *
+ * Moves a song in the playlist. This uses the id of the song, not the position
+ *
+ */
+
+void		mpd_playlist_move_id		(MpdObj *mi, int old_id, int new_id);
+
+
 /**
  * mpd_playlist_get_changes
  * @mi: a #MpdObj
@@ -126,12 +132,22 @@ int		mpd_playlist_get_playlist_length	(MpdObj *mi);
 void		mpd_playlist_add			(MpdObj *mi, char *path);
 
 /**
+ * mpd_playlist_delete_id
  * @mi: a #MpdObj
  * @songid: a song id.
  *
  * Delete's a single song by it's id.
  */
 void mpd_playlist_delete_id(MpdObj *mi, int songid);
+
+/**
+ * mpd_playlist_delete_pos
+ * @mi: a #MpdObj
+ * @songid: a song id.
+ *
+ * Delete's a single song by it's position.
+ */
+void mpd_playlist_delete_pos(MpdObj *mi, int songpos);	
 
 
 /* mpd svn only functions 0.12.0 */
@@ -166,7 +182,17 @@ void	mpd_playlist_queue_load		(MpdObj *mi,char *path);
  * This queue's an delete song from playlist command. The actually delete isn't done until #mpd_playlist_queue_commit is called
  *
  */
-void	mpd_playlist_queue_delete_id		(MpdObj *mi,int id);
+void	mpd_playlist_queue_delete_id	(MpdObj *mi,int id);
+
+/**
+ * mpd_playlist_queue_delete_pos
+ * @mi: a #MpdObj
+ * @songpos: a song pos.
+ *
+ * Queue's the deletion of a single song by it's position.
+ */
+void 	mpd_playlist_queue_delete_pos	(MpdObj *mi,int songpos);
+
 
 /**
  * mpd_playlist_queue_commit
@@ -188,4 +214,5 @@ MpdData *	mpd_playlist_find		(MpdObj *mi, int table, char *string, int exact);
 MpdData *	mpd_playlist_token_find		(MpdObj *mi, char *string) __attribute__((deprecated));
 
 int		mpd_playlist_delete			(MpdObj *mi,char *path) __attribute__((deprecated));
+int		mpd_playlist_save			(MpdObj *mi,char *path) __attribute__((deprecated));
 #endif

@@ -265,22 +265,55 @@ int mpd_database_delete_playlist(MpdObj *mi,char *path)
 {
 	if(path == NULL)
 	{
-		debug_printf(DEBUG_WARNING, "mpd_playlist_delete: path == NULL");
+		debug_printf(DEBUG_WARNING, "path == NULL");
 		return MPD_ERROR;
 	}
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_playlist_delete: not connected\n");
+		debug_printf(DEBUG_WARNING,"not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_playlist_delete: lock failed\n");
+		debug_printf(DEBUG_WARNING,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 
 	mpd_sendRmCommand(mi->connection,path);
 	mpd_finishCommand(mi->connection);
+
+	/* unlock */
+	mpd_unlock_conn(mi);
+	return FALSE;
+}
+
+int mpd_database_save_playlist(MpdObj *mi, char *name)
+{
+	if(name == NULL || !strlen(name))
+	{
+		debug_printf(DEBUG_WARNING, "mpd_playlist_save: name != NULL  and strlen(name) > 0 failed");
+		return MPD_ERROR;
+	}
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"mpd_playlist_save: not connected\n");
+		return MPD_NOT_CONNECTED;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		debug_printf(DEBUG_ERROR,"mpd_playlist_save: lock failed\n");
+		return MPD_LOCK_FAILED;
+	}
+
+	mpd_sendSaveCommand(mi->connection,name);
+	mpd_finishCommand(mi->connection);
+	if(mi->connection->error == MPD_ERROR_ACK && mi->connection->errorCode == MPD_ACK_ERROR_EXIST)
+	{
+		mpd_clearError(mi->connection);
+		mpd_unlock_conn(mi);
+		return MPD_PLAYLIST_EXIST;
+
+	}
 
 	/* unlock */
 	mpd_unlock_conn(mi);
