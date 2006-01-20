@@ -87,13 +87,6 @@ extern "C" {
 	typedef struct _MpdObj MpdObj;
 
 /**
- * MpdSong
- *
- * A structure that holds information about a song
- */
-	typedef struct mpd_Song MpdSong;
-
-/**
  * MpdServerCommand
  *
  */
