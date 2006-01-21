@@ -31,11 +31,11 @@ void debug_printf_real(DebugLevel dp, const char *file,const int line,const char
 		}
 		else if(dp == DEBUG_WARNING)
 		{
-			printf(YELLOW"WARNING:"RESET" %s %s:#%i:\t",file,function,line);
+			printf(YELLOW"WARNING:"RESET" %s %s():#%i:\t",file,function,line);
 		}
 		else
 		{
-			printf(DARKRED"ERROR:"RESET"   %s %s:#%i:\t",file,function,line);
+			printf(DARKRED"ERROR:"RESET"   %s %s():#%i:\t",file,function,line);
 		}
 		vprintf(format, arglist);
 		if(format[strlen(format)-1] != '\n')
