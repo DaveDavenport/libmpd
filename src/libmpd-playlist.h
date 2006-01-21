@@ -152,7 +152,7 @@ void mpd_playlist_delete_pos(MpdObj *mi, int songpos);
 
 /* mpd svn only functions 0.12.0 */
 /* TODO: rewrite this */
-MpdData *	mpd_playlist_get_unique_tags		(MpdObj *mi, int table,...);
+MpdData *	mpd_playlist_get_unique_tags		(MpdObj *mi, int field,...);
 MpdData *	mpd_playlist_find_adv		(MpdObj *mi,int exact, ...);
 
 /* queing stuff */

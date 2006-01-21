@@ -126,6 +126,7 @@ typedef struct _mpd_Connection {
 	int commandList;
 	mpd_ReturnElement * returnElement;
 	struct timeval timeout;
+	char *request;
 } mpd_Connection;
 
 /* mpd_newConnection
@@ -413,11 +414,6 @@ void mpd_sendSearchCommand(mpd_Connection * connection, int table,
 void mpd_sendFindCommand(mpd_Connection * connection, int table, 
 		const char * str);
 
-
-void mpd_sendSearchTagCommand(mpd_Connection *connection, ...);
-void mpd_sendFindTagCommand(mpd_Connection *connection, ...);
-void mpd_sendVSearchTagCommand(mpd_Connection *connection, va_list arglist);
-void mpd_sendVFindTagCommand(mpd_Connection *connection, va_list arglist);
 /* LIST TAG COMMANDS */
 
 /* use this function fetch next artist entry, be sure to free the returned 
@@ -561,9 +557,49 @@ void mpd_sendNotCommandsCommand(mpd_Connection * connection);
 char *mpd_getNextCommand(mpd_Connection *connection);
 
 
+/**
+ * mpd_startSearch
+ * @connection: a #mpd_Connection
+ * @exact: if to match exact
+ *
+ * starts a search, use mpd_addConstraintSearch to add 
+ * a constraint to the search, and mpd_commitSearch to do the actual search
+ */
+void mpd_startSearch(mpd_Connection * connection,int exact);
+/**
+ * @connection: a #mpd_Connection
+ * @field:
+ * @name:
+ *
+ */
+void mpd_addConstraintSearch(mpd_Connection *connection, int field, char *name);
+/**
+ * @connection: a #mpd_Connection
+ *
+ */
+void mpd_commitSearch(mpd_Connection *connection);
 
+/**
+ * mpd_startFieldSearch
+ * @connection: a #mpd_Connection
+ * @field: The field to search
+ *
+ * starts a search for fields... f.e. get a list of artists would be:
+ * mpd_startFieldSearch(connection, MPD_TAG_ITEM_ARTIST);
+ * mpd_commitSearch(connection);
+ *
+ * or get a list of artist in genre "jazz" would be:
+ * mpd_startFieldSearch(connection, MPD_TAG_ITEM_ARTIST);
+ * mpd_addConstraintSearch(connection, MPD_TAG_ITEM_GENRE, "jazz")
+ * mpd_commitSearch(connection);
+ *
+ * mpd_startSearch will return  a list of songs (and you need mpd_getNextInfoEntity)
+ * this one will return a list of only one field (the field specified with #field) and you need
+ * mpd_getNextTag to get the results
+ */
+void mpd_startFieldSearch(mpd_Connection * connection,int field);
 
-#ifdef __cplusplus
+#ifdef _cplusplus
 }
 #endif
 
