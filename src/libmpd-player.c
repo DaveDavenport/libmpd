@@ -39,18 +39,7 @@ int mpd_player_get_state(MpdObj * mi)
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
 		return MPD_FAILED_STATUS;
 	}
-
-	switch (mi->status->state) {
-	case MPD_STATUS_STATE_PLAY:
-		return MPD_PLAYER_PLAY;
-	case MPD_STATUS_STATE_STOP:
-		return MPD_PLAYER_STOP;
-	case MPD_STATUS_STATE_PAUSE:
-		return MPD_PLAYER_PAUSE;
-	default:
-		return MPD_PLAYER_UNKNOWN;
-	}
-	return MPD_PLAYER_UNKNOWN;
+	return mi->status->state;
 }
 
 int mpd_player_get_current_song_id(MpdObj * mi)
@@ -65,7 +54,7 @@ int mpd_player_get_current_song_id(MpdObj * mi)
 	}
 	/* check if in valid state */
 	if (mpd_player_get_state(mi) != MPD_PLAYER_PLAY &&
-	    mpd_player_get_state(mi) != MPD_PLAYER_PAUSE) {
+			mpd_player_get_state(mi) != MPD_PLAYER_PAUSE) {
 		return -1;
 	}
 	/* just to be sure check */
@@ -87,7 +76,7 @@ int mpd_player_get_current_song_pos(MpdObj * mi)
 	}
 	/* check if in valid state */
 	if (mpd_player_get_state(mi) != MPD_PLAYER_PLAY &&
-	    mpd_player_get_state(mi) != MPD_PLAYER_PAUSE) {
+			mpd_player_get_state(mi) != MPD_PLAYER_PAUSE) {
 		return -1;
 	}
 	/* just to be sure check */
