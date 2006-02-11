@@ -99,20 +99,20 @@ extern "C" {
  * but a list of MpdData structs can hold structs with different type of values.
  * It's required to check every MpdData Structure.
  */
-	typedef enum _MpdDataType {
-		/** The MpdData structure holds no value*/
-		MPD_DATA_TYPE_NONE,
-		/** Holds an Tag String. value->tag is filled value->tag_type defines what type of tag.*/
-		MPD_DATA_TYPE_TAG,
-		/** Holds an Directory String. value->directory is filled.*/
-		MPD_DATA_TYPE_DIRECTORY,
-		/** Holds an MpdSong Structure. value->song is valid.*/
-		MPD_DATA_TYPE_SONG,
-		/** Holds an Playlist String. value->playlist is filled.*/
-		MPD_DATA_TYPE_PLAYLIST,
-		/** Holds an MpdOutputDevice structure. value->output_dev is valid.*/
-		MPD_DATA_TYPE_OUTPUT_DEV
-	} MpdDataType;
+typedef enum _MpdDataType {
+	/** The MpdData structure holds no value*/
+	MPD_DATA_TYPE_NONE,
+	/** Holds an Tag String. value->tag is filled value->tag_type defines what type of tag.*/
+	MPD_DATA_TYPE_TAG,
+	/** Holds an Directory String. value->directory is filled.*/
+	MPD_DATA_TYPE_DIRECTORY,
+	/** Holds an MpdSong Structure. value->song is valid.*/
+	MPD_DATA_TYPE_SONG,
+	/** Holds an Playlist String. value->playlist is filled.*/
+	MPD_DATA_TYPE_PLAYLIST,
+	/** Holds an MpdOutputDevice structure. value->output_dev is valid.*/
+	MPD_DATA_TYPE_OUTPUT_DEV
+} MpdDataType;
 
 /**
  * \ingroup #MpdData

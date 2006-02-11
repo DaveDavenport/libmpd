@@ -19,7 +19,7 @@
 
 
 /**
- * @defgroup Player
+ * @defgroup Player Player
  * These functions allow the client to control the player part of mpd. 
  * To use the read functions you need "read" permission on mpd.
  * To use the control functions you need "control" and "read" permission on mpd.
