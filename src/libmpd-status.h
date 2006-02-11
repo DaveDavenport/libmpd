@@ -20,203 +20,236 @@
 
 #ifndef __MPD_LIB_STATUS__
 #define __MPD_LIB_STATUS__
+/**\defgroup 20status Status
+ * Functions to get and modify the status/state of mpd.
+ */
+/*@{*/
 
 /**
- * mpd_status_check
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  *
  * Checks if there is status information is availibe, if not availible it tries to fetch it.
  * This function is called from within libmpd, and shouldn't be called from the program.
  *
- * returns: 0 when successful
+ * @returns 0 when successful
  */
 int 		mpd_status_check			(MpdObj *mi);
+
+
+
 /**
- * mpd_status_queue_update
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  *
  * Marks the current status invalid, the next time status is needed it will be fetched from mpd.
  *
- * returns: 0 when successful
+ * @returns 0 when successful
  */
 int 		mpd_status_queue_update			(MpdObj *mi);
+
+
+
 /**
- * mpd_status_update
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  *
  * Updates the status field from mpd.
  * Call this function ever 0.x seconds from the program's main-loop to recieve signals when mpd's status has changed.
  *
- * returns: 0 when succesfull
+ * @returns 0 when succesfull
  */
 int 		mpd_status_update			(MpdObj *mi);
+
+
+
 /**
- * mpd_status_set_volume_as_float
- * @mi: a #MpdObj
- * @fvol: an float between 0.0 and 1.0
+ * @param mi a #MpdObj
+ * @param fvol an float between 0.0 and 1.0
  *
  * Set the output volume
- * returns: the new volume or a value below 0 when failed.
+ * @returns the new volume or a value below 0 when failed.
  */
 float 		mpd_status_set_volume_as_float		(MpdObj *mi, float fvol);
 
+
 /**
- * mpd_status_set_volume
- * @mi: a #MpdObj
- * @volume: a value between 0 and 100.
+ * @param mi a #MpdObj
+ * @param volume a value between 0 and 100.
  *
  * Set the output volume
  *
- * returns: the new volume or < 0 when failed.
+ * @returns the new volume or < 0 when failed.
  */
 int 		mpd_status_set_volume			(MpdObj *mi,int volume);
+
+
+
 /**
- * mpd_status_get_volume:
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  *
  * Set the audio output volume.
  *
- * returns: the volume between 0 and 100 or < 0 when failed
+ * @returns the volume between 0 and 100 or < 0 when failed
  */
 int 		mpd_status_get_volume			(MpdObj *mi);
+
+
+
 /**
- * mpd_status_get_bitrate
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  *
  * get the bitrate of the current playing song in kbs. This is a constantly updating value. (for vbr songs)
  *
- * returns: bitrate in kbs
+ * @returns bitrate in kbs
  */
 int 		mpd_status_get_bitrate			(MpdObj *mi);
+
+
+
 /**
- * mpd_status_get_samplerate
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  *
  * get the samplerate of the current playing song in bps. 
  *
- * returns: samplerate in bps
+ * @returns samplerate in bps
  */
 unsigned int 	mpd_status_get_samplerate			(MpdObj *mi);
+
+
+
 /**
- * mpd_status_get_channels
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  *
  * get the number of channels in the current playing song. This is usually only 1(mono) or 2(stereo), but this might change in the future.
  *
- * returns: number of channels
+ * @returns number of channels
  */
 int 		mpd_status_get_channels			(MpdObj *mi);
+
+
+
 /**
- * mpd_status_get_bits
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  *
  * get the number of bits per sample of the current playing song. 
  *
- * returns: bits per sample 
+ * @returns bits per sample 
  */
 int 		mpd_status_get_bits			(MpdObj *mi);
 
+
+
 /**
- * mpd_status_get_total_song_time
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  *
  * get the total length of the currently playing song.
  *
- * returns: time in seconds or <0 when failed.
+ * @returns time in seconds or <0 when failed.
  */
 int		mpd_status_get_total_song_time		(MpdObj *mi);
 
+
 /**
- * mpd_status_get_elapsed_song_time
- * @mi: a #MpdObj 
+ * @param mi a #MpdObj 
  *
  * Gets the elapsed time of the currently playing song.
  *
- * returns: Time in seconds
+ * @returns Time in seconds
  */
 int		mpd_status_get_elapsed_song_time	(MpdObj *mi);
 
+
 /**
- * mpd_status_get_crossfade
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  * 
  * Get the crossfade time. 0 is disabled.
  *
- * returns: The crossfade time in seconds
+ * @returns The crossfade time in seconds
  */
 int		mpd_status_get_crossfade		(MpdObj *mi);
+
+
+
 /**
- * mpd_status_set_crossfade
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
+ * @param crossfade_time the time to crossfade in seconds
  *
  * Sets the crossfade time. 0 is disabled
  *
- * returns:
+ * @returns
  */
 int		mpd_status_set_crossfade		(MpdObj *mi, int crossfade_time);
+
+
+
 /**
- * mpd_stats_update
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  *
  * Shouldn't be used from the program.
  */
 int		mpd_stats_update			(MpdObj *mi);
 
+
 /**
- * mpd_stats_get_total_songs
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  *
  * Gets the total number of songs in the database
  *
- * returns: The total number of songs
+ * @returns The total number of songs
  */
 int		mpd_stats_get_total_songs		(MpdObj *mi);
+
+
 /**
- * mpd_stats_get_total_artists
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  *
  * Gets the total number of artists in the database.
  *
- * returns: The number of artists in the database
+ * @returns The number of artists in the database
  */
 int		mpd_stats_get_total_artists		(MpdObj *mi);
+
+
+
 /**
- * mpd_stats_get_total_albums
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  *
  * Gets the total number of albums in the database
  *
- * returns: The number of albums in the database
+ * @returns The number of albums in the database
  */
 int		mpd_stats_get_total_albums		(MpdObj *mi);
+
+
+
 /**
- * mpd_stats_get_uptime
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  *
  * Gets the time mpd is running
  * 
- * returns: time that mpd is running in seconds
+ * @returns time that mpd is running in seconds
  */
 int		mpd_stats_get_uptime			(MpdObj *mi);
+
+
+
 /**
- * mpd_stats_get_playtime
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  *
  * Gets the time mpd is playing
  * 
- * returns: time that mpd is playing in seconds
+ * @returns time that mpd is playing in seconds
  */
-
 int		mpd_stats_get_playtime			(MpdObj *mi);
+
+
+
 /**
- * mpd_status_db_is_updating
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  *
  * Checks if mpd is updating it's music db.
  * 
- * returns: TRUE if mpd is still updating, FALSE if not.
+ * @returns TRUE if mpd is still updating, FALSE if not.
  */
 int 		mpd_status_db_is_updating		(MpdObj *mi);
 
-
+/*@}*/
 #endif

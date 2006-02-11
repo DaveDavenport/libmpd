@@ -19,86 +19,93 @@
 
 #ifndef __MPD_LIB_DATABASE__
 #define __MPD_LIB_DATABASE__
+
+/** \defgroup 80database Database
+ */
+/*@{*/
+
+
+
 /**
- * mpd_database_get_albums
- * @mi: A #MpdObj
- * @artist: an artist name
+ * @param mi A #MpdObj
+ * @param artist an artist name
  *
  * Grab's a list of albums of a certain artist from mpd.
  * if artist is %NULL it grabs all albums
  *
- * returns: A #MpdData list.
+ * @returns A #MpdData list.
  */
 MpdData *	mpd_database_get_albums		(MpdObj *mi, char *artist);
 
+
 /**
- * mpd_database_get_artists
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  *
  * returns a list of all availible artists.
  *
- * returns: a #MpdData list
+ * @returns a #MpdData list
  */
 MpdData *	mpd_database_get_artists		(MpdObj *mi);
 
 
 /**
- * mpd_database_get_complete
- * @mi: a #MpdObj
+ * @param mi a #MpdObj
  *
  * Get's the complete datababse, only returns songs
  *
- * returns: a #MpdData list with songs
+ * @returns a #MpdData list with songs
  */
 
 MpdData * mpd_database_get_complete(MpdObj *mi);
 
 
 /**
- * mpd_atabase_update_dir
- *@mi: A #MpdObj
- *@path: The path mpd should update.
+ *@param mi A #MpdObj
+ *@param path The path mpd should update.
  *
  * Force mpd to update (parts of )the database.
  *
  */
 void		mpd_database_update_dir		(MpdObj *mi, char *path);
 
+
+
 /**
- * mpd_database_token_find
- * @mi: A #MpdObj
- * @string: The search string
+ * @param mi A #MpdObj
+ * @param string The search string
  *
  * client side search function with best "match" option..
  * It splits the search string into tokens. (on the ' ')  every token is then matched using regex.
  * So f.e. Murder Hooker|Davis  matches songs where title/filename/artist/album contains murder and hooker or murder davis in any order.
  * Warning: This function can be slow.
  *
- * returns: a #MpdData list
+ * @returns a #MpdData list
  */
 MpdData *	mpd_database_token_find		(MpdObj *mi , char *string);
 
+
+
 /**
- * mpd_database_delete_playlist
- * @mi: A #MpdObj
- * @path: path of the playlist
+ * @param mi A #MpdObj
+ * @param path path of the playlist
  *
  * Deletes a playlist.
- * returns:
+ * @returns
  */
 
 int mpd_database_delete_playlist(MpdObj *mi,char *path);
 
+
+
 /**
- * mpd_database_save_playlist
- * @mi: a #MpdObj
- * @name: The name of the playlist
+ * @param mi a #MpdObj
+ * @param name The name of the playlist
  *
  * Saves the current playlist to a file.
  *
- * returns: 0 if succesfull, #MPD_PLAYLIST_EXIST when the playlist allready exists, <0 when failed.
+ * @returns 0 if succesfull, #MPD_PLAYLIST_EXIST when the playlist allready exists, <0 when failed.
  */ 
 int		mpd_database_save_playlist			(MpdObj *mi, char *name);
 
-
+/*@}*/
 #endif

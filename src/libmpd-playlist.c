@@ -17,6 +17,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
+
+
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #define __USE_GNU
@@ -996,3 +1001,5 @@ MpdData * mpd_playlist_get_artists(MpdObj *mi) { return mpd_database_get_artists
 MpdData * mpd_playlist_token_find(MpdObj *mi, char *string) {return mpd_database_token_find(mi,string);}
 int mpd_playlist_delete(MpdObj *mi, char  *path) {return mpd_database_delete_playlist(mi, path);}
 int mpd_playlist_save(MpdObj *mi, char  *path) {return mpd_database_save_playlist(mi, path);}
+
+
