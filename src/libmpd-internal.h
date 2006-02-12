@@ -198,6 +198,6 @@ MpdData * mpd_playlist_sort_tag_list(MpdData *data);
 char * 		strndup					(const char *s, size_t n);
 #endif
 
-void mpd_server_get_allowed_commands(MpdObj *mi);
+int mpd_server_get_allowed_commands(MpdObj *mi);
 
 #endif

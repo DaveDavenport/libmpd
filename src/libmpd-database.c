@@ -266,7 +266,7 @@ int mpd_database_delete_playlist(MpdObj *mi,char *path)
 	if(path == NULL)
 	{
 		debug_printf(DEBUG_WARNING, "path == NULL");
-		return MPD_ERROR;
+		return MPD_ARGS_ERROR;
 	}
 	if(!mpd_check_connected(mi))
 	{
@@ -284,7 +284,7 @@ int mpd_database_delete_playlist(MpdObj *mi,char *path)
 
 	/* unlock */
 	mpd_unlock_conn(mi);
-	return FALSE;
+	return MPD_OK;
 }
 
 int mpd_database_save_playlist(MpdObj *mi, char *name)
@@ -292,7 +292,7 @@ int mpd_database_save_playlist(MpdObj *mi, char *name)
 	if(name == NULL || !strlen(name))
 	{
 		debug_printf(DEBUG_WARNING, "mpd_playlist_save: name != NULL  and strlen(name) > 0 failed");
-		return MPD_ERROR;
+		return MPD_ARGS_ERROR;
 	}
 	if(!mpd_check_connected(mi))
 	{
@@ -311,11 +311,10 @@ int mpd_database_save_playlist(MpdObj *mi, char *name)
 	{
 		mpd_clearError(mi->connection);
 		mpd_unlock_conn(mi);
-		return MPD_PLAYLIST_EXIST;
+		return MPD_DATABASE_PLAYLIST_EXIST;
 
 	}
-
 	/* unlock */
 	mpd_unlock_conn(mi);
-	return FALSE;
+	return MPD_OK;
 }

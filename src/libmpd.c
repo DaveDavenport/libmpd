@@ -51,6 +51,26 @@ char * strndup(const char *s, size_t n)
 	return p;
 }
 #endif
+static void mpd_init_MpdServerState(MpdServerState *state)
+{
+	state->playlistid 	= -1;
+	state->state 		= -1;
+	state->songid 		= -1;     	
+	state->songpos 		= -1;
+	state->dbUpdateTime 	= 0;
+	state->updatingDb 	= 0;
+	state->repeat 		= -1;
+	state->random 		= -1;
+	state->volume 		= -2;
+	state->xfade		= -1;
+	state->totaltime 	= 0;
+	state->elapsedtime 	= 0;
+	state->bitrate 		= 0;
+	state->samplerate 	= 0;
+	state->channels 	= 0;
+	state->bits 		= 0;
+
+}
 
 
 static MpdObj * mpd_create()
@@ -64,68 +84,36 @@ static MpdObj * mpd_create()
 
 
 	/* set default values */
+	/* we start not connected */
 	mi->connected = FALSE;
+	/* port 6600 is the default mpd port */
 	mi->port = 6600;
+	/* localhost */
 	mi->hostname = strdup("localhost");
+	/* no password */
 	mi->password = NULL;
+	/* 1 second timeout */
 	mi->connection_timeout = 1.0;
+	/* we have no connection pointer */
 	mi->connection = NULL;
+	/* no status */
 	mi->status = NULL;
+	/* no stats */
 	mi->stats = NULL;
 	mi->error = 0;
 	mi->error_mpd_code = 0;
 	mi->error_msg = NULL;
 	mi->CurrentSong = NULL;
 	/* info */
-	mi->CurrentState.playlistid = -1;
-	mi->CurrentState.state = -1;
-	mi->CurrentState.songid = -1;
-	mi->CurrentState.songpos = -1;
-	mi->CurrentState.dbUpdateTime = 0;
-	mi->CurrentState.updatingDb = 0;
-	mi->CurrentState.repeat = -1;
-	mi->CurrentState.random = -1;
-	mi->CurrentState.volume = -2;
-	mi->CurrentState.xfade	= -1;
-	mi->CurrentState.totaltime = 0;
-	mi->CurrentState.elapsedtime = 0;
-	mi->CurrentState.bitrate = 0;
-	mi->CurrentState.samplerate = 0;
-	mi->CurrentState.channels = 0;
-	mi->CurrentState.bits = 0;
-
+	mpd_init_MpdServerState(&(mi->CurrentState));
+	mpd_init_MpdServerState(&(mi->OldState));
+/*
 	memcpy(&(mi->OldState), &(mi->CurrentState), sizeof(MpdServerState));
-
-
-	/* signals */
-/*	mi->playlist_changed = NULL;
-	mi->playlist_changed_pointer = NULL;
-*/	/* song */
-/*	mi->song_changed = NULL;
-	mi->song_changed_signal_pointer = NULL;
-*/	/* status */
-/*	mi->status_changed = NULL;
-	mi->status_changed_signal_pointer = NULL;
-*/	/* state */
-/*	mi->state_changed = NULL;
-	mi->state_changed_signal_pointer = NULL;
-*/	/* database changed */
-/*	mi->database_changed = NULL;
-	mi->state_changed_signal_pointer = NULL;
-*/	/* disconnect signal */
-/*	mi->disconnect = NULL;
-	mi->disconnect_pointer = NULL;
-*/	/* connect signal */
-/*	mi->connect = NULL;
-	mi->connect_pointer = NULL;
-*/	/* updating db */
-/*	mi->updating_changed = NULL;
-	mi->updating_signal_pointer = NULL;
-*/	/* error signal */
-/*	mi->error_signal = NULL;
-	mi->error_signal_pointer = NULL;
 */
 
+	/**
+	 * Set signals to NULL 
+	 */
 	/* connection changed signal */
 	mi->the_connection_changed_callback = NULL;
 	mi->the_connection_changed_signal_userdata = NULL;
@@ -140,7 +128,9 @@ static MpdObj * mpd_create()
 	/* connection is locked because where not connected */
 	mi->connection_lock = TRUE;
 
+	/* set queue to NULL */
 	mi->queue = NULL;
+
 	/* commands */
 	mi->commands = NULL;
 	return mi;
@@ -191,19 +181,15 @@ int mpd_check_error(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		return FALSE;
+		debug_printf(DEBUG_ERROR, "mi == NULL?");
+		return MPD_ARGS_ERROR;
 	}
-/*
-	if(mi->error)
-	{
-		return TRUE;
-	}
-*/
+	
 	/* this shouldn't happen, ever */
 	if(mi->connection == NULL)
 	{
-		debug_printf(DEBUG_WARNING, "should this happen, mi->connection == NULL?");
-		return TRUE;
+		debug_printf(DEBUG_ERROR, "mi->connection == NULL?");
+		return MPD_FATAL_ERROR;
 	}
 
 	/* TODO: map these errors in the future */
@@ -234,49 +220,40 @@ int mpd_check_error(MpdObj *mi)
 
 		debug_printf(DEBUG_ERROR, "Following error occured: %i: code: %i msg: %s", mi->error,mi->connection->errorCode, mi->error_msg);
 		mpd_disconnect(mi);
-		/* deprecated */
-		/*		if(mi->error_signal)
-				{
-				mi->error_signal(mi, mi->error, mi->error_msg,mi->error_signal_pointer);
-				}
-				*/
 		if (mi->the_error_callback)
 		{
 			mi->the_error_callback(mi, mi->error, mi->error_msg, mi->the_error_signal_userdata );
 		}
 		free(mi->error_msg);
 		mi->error_msg = NULL;
-		
-		return TRUE;
+
+		return MPD_SERVER_ERROR;
 	}
 	free(mi->error_msg);
 	mi->error_msg = NULL;	
-	return FALSE;
+	return MPD_OK;
 }
 
 
 
 int mpd_lock_conn(MpdObj *mi)
 {
-	/*	debug_printf(DEBUG_INFO, "Locking connection\n");
-	*/
+
 	if(mi->connection_lock)
 	{
 		debug_printf(DEBUG_WARNING, "Failed to lock connection, already locked\n");
-		return TRUE;
+		return MPD_LOCK_FAILED;
 	}
 	mi->connection_lock = TRUE;
-	return FALSE;
+	return MPD_OK;
 }
 
 int mpd_unlock_conn(MpdObj *mi)
 {
-	/*	debug_printf(DEBUG_INFO, "mpd_unlock_conn: unlocking connection\n");
-	*/
 	if(!mi->connection_lock)
 	{
-		debug_printf(DEBUG_WARNING, "Failed to unlock connection, already unlocked\n");
-		return FALSE;
+		debug_printf(DEBUG_ERROR, "Failed to unlock connection, already unlocked\n");
+		return MPD_LOCK_FAILED;
 	}
 
 	mi->connection_lock = FALSE;
@@ -312,12 +289,12 @@ MpdObj *mpd_new(char *hostname,  int port, char *password)
 	return mi;
 }
 
-void mpd_set_hostname(MpdObj *mi, char *hostname)
+int mpd_set_hostname(MpdObj *mi, char *hostname)
 {
 	if(mi == NULL)
 	{
 		debug_printf(DEBUG_ERROR, "mi == NULL\n");
-		return;
+		return MPD_ARGS_ERROR;
 	}
 
 	if(mi->hostname != NULL)
@@ -326,14 +303,15 @@ void mpd_set_hostname(MpdObj *mi, char *hostname)
 	}
 	/* possible location todo some post processing of hostname */
 	mi->hostname = strdup(hostname);
+	return MPD_OK;
 }
 
-void mpd_set_password(MpdObj *mi, char *password)
+int mpd_set_password(MpdObj *mi, char *password)
 {
 	if(mi == NULL)
 	{
 		debug_printf(DEBUG_ERROR, "mi == NULL\n");
-		return;
+		return MPD_ARGS_ERROR;
 	}
 
 	if(mi->password != NULL)
@@ -342,25 +320,26 @@ void mpd_set_password(MpdObj *mi, char *password)
 	}
 	/* possible location todo some post processing of password */
 	mi->password = strdup(password);
+	return MPD_OK;
 }
 
 
-void mpd_send_password(MpdObj *mi)
+int mpd_send_password(MpdObj *mi)
 {
-	if(!mi) return;
+	if(!mi) return MPD_ARGS_ERROR;
 	if(mi->password && mpd_check_connected(mi))
 	{
 		if(mpd_lock_conn(mi))
 		{
 			debug_printf(DEBUG_WARNING, "failed to lock connection");
-			return;
+			return MPD_LOCK_FAILED;
 		}
 		mpd_sendPasswordCommand(mi->connection, mi->password);
 		mpd_finishCommand(mi->connection);
 		if(mpd_unlock_conn(mi))
 		{
 			debug_printf(DEBUG_ERROR, "Failed to unlock connection\n");
-			return;
+			return MPD_LOCK_FAILED;
 		}
 		mpd_server_get_allowed_commands(mi);
 		/*TODO: should I do it here, or in the
@@ -373,24 +352,26 @@ void mpd_send_password(MpdObj *mi)
 					MPD_CST_PERMISSION, mi->the_status_changed_signal_userdata );
 		}
 	}
+	return MPD_OK;
 }
 
-void mpd_set_port(MpdObj *mi, int port)
+int mpd_set_port(MpdObj *mi, int port)
 {
 	if(mi == NULL)
 	{
 		debug_printf(DEBUG_ERROR, "mi == NULL\n");
-		return;
+		return MPD_ARGS_ERROR;
 	}
 	mi->port = port;
+	return MPD_OK;
 }
 
-void mpd_set_connection_timeout(MpdObj *mi, float timeout)
+int mpd_set_connection_timeout(MpdObj *mi, float timeout)
 {
 	if(mi == NULL)
 	{
 		debug_printf(DEBUG_ERROR, "mi == NULL\n");
-		return;
+		return MPD_ARGS_ERROR;
 	}
 	mi->connection_timeout = timeout;
 	if(mpd_check_connected(mi))
@@ -398,8 +379,8 @@ void mpd_set_connection_timeout(MpdObj *mi, float timeout)
 		/*TODO: set timeout */	
 		if(mpd_lock_conn(mi))
 		{
-			debug_printf(DEBUG_WARNING,"lock failed\n");
-			return;
+			debug_printf(DEBUG_ERROR,"lock failed\n");
+			return MPD_LOCK_FAILED;
 		}
 		mpd_setConnectionTimeout(mi->connection, timeout);
 		mpd_finishCommand(mi->connection);
@@ -407,6 +388,7 @@ void mpd_set_connection_timeout(MpdObj *mi, float timeout)
 		mpd_unlock_conn(mi);
 
 	}
+	return MPD_OK;
 }
 
 static void mpd_server_free_commands(MpdObj *mi)
@@ -426,20 +408,29 @@ static void mpd_server_free_commands(MpdObj *mi)
 }
 
 
-void mpd_server_get_allowed_commands(MpdObj *mi)
+int mpd_server_get_allowed_commands(MpdObj *mi)
 {
 	char *temp = NULL;
 	int num_commands = 0;
-	if(!mi) return;
-	if(!mpd_check_connected(mi))return;
-	if(!mpd_server_check_version(mi,0,12,0)) return;
+	if(!mi){
+		debug_printf(DEBUG_ERROR, "mi != NULL failed\n");
+	       	return MPD_ARGS_ERROR;
+	}
+	if(!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "Not Connected");
+		return MPD_NOT_CONNECTED;
+	}
+	if(!mpd_server_check_version(mi,0,12,0)){
+		debug_printf(DEBUG_INFO, "Not supported by mpd");
+	       	return MPD_SERVER_NOT_SUPPORTED;
+	}
 
 	mpd_server_free_commands(mi);
 
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING, "lock failed");
-		return;
+		debug_printf(DEBUG_ERROR, "lock failed");
+		return MPD_LOCK_FAILED;
 	}
 	mpd_sendCommandsCommand(mi->connection);
 	while((temp = mpd_getNextCommand(mi->connection)))
@@ -465,7 +456,7 @@ void mpd_server_get_allowed_commands(MpdObj *mi)
 	mpd_finishCommand(mi->connection);
 
 	mpd_unlock_conn(mi);
-	return;
+	return MPD_OK;
 }
 
 
@@ -530,7 +521,7 @@ int mpd_disconnect(MpdObj *mi)
 		}
 		*/
 	mpd_server_free_commands(mi);
-	return FALSE;
+	return MPD_OK;
 }
 
 int mpd_connect(MpdObj *mi)
@@ -538,7 +529,8 @@ int mpd_connect(MpdObj *mi)
 	if(mi == NULL)
 	{
 		/* should return some spiffy error here */
-		return -1;
+		debug_printf(DEBUG_ERROR, "mi != NULL failed");
+		return MPD_ARGS_ERROR;
 	}
 	/* reset errors */
 	mi->error = 0;
@@ -550,22 +542,7 @@ int mpd_connect(MpdObj *mi)
 	mi->error_msg = NULL;
 
 	debug_printf(DEBUG_INFO, "connecting\n");
-	mi->CurrentState.playlistid = -1;
-	mi->CurrentState.state = -1;
-	mi->CurrentState.songid = -1;
-	mi->CurrentState.songpos = -1;
-	mi->CurrentState.dbUpdateTime = 0;
-	mi->CurrentState.updatingDb = 0;
-	mi->CurrentState.repeat = -1;
-	mi->CurrentState.random = -1;
-	mi->CurrentState.volume = -2;
-	mi->CurrentState.xfade	= -1;
-	mi->CurrentState.totaltime = 0;
-	mi->CurrentState.elapsedtime = 0;
-	mi->CurrentState.bitrate = 0;
-	mi->CurrentState.samplerate = 0; 
-	mi->CurrentState.channels = 0; 
-	mi->CurrentState.bits = 0;
+	mpd_init_MpdServerState(&(mi->CurrentState));
 
 	memcpy(&(mi->OldState), &(mi->CurrentState), sizeof(MpdServerState));
 
@@ -579,7 +556,7 @@ int mpd_connect(MpdObj *mi)
 	{
 		mpd_set_hostname(mi, "localhost");
 	}
-	/* make sure this is true */
+	/* make sure this is locked */
 	if(!mi->connection_lock)
 	{
 		mpd_lock_conn(mi);
@@ -588,26 +565,15 @@ int mpd_connect(MpdObj *mi)
 	mi->connection = mpd_newConnection(mi->hostname,mi->port,mi->connection_timeout);
 	if(mi->connection == NULL)
 	{
-		/* again spiffy error here */
-		return -1;
+		/* TODO: make seperate error message? */
+		return MPD_NOT_CONNECTED;
 	}
-	/*
-	 * We always connect anonymous
-	 */
-	/*
-	   if(mi->password != NULL && strlen(mi->password) > 0)
-	   {
-	   mpd_sendPasswordCommand(mi->connection, mi->password);
-	   mpd_finishCommand(mi->connection);
-
-	   }
-	   */
 
 	/* set connected state */
 	mi->connected = TRUE;
 	if(mpd_unlock_conn(mi))
 	{
-		return -1;
+		return MPD_LOCK_FAILED;
 	}
 
 	/* get the commands we are allowed to use */
@@ -618,14 +584,9 @@ int mpd_connect(MpdObj *mi)
 	{
 		mi->the_connection_changed_callback( mi, TRUE, mi->the_connection_changed_signal_userdata );
 	}
-	/* deprecated */
-	/*	if(mi->connect != NULL)
-		{
-		mi->connect(mi, mi->connect_pointer);
-		}
-		*/
+
 	debug_printf(DEBUG_INFO, "Connected to mpd");
-	return 0;
+	return MPD_OK;
 }
 
 int mpd_check_connected(MpdObj *mi)
@@ -637,36 +598,13 @@ int mpd_check_connected(MpdObj *mi)
 	return mi->connected;
 }
 
-/*
-   void mpd_signal_set_connect (MpdObj *mi, void *(* connect)(MpdObj *mi, void *pointer), void *connect_pointer)
-   {
-   if(mi == NULL)
-   {
-   debug_printf(DEBUG_ERROR, "mpd_signal_set_connect: MpdObj *mi == NULL");
-   return;
-   }
-   mi->connect = connect;
-   mi->connect_pointer = connect_pointer;
-   }
-   */
-/* SIGNALS */
-/*
-   void mpd_signal_set_disconnect (MpdObj *mi, void *(* disconnect)(MpdObj *mi, void *pointer), void *disconnect_pointer)
-   {
-   if(mi == NULL)
-   {
-   debug_printf(DEBUG_ERROR, "mpd_signal_set_disconnect: MpdObj *mi == NULL");
-   return;
-   }
-   mi->disconnect = disconnect;
-   mi->disconnect_pointer = disconnect_pointer;
-   }
-   */
+
 /* SIGNALS */
 void	mpd_signal_connect_status_changed        (MpdObj *mi, StatusChangedCallback status_changed, void *userdata)
 {
 	if(mi == NULL)
 	{
+		debug_printf(DEBUG_ERROR, "mi != NULL failed");
 		return;
 	}
 	mi->the_status_changed_callback = status_changed;
@@ -678,6 +616,7 @@ void	mpd_signal_connect_error(MpdObj *mi, ErrorCallback error_callback, void *us
 {
 	if(mi == NULL)
 	{
+		debug_printf(DEBUG_ERROR, "mi != NULL failed");
 		return;
 	}
 	mi->the_error_callback = error_callback;
@@ -688,95 +627,12 @@ void	mpd_signal_connect_connection_changed(MpdObj *mi, ConnectionChangedCallback
 {
 	if(mi == NULL)
 	{
+		debug_printf(DEBUG_ERROR, "mi != NULL failed");
 		return;
 	}
 	mi->the_connection_changed_callback = connection_changed;
 	mi->the_connection_changed_signal_userdata = userdata;
 }
-
-
-/*
-   void mpd_signal_set_playlist_changed (MpdObj *mi, void *(* playlist_changed)(MpdObj *mi, int old_playlist_id, int new_playlist_id,void *pointer), void *pointer)
-   {
-   if(mi == NULL)
-   {
-   debug_printf(DEBUG_ERROR, "mpd_signal_set_playlist_changed: MpdObj *mi == NULL");
-   return;
-   }
-   mi->playlist_changed = playlist_changed;
-   mi->playlist_changed_pointer = pointer;
-   }
-
-
-   void mpd_signal_set_song_changed (MpdObj *mi, void *(* song_changed)(MpdObj *mi, int old_song_id, int new_song_id, void *pointer),void *pointer)
-   {
-   if(mi == NULL)
-   {
-   debug_printf(DEBUG_ERROR, "mpd_signal_set_song_changed: MpdObj *mi == NULL");
-   return;
-   }
-   mi->song_changed = song_changed;
-   mi->song_changed_signal_pointer = pointer;
-   }
-
-
-   void mpd_signal_set_state_changed (MpdObj *mi, void *(* state_changed)(MpdObj *mi, int old_state, int new_state, void *pointer),void *pointer)
-   {
-   if(mi == NULL)
-   {
-   debug_printf(DEBUG_ERROR, "mpd_signal_set_state_changed: MpdObj *mi == NULL");
-   return;
-   }
-   mi->state_changed = state_changed;
-   mi->state_changed_signal_pointer = pointer;
-   }
-
-   void mpd_signal_set_database_changed (MpdObj *mi, void *(* database_changed)(MpdObj *mi, void *pointer), void *pointer)
-   {
-   if(mi == NULL)
-   {
-   debug_printf(DEBUG_ERROR, "mpd_signal_set_database_changed: MpdObj *mi == NULL");
-   return;
-   }
-   mi->database_changed = database_changed;
-   mi->database_changed_signal_pointer = pointer;
-   }
-
-
-   void mpd_signal_set_updating_changed (MpdObj *mi, void *(* updating_changed)(MpdObj *mi,int updating, void *pointer), void *pointer)
-   {
-   if(mi == NULL)
-   {
-   debug_printf(DEBUG_ERROR, "mpd_signal_set_updating_changed: MpdObj *mi == NULL");
-   return;
-   }
-   mi->updating_changed = updating_changed;
-   mi->updating_signal_pointer = pointer;
-   }
-
-   void mpd_signal_set_status_changed (MpdObj *mi, void *(* status_changed)(MpdObj *mi, void *pointer),void *pointer)
-   {
-   if(mi == NULL)
-   {
-   debug_printf(DEBUG_ERROR, "mpd_signal_set_state_changed: MpdObj *mi == NULL");
-   return;
-   }
-   mi->status_changed = status_changed;
-   mi->status_changed_signal_pointer = pointer;
-   }
-
-
-   void mpd_signal_set_error (MpdObj *mi, void *(* error_signal)(MpdObj *mi, int id, char *msg,void *pointer),void *pointer)
-{
-	if(mi == NULL)
-	{
-		debug_printf(DEBUG_ERROR, "mpd_signal_set_error: MpdObj *mi == NULL");
-		return;
-	}
-	mi->error_signal = error_signal;
-	mi->error_signal_pointer = pointer;
-}
-*/
 
 
 /* more playlist */
@@ -964,6 +820,7 @@ void mpd_data_free(MpdData *data)
 	unsigned int i;
 	if(data == NULL)
 	{
+		debug_printf(DEBUG_ERROR, "data != NULL Failed");
 		return;
 	}
 	head = mpd_data_get_head(data);
@@ -990,8 +847,14 @@ void mpd_data_free(MpdData *data)
 static void mpd_free_queue_ob(MpdObj *mi)
 {
 	MpdQueue *temp = NULL;
+	if(mi == NULL)
+	{
+		debug_printf(DEBUG_ERROR, "mi != NULL failed");
+		return;
+	}
 	if(mi->queue == NULL)
 	{
+		debug_printf(DEBUG_ERROR, "mi->queue != NULL failed");
 		return;
 	}	
 	mi->queue = mi->queue->first;
@@ -1211,7 +1074,7 @@ int mpd_misc_get_tag_by_name(char *name)
 	int i;
 	if(name == NULL)
 	{
-		return -1;
+		return MPD_ARGS_ERROR;
 	}
 	for(i=0; i < MPD_TAG_NUM_OF_ITEM_TYPES; i++)
 	{
@@ -1220,5 +1083,5 @@ int mpd_misc_get_tag_by_name(char *name)
 			return i;
 		}
 	}
-	return -1;
+	return MPD_TAG_NOT_FOUND;
 }

@@ -43,36 +43,38 @@ extern "C" {
 #define FALSE 0
 #endif
 
-
 /**
- * Action failed because there is no connection to an mpd daemon
+ * Enum that represent the errors libmpd functions can return 
  */
-#define MPD_NOT_CONNECTED -2
 
-/**
- * Failed to grab status
- */
-#define MPD_FAILED_STATUS -3
+typedef enum _MpdError {
+	/** Command/function completed succesfull */
+	MPD_OK = 0,
+	/** Error in the function's arguments */
+	MPD_ARGS_ERROR = -5,
+	/** Action failed because there is no connection to an mpd daemon */
+	MPD_NOT_CONNECTED = -10,
+	/** Failed to grab status*/
+	MPD_FAILED_STATUS  = -20,
+	/** Connection is still locked	 */
+	MPD_LOCK_FAILED  = -30,
+	/** Failed to grab status	 */
+	MPD_FAILED_STATS = -40,
+	/** Mpd server returned an error	 */
+	MPD_SERVER_ERROR = -50,
+	/** Mpd doesn't support this feature */
+	MPD_SERVER_NOT_SUPPORTED = -51,
 	
-/**
- * Connection is still locked
- */
-#define MPD_LOCK_FAILED -4
+	/**  The playlist allready extists	 */
+	MPD_DATABASE_PLAYLIST_EXIST  = -60,
 
-/**
- * Failed to grab status
- */
-#define MPD_FAILED_STATS -5
+	/** Tag ITem not found */
+	MPD_TAG_NOT_FOUND = -80,
 	
-/**
- * Mpd returned an error
- */
-#define MPD_ERROR -6
+	/** Fatal error, something I am not sure what todo with */
+	MPD_FATAL_ERROR = -1000
+}MpdError;
 
-/**
- * The playlist allready extists
- */
-#define MPD_PLAYLIST_EXIST -10
 
 
 /**
@@ -182,8 +184,10 @@ MpdObj *mpd_new(char *hostname, int port, char *password);
  *@param hostname The new hostname to use
  *
  * set the hostname
+ *
+ * @returns a #MpdError. (MPD_OK if everything went ok)
  */
-void mpd_set_hostname(MpdObj * mi, char *hostname);
+int mpd_set_hostname(MpdObj * mi, char *hostname);
 
 	
 /**
@@ -191,8 +195,10 @@ void mpd_set_hostname(MpdObj * mi, char *hostname);
  * @param password The new password to use
  *
  * Set the password
+ *
+ * @returns a #MpdError. (MPD_OK if everything went ok)
  */
-void mpd_set_password(MpdObj * mi, char *password);
+int mpd_set_password(MpdObj * mi, char *password);
 	
 	
 /**
@@ -200,8 +206,11 @@ void mpd_set_password(MpdObj * mi, char *password);
  * @param port The port to use. (Default: 6600)
  *
  * Set the Port number
+ *
+ *
+ * @returns a #MpdError. (MPD_OK if everything went ok)
  */
-void mpd_set_port(MpdObj * mi, int port);
+int mpd_set_port(MpdObj * mi, int port);
 
 
 
@@ -212,8 +221,10 @@ void mpd_set_port(MpdObj * mi, int port);
  *
  * Set the timeout of the connection.
  * If allready connected the timeout of the running connection
+ *
+ * @returns a #MpdError. (MPD_OK if everything went ok)
  */
-void mpd_set_connection_timeout(MpdObj * mi, float timeout);
+int mpd_set_connection_timeout(MpdObj * mi, float timeout);
 
 
 	
@@ -222,7 +233,8 @@ void mpd_set_connection_timeout(MpdObj * mi, float timeout);
  *
  * Connect to the mpd daemon.
  * Warning: mpd_connect connects anonymous, to authentificate use mpd_send_password
- * @returns returns 0 when successful
+ * 
+ * @returns returns a #MpdError, MPD_OK when successful
  */
 int mpd_connect(MpdObj * mi);
 
@@ -231,7 +243,7 @@ int mpd_connect(MpdObj * mi);
  * @param mi The #MpdObj to disconnect
  *
  * Disconnect the current connection
- * @returns False (always)
+ * @returns MPD_OK (always)
  */
 int mpd_disconnect(MpdObj * mi);
 
@@ -270,8 +282,10 @@ void mpd_free(MpdObj * mi);
  * @param mi a #MpdObj
  *
  * Forces libmpd to re-authenticate itself.
+ *
+ * @returns: a #MpdError
  */
-void mpd_send_password(MpdObj * mi);
+int mpd_send_password(MpdObj * mi);
 
 	
 
