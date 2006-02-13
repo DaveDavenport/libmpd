@@ -47,7 +47,7 @@ extern "C" {
  * Enum that represent the errors libmpd functions can return 
  */
 
-typedef enum _MpdError {
+typedef enum {
 	/** Command/function completed succesfull */
 	MPD_OK = 0,
 	/** Error in the function's arguments */
@@ -86,7 +86,7 @@ typedef enum _MpdError {
  *
  * enum that represents the state of a command.
  */
-	typedef enum _MpdServerCommand {
+	typedef enum {
 		MPD_SERVER_COMMAND_ALLOWED = TRUE,
 		MPD_SERVER_COMMAND_NOT_ALLOWED = FALSE,
 		MPD_SERVER_COMMAND_NOT_SUPPORTED = -1,
@@ -101,7 +101,7 @@ typedef enum _MpdError {
  * but a list of MpdData structs can hold structs with different type of values.
  * It's required to check every MpdData Structure.
  */
-typedef enum _MpdDataType {
+typedef enum {
 	/** The MpdData structure holds no value*/
 	MPD_DATA_TYPE_NONE,
 	/** Holds an Tag String. value->tag is filled value->tag_type defines what type of tag.*/
@@ -296,7 +296,7 @@ int mpd_send_password(MpdObj * mi);
 /**
  * Bitwise enumeration to determine what triggered the status_changed signals
  */
-typedef enum _ChangedStatusType {
+typedef enum {
 	/** The playlist has changed */
 	MPD_CST_PLAYLIST      = 0x0001,
 	/** The song position of the playing song has changed*/
