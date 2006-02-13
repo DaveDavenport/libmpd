@@ -44,7 +44,7 @@ int mpd_playlist_get_playlist_length(MpdObj *mi)
 		debug_printf(DEBUG_WARNING,"mpd_player_get_playlist_length: not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(!mpd_status_check(mi))
+	if(mpd_status_check(mi) != MPD_OK)
 	{
 		debug_printf(DEBUG_WARNING,"mpd_player_get_playlist_length: Failed grabbing status\n");
 		return MPD_NOT_CONNECTED;
@@ -64,7 +64,7 @@ long long mpd_playlist_get_playlist_id(MpdObj *mi)
 		debug_printf(DEBUG_WARNING,"mpd_player_get_playlist_id: not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(!mpd_status_check(mi))
+	if(mpd_status_check(mi) != MPD_OK)
 	{
 		debug_printf(DEBUG_WARNING,"mpd_player_get_playlist_id: Failed grabbing status\n");
 		return MPD_NOT_CONNECTED;
@@ -146,7 +146,7 @@ mpd_Song * mpd_playlist_get_current_song(MpdObj *mi)
 		return NULL;
 	}
 
-	if(!mpd_status_check(mi))
+	if(mpd_status_check(mi) != MPD_OK)
 	{
 		debug_printf(DEBUG_ERROR, "mpd_playlist_get_current_song: Failed to check status\n");
 		return NULL;

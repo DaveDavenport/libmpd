@@ -35,7 +35,7 @@ int mpd_player_get_state(MpdObj * mi)
 		debug_printf(DEBUG_WARNING, "not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if (!mpd_status_check(mi)) {
+	if (mpd_status_check(mi) != MPD_OK) {
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
 		return MPD_STATUS_FAILED;
 	}
@@ -48,7 +48,7 @@ int mpd_player_get_current_song_id(MpdObj * mi)
 		debug_printf(DEBUG_WARNING, "not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if (!mpd_status_check(mi)) {
+	if (mpd_status_check(mi) != MPD_OK) {
 		debug_printf(DEBUG_ERROR, "to get status\n");
 		return MPD_STATUS_FAILED;
 	}
@@ -70,7 +70,7 @@ int mpd_player_get_current_song_pos(MpdObj * mi)
 		debug_printf(DEBUG_WARNING, "not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if (!mpd_status_check(mi)) {
+	if (mpd_status_check(mi)!= MPD_OK) {
 		debug_printf(DEBUG_ERROR, "Failed to get status\n");
 		return MPD_STATUS_FAILED;
 	}
@@ -243,7 +243,7 @@ int mpd_player_get_repeat(MpdObj * mi)
 		debug_printf(DEBUG_WARNING, "not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if (!mpd_status_check(mi)) {
+	if (mpd_status_check(mi) != MPD_OK) {
 		debug_printf(DEBUG_WARNING, "Failed grabbing status\n");
 		return MPD_NOT_CONNECTED;
 	}
@@ -277,7 +277,7 @@ int mpd_player_get_random(MpdObj * mi)
 		debug_printf(DEBUG_WARNING, "not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if (!mpd_status_check(mi)) {
+	if (mpd_status_check(mi) != MPD_OK) {
 		debug_printf(DEBUG_WARNING, "Failed grabbing status\n");
 		return MPD_NOT_CONNECTED;
 	}

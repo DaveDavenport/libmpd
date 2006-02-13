@@ -327,7 +327,7 @@ int mpd_status_get_volume(MpdObj *mi)
 		debug_printf(DEBUG_ERROR, "failed to check mi == NULL\n");
 		return MPD_ARGS_ERROR;
 	}
-	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
+	if(mpd_status_check(mi) != MPD_OK)
 	{
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
 		return MPD_STATUS_FAILED;
@@ -343,7 +343,7 @@ int mpd_status_get_bitrate(MpdObj *mi)
 		debug_printf(DEBUG_ERROR,"failed to check mi == NULL\n");
 		return MPD_ARGS_ERROR;
 	}
-	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
+	if(mpd_status_check(mi) != MPD_OK)
 	{
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
 		return MPD_STATUS_FAILED;
@@ -358,7 +358,7 @@ int mpd_status_get_channels(MpdObj *mi)
 		debug_printf(DEBUG_ERROR,"failed to check mi == NULL\n");
 		return MPD_ARGS_ERROR;
 	}
-	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
+	if(mpd_status_check(mi) != MPD_OK)
 	{
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
 		return MPD_STATUS_FAILED;
@@ -373,7 +373,7 @@ unsigned int mpd_status_get_samplerate(MpdObj *mi)
 		debug_printf(DEBUG_ERROR,"failed to check mi == NULL\n");
 		return MPD_ARGS_ERROR;
 	}
-	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
+	if(mpd_status_check(mi) != MPD_OK)
 	{
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
 		return MPD_STATUS_FAILED;
@@ -388,7 +388,7 @@ int mpd_status_get_bits(MpdObj *mi)
 		debug_printf(DEBUG_WARNING,"failed to check mi == NULL\n");
 		return MPD_ARGS_ERROR;
 	}
-	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
+	if(mpd_status_check(mi) != MPD_OK)
 	{
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
 		return MPD_STATUS_FAILED;
@@ -410,7 +410,7 @@ int mpd_status_get_total_song_time(MpdObj *mi)
 		debug_printf(DEBUG_ERROR, "failed to check mi == NULL\n");
 		return MPD_ARGS_ERROR;
 	}
-	if(!mpd_status_check(mi))
+	if(mpd_status_check(mi) != MPD_OK)
 	{
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
 		return MPD_STATUS_FAILED;
@@ -426,7 +426,7 @@ int mpd_status_get_elapsed_song_time(MpdObj *mi)
 		debug_printf(DEBUG_WARNING,"failed to check mi == NULL\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(!mpd_status_check(mi))
+	if(mpd_status_check(mi) != MPD_OK)
 	{
 		debug_printf(DEBUG_WARNING,"Failed to get status\n");
 		return MPD_STATUS_FAILED;
@@ -469,7 +469,7 @@ int mpd_status_get_crossfade(MpdObj *mi)
 		debug_printf(DEBUG_WARNING,"not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(!mpd_status_check(mi))
+	if(mpd_status_check(mi) != MPD_OK)
 	{
 		debug_printf(DEBUG_WARNING,"Failed grabbing status\n");
 		return MPD_NOT_CONNECTED;
