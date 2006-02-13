@@ -76,7 +76,10 @@ void		mpd_database_update_dir		(MpdObj *mi, char *path);
  *
  * client side search function with best "match" option..
  * It splits the search string into tokens. (on the ' ')  every token is then matched using regex.
- * So f.e. Murder Hooker|Davis  matches songs where title/filename/artist/album contains murder and hooker or murder davis in any order.
+ * It not tokenize between [()].
+ *
+ * So f.e. Murder Hooker|Davis  matches songs where title/filename/artist/album contains murder and hooker or murder and davis in any order.
+ *
  * Warning: This function can be slow.
  *
  * @returns a #MpdData list
@@ -103,7 +106,8 @@ int mpd_database_delete_playlist(MpdObj *mi,char *path);
  *
  * Saves the current playlist to a file.
  *
- * @returns 0 if succesfull, #MPD_PLAYLIST_EXIST when the playlist allready exists, <0 when failed.
+ * @returns a #MpdError. #MPD_OK if succesfull,
+ * #MPD_DATABASE_PLAYLIST_EXIST when the playlist allready exists.
  */ 
 int		mpd_database_save_playlist			(MpdObj *mi, char *name);
 

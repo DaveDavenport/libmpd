@@ -37,7 +37,7 @@ int mpd_player_get_state(MpdObj * mi)
 	}
 	if (!mpd_status_check(mi)) {
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
 	return mi->status->state;
 }
@@ -50,16 +50,16 @@ int mpd_player_get_current_song_id(MpdObj * mi)
 	}
 	if (!mpd_status_check(mi)) {
 		debug_printf(DEBUG_ERROR, "to get status\n");
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
 	/* check if in valid state */
 	if (mpd_player_get_state(mi) != MPD_PLAYER_PLAY &&
 			mpd_player_get_state(mi) != MPD_PLAYER_PAUSE) {
-		return -1;
+		return MPD_PLAYER_NOT_PLAYING;
 	}
 	/* just to be sure check */
 	if (!mi->status->playlistLength) {
-		return -1;
+		return MPD_PLAYLIST_EMPTY;
 	}
 	return mi->status->songid;
 }
@@ -72,16 +72,16 @@ int mpd_player_get_current_song_pos(MpdObj * mi)
 	}
 	if (!mpd_status_check(mi)) {
 		debug_printf(DEBUG_ERROR, "Failed to get status\n");
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
 	/* check if in valid state */
 	if (mpd_player_get_state(mi) != MPD_PLAYER_PLAY &&
 			mpd_player_get_state(mi) != MPD_PLAYER_PAUSE) {
-		return -1;
+		return MPD_PLAYER_NOT_PLAYING;
 	}
 	/* just to be sure check */
 	if (!mi->status->playlistLength) {
-		return -1;
+		return MPD_PLAYLIST_EMPTY;
 	}
 	return mi->status->song;
 }
@@ -104,9 +104,9 @@ int mpd_player_play_id(MpdObj * mi, int id)
 
 	mpd_unlock_conn(mi);
 	if (mpd_status_update(mi)) {
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
-	return FALSE;
+	return MPD_OK;
 }
 
 int mpd_player_play(MpdObj * mi)
@@ -131,9 +131,9 @@ int mpd_player_stop(MpdObj * mi)
 
 	mpd_unlock_conn(mi);
 	if (mpd_status_update(mi)) {
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
-	return FALSE;
+	return MPD_OK;
 }
 
 int mpd_player_next(MpdObj * mi)
@@ -153,9 +153,9 @@ int mpd_player_next(MpdObj * mi)
 
 	mpd_unlock_conn(mi);
 	if (mpd_status_update(mi)) {
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
-	return FALSE;
+	return MPD_OK;
 }
 
 int mpd_player_prev(MpdObj * mi)
@@ -175,9 +175,9 @@ int mpd_player_prev(MpdObj * mi)
 
 	mpd_unlock_conn(mi);
 	if (mpd_status_update(mi)) {
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
-	return FALSE;
+	return MPD_OK;
 }
 
 
@@ -203,17 +203,17 @@ int mpd_player_pause(MpdObj * mi)
 
 	mpd_unlock_conn(mi);
 	if (mpd_status_update(mi)) {
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
-	return FALSE;
+	return MPD_OK;
 }
 
 int mpd_player_seek(MpdObj * mi, int sec)
 {
 	int cur_song = mpd_player_get_current_song_pos(mi);
 	if (cur_song < 0) {
-		debug_printf(DEBUG_WARNING, "failed to get current song pos\n");
-		return MPD_NOT_CONNECTED;
+		debug_printf(DEBUG_ERROR, "mpd_player_get_current_song_pos returned error\n");
+		return cur_song;
 	}
 	if (!mpd_check_connected(mi)) {
 		debug_printf(DEBUG_WARNING, "not connected\n");
@@ -232,9 +232,9 @@ int mpd_player_seek(MpdObj * mi, int sec)
 
 	mpd_unlock_conn(mi);
 	if (mpd_status_update(mi)) {
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
-	return FALSE;
+	return MPD_OK;
 }
 
 int mpd_player_get_repeat(MpdObj * mi)
@@ -266,7 +266,7 @@ int mpd_player_set_repeat(MpdObj * mi, int repeat)
 
 	mpd_unlock_conn(mi);
 	mpd_status_queue_update(mi);
-	return FALSE;
+	return MPD_OK;
 }
 
 
@@ -300,5 +300,5 @@ int mpd_player_set_random(MpdObj * mi, int random)
 
 	mpd_unlock_conn(mi);
 	mpd_status_queue_update(mi);
-	return FALSE;
+	return MPD_OK;
 }

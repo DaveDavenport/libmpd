@@ -909,7 +909,7 @@ long unsigned mpd_server_get_database_update_time(MpdObj *mi)
 	if(!mpd_stats_check(mi))
 	{
 		debug_printf(DEBUG_WARNING,"Failed grabbing status\n");
-		return MPD_FAILED_STATS;
+		return MPD_STATS_FAILED;
 	}
 	return mi->stats->dbUpdateTime;
 }

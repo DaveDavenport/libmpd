@@ -53,7 +53,7 @@ long long	mpd_playlist_get_old_playlist_id         (MpdObj *mi);
  *
  * returns the mpd_Song for playlist entry with songid.
  *
- * @returns a #mpd_Song
+ * @returns a mpd_Song
  */
 mpd_Song *	mpd_playlist_get_song			(MpdObj *mi, int songid);
 
@@ -63,7 +63,7 @@ mpd_Song *	mpd_playlist_get_song			(MpdObj *mi, int songid);
  *
  * returns the mpd_Song for the currently playing song
  *
- * @returns a #mpd_Song
+ * @returns a mpd_Song
  */
 mpd_Song *	mpd_playlist_get_current_song		(MpdObj *mi);
 

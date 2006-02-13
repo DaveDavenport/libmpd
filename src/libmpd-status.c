@@ -279,7 +279,7 @@ int mpd_stats_get_total_songs(MpdObj *mi)
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_ERROR,"Failed to get status\n");
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
 	return mi->stats->numberOfSongs;
 }
@@ -294,7 +294,7 @@ int mpd_stats_get_total_artists(MpdObj *mi)
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"Failed to get status\n");
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
 	return mi->stats->numberOfArtists;
 }
@@ -309,7 +309,7 @@ int mpd_stats_get_total_albums(MpdObj *mi)
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"Failed to get status\n");
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
 	return mi->stats->numberOfAlbums;
 }
@@ -325,7 +325,7 @@ int mpd_stats_get_uptime(MpdObj *mi)
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"Failed to get status\n");
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
 	return mi->stats->uptime;
 }
@@ -340,7 +340,7 @@ int mpd_stats_get_playtime(MpdObj *mi)
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"Failed to get status\n");
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
 	return mi->stats->playTime;
 }
@@ -354,7 +354,7 @@ int mpd_status_get_volume(MpdObj *mi)
 	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
 	return mi->status->volume;
 }
@@ -370,7 +370,7 @@ int mpd_status_get_bitrate(MpdObj *mi)
 	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
 	return mi->CurrentState.bitrate;
 }
@@ -385,7 +385,7 @@ int mpd_status_get_channels(MpdObj *mi)
 	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
 	return mi->CurrentState.channels;
 }
@@ -400,7 +400,7 @@ unsigned int mpd_status_get_samplerate(MpdObj *mi)
 	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
 	return mi->CurrentState.samplerate;
 }
@@ -415,7 +415,7 @@ int mpd_status_get_bits(MpdObj *mi)
 	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
 	return mi->CurrentState.bits;
 }
@@ -437,7 +437,7 @@ int mpd_status_get_total_song_time(MpdObj *mi)
 	if(!mpd_status_check(mi))
 	{
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
 	if(mi->status == NULL)
 	{
@@ -458,7 +458,7 @@ int mpd_status_get_elapsed_song_time(MpdObj *mi)
 	if(!mpd_status_check(mi))
 	{
 		debug_printf(DEBUG_WARNING,"Failed to get status\n");
-		return MPD_FAILED_STATUS;
+		return MPD_STATUS_FAILED;
 	}
 	return mi->status->elapsedTime;
 }

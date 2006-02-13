@@ -36,10 +36,12 @@ extern "C" {
 #include <regex.h>
 
 #ifndef TRUE
+/** Defined for readability: True is 1. */
 #define TRUE 1
 #endif
 
 #ifndef FALSE
+/** Defined for readability: False is 0. */
 #define FALSE 0
 #endif
 
@@ -55,11 +57,11 @@ typedef enum {
 	/** Action failed because there is no connection to an mpd daemon */
 	MPD_NOT_CONNECTED = -10,
 	/** Failed to grab status*/
-	MPD_FAILED_STATUS  = -20,
+	MPD_STATUS_FAILED  = -20,
 	/** Connection is still locked	 */
 	MPD_LOCK_FAILED  = -30,
 	/** Failed to grab status	 */
-	MPD_FAILED_STATS = -40,
+	MPD_STATS_FAILED = -40,
 	/** Mpd server returned an error	 */
 	MPD_SERVER_ERROR = -50,
 	/** Mpd doesn't support this feature */
@@ -67,9 +69,13 @@ typedef enum {
 	
 	/**  The playlist allready extists	 */
 	MPD_DATABASE_PLAYLIST_EXIST  = -60,
+	/** Playlist is empty */
+	MPD_PLAYLIST_EMPTY = -70,
+	/** Player isn't Playing */
+	MPD_PLAYER_NOT_PLAYING = -80,
 
 	/** Tag ITem not found */
-	MPD_TAG_NOT_FOUND = -80,
+	MPD_TAG_NOT_FOUND = -90,
 	
 	/** Fatal error, something I am not sure what todo with */
 	MPD_FATAL_ERROR = -1000
@@ -80,18 +86,18 @@ typedef enum {
 /**
  *  The Main Mpd Object. Don't access any of the internal values directly, but use the provided functions.
  */
-	typedef struct _MpdObj MpdObj;
+typedef struct _MpdObj MpdObj;
 
 /**
  *
  * enum that represents the state of a command.
  */
-	typedef enum {
-		MPD_SERVER_COMMAND_ALLOWED = TRUE,
-		MPD_SERVER_COMMAND_NOT_ALLOWED = FALSE,
-		MPD_SERVER_COMMAND_NOT_SUPPORTED = -1,
-		MPD_SERVER_COMMAND_ERROR = -2
-	} MpdServerCommand;
+typedef enum {
+	MPD_SERVER_COMMAND_ALLOWED = TRUE,
+	MPD_SERVER_COMMAND_NOT_ALLOWED = FALSE,
+	MPD_SERVER_COMMAND_NOT_SUPPORTED = -1,
+	MPD_SERVER_COMMAND_ERROR = -2
+} MpdServerCommand;
 
 
 /**
@@ -120,27 +126,26 @@ typedef enum {
  * \ingroup #MpdData
  * A fast linked list that is used to pass data from libmpd to the client.
  */
-	typedef struct _MpdData {
-		/** a #MpdDataType */
-		MpdDataType type;
-
-		union {
-			struct {
-				/** a #MpdTagType defining what #tag contains */
-				int tag_type;
-				/** a string containing the tag*/
-				char *tag;
-			};
-			/** a directory */
-			char *directory;
-			/** a path to a playlist */
-			char *playlist;
-			/** a  mpd_Song */
-			mpd_Song *song;
-			/** an output device entity */
-			mpd_OutputEntity *output_dev;
+typedef struct _MpdData {
+	/** a #MpdDataType */
+	MpdDataType type;
+	union {
+		struct {
+			/** a #MpdTagType defining what #tag contains */
+			int tag_type;
+			/** a string containing the tag*/
+			char *tag;
 		};
-	} MpdData;
+		/** a directory */
+		char *directory;
+		/** a path to a playlist */
+		char *playlist;
+		/** a  mpd_Song */
+		mpd_Song *song;
+		/** an output device entity */
+		mpd_OutputEntity *output_dev;
+	};
+} MpdData;
 
 
 #include "libmpd-player.h"
@@ -155,9 +160,13 @@ typedef enum {
  * mpd_new_default
  *
  * Create an new #MpdObj with default settings.
- * hostname will be set to "localhost"
- * port will be 6600
- * same as calling #mpd_new("localhost",6600,NULL)
+ * Hostname will be set to "localhost".
+ * Port will be 6600.
+ * 
+ * same as calling:
+ * @code
+ * mpd_new("localhost",6600,NULL);
+ * @endcode
  *
  * @returns the new #MpdObj
  */
@@ -185,7 +194,7 @@ MpdObj *mpd_new(char *hostname, int port, char *password);
  *
  * set the hostname
  *
- * @returns a #MpdError. (MPD_OK if everything went ok)
+ * @returns a #MpdError. (#MPD_OK if everything went ok)
  */
 int mpd_set_hostname(MpdObj * mi, char *hostname);
 
@@ -196,7 +205,7 @@ int mpd_set_hostname(MpdObj * mi, char *hostname);
  *
  * Set the password
  *
- * @returns a #MpdError. (MPD_OK if everything went ok)
+ * @returns a #MpdError. (#MPD_OK if everything went ok)
  */
 int mpd_set_password(MpdObj * mi, char *password);
 	
@@ -208,7 +217,7 @@ int mpd_set_password(MpdObj * mi, char *password);
  * Set the Port number
  *
  *
- * @returns a #MpdError. (MPD_OK if everything went ok)
+ * @returns a #MpdError. (#MPD_OK if everything went ok)
  */
 int mpd_set_port(MpdObj * mi, int port);
 
@@ -232,7 +241,7 @@ int mpd_set_connection_timeout(MpdObj * mi, float timeout);
  * @param mi a #MpdObj
  *
  * Connect to the mpd daemon.
- * Warning: mpd_connect connects anonymous, to authentificate use mpd_send_password
+ * Warning: mpd_connect connects anonymous, to authentificate use #mpd_send_password
  * 
  * @returns returns a #MpdError, MPD_OK when successful
  */
@@ -282,6 +291,8 @@ void mpd_free(MpdObj * mi);
  * @param mi a #MpdObj
  *
  * Forces libmpd to re-authenticate itself.
+ * 
+ * When succesfull it will trigger the "permission" changed signal.
  *
  * @returns: a #MpdError
  */
@@ -295,6 +306,22 @@ int mpd_send_password(MpdObj * mi);
 
 /**
  * Bitwise enumeration to determine what triggered the status_changed signals
+ * This is used in combination with the #StatusChangedCallback
+ * @code
+ * void status_changed_callback(MpdObj *mi, ChangedStatusType what)
+ * {
+ *	if(what&MPD_CST_SONGID)
+ *	{
+ *		// act on song change 
+ *
+ *	}
+ *	if(what&MPD_CST_RANDOM)
+ *	{
+ *		// act on random change
+ *	}
+ *	// etc.
+ * }
+ * @endcode
  */
 typedef enum {
 	/** The playlist has changed */
@@ -430,6 +457,13 @@ void mpd_data_free(MpdData * data);
  * Returns the next #MpdData in the list.
  * If it's the last item in the list, it will free the list.
  *
+ * You can itterate through a list like this and have it free'ed afterwards.
+ * @code
+ *	for(data = mpd_database_get_albums(mi);data != NULL; data = mpd_data_get_next(data))
+ *	{
+ *		// do your thing
+ *	}
+ * @endcode
  * @returns The next #MpdData or %NULL
  */
 MpdData *mpd_data_get_next(MpdData * data);
@@ -511,7 +545,7 @@ long unsigned mpd_server_get_database_update_time(MpdObj * mi);
  *
  * Checks if the connected mpd server version is equal or higer.
  *
- * @returns True or False
+ * @returns #TRUE when version of mpd equals or is higher, else #FALSE
  */
 int mpd_server_check_version(MpdObj * mi, int major, int minor, int micro);
 

@@ -47,8 +47,13 @@ typedef enum {
  * \param mi a #MpdObj
  *
  * Sends mpd the play command.
+ * 
+ * This equals:
+ * @code
+ * mpd_player_play_id(mi, -1);
+ * @endcode
  *
- * @returns 0 when successful
+ * @returns a #MpdError
  */
 int mpd_player_play(MpdObj * mi);
 
@@ -60,7 +65,7 @@ int mpd_player_play(MpdObj * mi);
  *
  * Plays the song with id
  *
- * @returns 0 when successfull
+ * @returns a #MpdError
  */
 int mpd_player_play_id(MpdObj * mi, int id);
 
@@ -70,7 +75,7 @@ int mpd_player_play_id(MpdObj * mi, int id);
  *
  * Sends mpd the stop command.
  *
- * @returns 0 when successful
+ * @returns a #MpdError
  */
 int mpd_player_stop(MpdObj * mi);
 
@@ -80,7 +85,7 @@ int mpd_player_stop(MpdObj * mi);
  *
  * Sends mpd the next command.
  *
- * @returns 0 when successful
+ * @returns a #MpdError
  */
 int mpd_player_next(MpdObj * mi);
 
@@ -90,7 +95,7 @@ int mpd_player_next(MpdObj * mi);
  *
  * Sends mpd the prev command.
  *
- * @returns 0 when successful
+ * @returns a #MpdError
  */
 int mpd_player_prev(MpdObj * mi);
 
@@ -100,7 +105,7 @@ int mpd_player_prev(MpdObj * mi);
  *
  * Sends mpd the pause command.
  *
- * @returns 0 when successful
+ * @returns a #MpdError
  */
 int mpd_player_pause(MpdObj * mi);
 
@@ -178,7 +183,7 @@ int mpd_player_set_random(MpdObj * mi, int random);
  * @param sec Position to seek to. (in seconds)
  *
  * Seek through the current song.
- * @returns 0 when successful
+ * @returns a #MpdError
  */
 int mpd_player_seek(MpdObj * mi, int sec);
 
