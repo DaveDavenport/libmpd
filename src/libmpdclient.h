@@ -31,6 +31,10 @@
 
 */
 
+/** \defgroup libmpdclient Libmpdclient low level functions
+ * Libmpdclient library that libmpd wraps.
+ */
+/*@{*/
 #ifndef LIBMPDCLIENT_H
 #define LIBMPDCLIENT_H
 
@@ -532,69 +536,66 @@ void mpd_sendDisableOutputCommand(mpd_Connection * connection, int outputId);
 void mpd_freeOutputElement(mpd_OutputEntity * output);
 
 /**
- * mpd_sendCommandsCommand
- * @connection: a #mpd_Connection
+ * @param connection a #mpd_Connection
  * 
  * Queries mpd for the allowed commands
  */
 void mpd_sendCommandsCommand(mpd_Connection * connection);
 /**
- * mpd_sendNotCommandsCommand
- * @connection: a #mpd_Connection
+ * @param connection a #mpd_Connection
  * 
  * Queries mpd for the not allowed commands
  */
 void mpd_sendNotCommandsCommand(mpd_Connection * connection);
 
 /**
- * mpd_getNextCommand
- * @connection: a #mpd_Connection
+ * @param connection a #mpd_Connection
  *
  * returns the next supported command.
  *
- * returns: a string, needs to be free'ed
+ * @returns a string, needs to be free'ed
  */
 char *mpd_getNextCommand(mpd_Connection *connection);
 
 
 /**
- * mpd_startSearch
- * @connection: a #mpd_Connection
- * @exact: if to match exact
+ * @param connection a #mpd_Connection
+ * @param exact if to match exact
  *
  * starts a search, use mpd_addConstraintSearch to add 
  * a constraint to the search, and mpd_commitSearch to do the actual search
  */
 void mpd_startSearch(mpd_Connection * connection,int exact);
 /**
- * @connection: a #mpd_Connection
- * @field:
- * @name:
+ * @param connection a #mpd_Connection
+ * @param field
+ * @param name
  *
  */
 void mpd_addConstraintSearch(mpd_Connection *connection, int field, char *name);
 /**
- * @connection: a #mpd_Connection
+ * @param connection a #mpd_Connection
  *
  */
 void mpd_commitSearch(mpd_Connection *connection);
 
 /**
- * mpd_startFieldSearch
- * @connection: a #mpd_Connection
- * @field: The field to search
+ * @param connection a #mpd_Connection
+ * @param field The field to search
  *
  * starts a search for fields... f.e. get a list of artists would be:
  * mpd_startFieldSearch(connection, MPD_TAG_ITEM_ARTIST);
  * mpd_commitSearch(connection);
  *
  * or get a list of artist in genre "jazz" would be:
+ * @code
  * mpd_startFieldSearch(connection, MPD_TAG_ITEM_ARTIST);
  * mpd_addConstraintSearch(connection, MPD_TAG_ITEM_GENRE, "jazz")
  * mpd_commitSearch(connection);
+ * @endcode
  *
  * mpd_startSearch will return  a list of songs (and you need mpd_getNextInfoEntity)
- * this one will return a list of only one field (the field specified with #field) and you need
+ * this one will return a list of only one field (the field specified with field) and you need
  * mpd_getNextTag to get the results
  */
 void mpd_startFieldSearch(mpd_Connection * connection,int field);
@@ -604,3 +605,4 @@ void mpd_startFieldSearch(mpd_Connection * connection,int field);
 #endif
 
 #endif
+/*@}*/

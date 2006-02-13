@@ -131,7 +131,7 @@ typedef struct _MpdData {
 	MpdDataType type;
 	union {
 		struct {
-			/** a #MpdTagType defining what #tag contains */
+			/** a #mpd_TagType defining what #tag contains */
 			int tag_type;
 			/** a string containing the tag*/
 			char *tag;

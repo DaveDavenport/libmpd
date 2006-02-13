@@ -32,6 +32,9 @@
 
 
 #ifndef HAVE_STRNDUP
+/**
+ * Not every platfarm has strndup, so here we have a nice little custom implementation
+ */
 char * strndup(const char *s, size_t n)
 {
 	size_t nAvail;
@@ -51,6 +54,11 @@ char * strndup(const char *s, size_t n)
 	return p;
 }
 #endif
+/**
+ * @param state a #MpdServerState to initialize
+ *
+ * Initialize #MpdServerState. To stop duplicating code.
+ */
 static void mpd_init_MpdServerState(MpdServerState *state)
 {
 	state->playlistid 	= -1;
@@ -107,9 +115,6 @@ static MpdObj * mpd_create()
 	/* info */
 	mpd_init_MpdServerState(&(mi->CurrentState));
 	mpd_init_MpdServerState(&(mi->OldState));
-/*
-	memcpy(&(mi->OldState), &(mi->CurrentState), sizeof(MpdServerState));
-*/
 
 	/**
 	 * Set signals to NULL 
@@ -404,7 +409,6 @@ static void mpd_server_free_commands(MpdObj *mi)
 		free(mi->commands);
 		mi->commands = NULL;
 	}
-
 }
 
 
@@ -906,7 +910,7 @@ long unsigned mpd_server_get_database_update_time(MpdObj *mi)
 		debug_printf(DEBUG_WARNING,"not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
-	if(!mpd_stats_check(mi))
+	if(mpd_stats_check(mi) != MPD_OK)
 	{
 		debug_printf(DEBUG_WARNING,"Failed grabbing status\n");
 		return MPD_STATS_FAILED;

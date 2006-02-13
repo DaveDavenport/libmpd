@@ -87,7 +87,7 @@ FILE_PATTERNS          = *.h \
 RECURSIVE              = NO
 EXCLUDE                = 
 EXCLUDE_SYMLINKS       = NO
-EXCLUDE_PATTERNS       = libmpdclient.* \
+EXCLUDE_PATTERNS       = \
                          libmpd-internal.h
 EXAMPLE_PATH           = /home/qball/Programming/C/libmpd/doc/examples/
 EXAMPLE_PATTERNS       = *

@@ -187,7 +187,16 @@ inline	MpdData_head *	mpd_data_get_head			(MpdData const * const data);
 inline	MpdData *	mpd_data_concatenate			(MpdData * const first, MpdData * const second);
 inline	MpdData *	mpd_data_get_next_real			(MpdData * const data, int kill_list);
 /* more internal stuff*/
+
+/**
+ * @param mi a #MpdObj 
+ *
+ * Checks if mpd_stats is availible, and updates when needed.
+ * 
+ * @returns a #MpdError
+ */
 int mpd_stats_check(MpdObj *mi);
+
 int mpd_lock_conn(MpdObj *mi);
 int mpd_unlock_conn(MpdObj *mi);
 /*MpdData * mpd_playlist_sort_artist_list(MpdData *data);*/
