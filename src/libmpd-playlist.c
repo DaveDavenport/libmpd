@@ -975,25 +975,6 @@ void mpd_playlist_queue_delete_pos(MpdObj *mi,int songpos)
 	mi->queue->path = NULL;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* deprecated stuff */
 void mpd_playlist_update_dir(MpdObj *mi, char *path){ mpd_database_update_dir(mi,path);}
 MpdData * mpd_playlist_get_albums(MpdObj *mi, char *artist) { return mpd_database_get_albums(mi,artist);}
