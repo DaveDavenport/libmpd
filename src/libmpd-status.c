@@ -37,14 +37,14 @@ int mpd_status_queue_update(MpdObj *mi)
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_INFO,"Where not connected\n");
-		return TRUE;
+		return MPD_NOT_CONNECTED;
 	}
 	if(mi->status != NULL)
 	{
 		mpd_freeStatus(mi->status);
 		mi->status = NULL;
 	}
-	return FALSE;
+	return MPD_OK;
 }
 
 
@@ -54,7 +54,7 @@ int mpd_status_update(MpdObj *mi)
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_INFO,"Where not connected\n");
-		return TRUE;
+		return MPD_NOT_CONNECTED;
 	}
 	if(mpd_lock_conn(mi))
 	{
@@ -74,12 +74,12 @@ int mpd_status_update(MpdObj *mi)
 	{
 		debug_printf(DEBUG_ERROR,"Failed to grab status from mpd\n");
 		mpd_unlock_conn(mi);
-		return TRUE;
+		return MPD_STATUS_FAILED;
 	}
 	if(mpd_unlock_conn(mi))
 	{
 		debug_printf(DEBUG_ERROR, "Failed to unlock");
-		return TRUE;
+		return MPD_LOCK_FAILED;
 	}
 	/*
 	 * check for changes 
@@ -92,18 +92,6 @@ int mpd_status_update(MpdObj *mi)
 	{
 		/* print debug message */
 		debug_printf(DEBUG_INFO, "Playlist has changed!");
-
-		/* deprecated */
-/*		if(mi->playlist_changed != NULL)
-		{
-			mi->playlist_changed(mi, mi->OldState.playlistid, mi->status->playlist,mi->playlist_changed_pointer);
-			if(!mpd_check_connected(mi))
-			{
-				debug_printf(DEBUG_INFO, "mpd_status_update: Not connected anymore");
-				return TRUE;
-			}
-		}
-*/
 
 		/* We can't trust the current song anymore. so we remove it */
 		/* tags might have been updated */
@@ -124,12 +112,7 @@ int mpd_status_update(MpdObj *mi)
 	/* state change */
 	if(mi->CurrentState.state != mi->status->state)
 	{
-		/* deprecated */
-/*		if(mi->state_changed != NULL)
-		{
-			mi->state_changed(mi, mi->OldState.state,mi->status->state,mi->state_changed_signal_pointer);
-		}
-*/		what_changed |= MPD_CST_STATE;
+		what_changed |= MPD_CST_STATE;
 		mi->CurrentState.state = mi->status->state;
 	}
 
@@ -138,12 +121,7 @@ int mpd_status_update(MpdObj *mi)
 		/* print debug message */
 		debug_printf(DEBUG_INFO, "Song has changed %i %i!", mi->OldState.songid, mi->status->songid);
 
-		/* deprecated */
-/*		if(mi->song_changed != NULL)
-		{
-			mi->song_changed(mi, mi->OldState.songid,mi->status->songid,mi->song_changed_signal_pointer);
-		}
-*/		what_changed |= MPD_CST_SONGID;
+		what_changed |= MPD_CST_SONGID;
 		/* save new songid */
 		mi->CurrentState.songid = mi->status->songid;
 
@@ -153,12 +131,7 @@ int mpd_status_update(MpdObj *mi)
 		/* print debug message */
 		debug_printf(DEBUG_INFO, "Song has changed %i %i!", mi->OldState.songpos, mi->status->song);
 
-		/* deprecated */
-/*		if(mi->song_changed != NULL)
-		{
-			mi->song_changed(mi, mi->OldState.songid,mi->status->songid,mi->song_changed_signal_pointer);
-		}
-*/		what_changed |= MPD_CST_SONGPOS;
+		what_changed |= MPD_CST_SONGPOS;
 		/* save new songid */
 		mi->CurrentState.songpos = mi->status->song;
 
@@ -194,41 +167,42 @@ int mpd_status_update(MpdObj *mi)
 		what_changed |= MPD_CST_ELAPSED_TIME;
 		mi->CurrentState.elapsedtime = mi->status->elapsedTime;
 	}
+
+	/* Check if bitrate changed, happens with vbr encodings. */
 	if(mi->CurrentState.bitrate != mi->status->bitRate)
 	{
 		what_changed |= MPD_CST_BITRATE;
 		mi->CurrentState.bitrate = mi->status->bitRate;
 	}
+
+	/* The following 3 probly only happen on a song change, or is it possible in one song/stream? */
+	/* Check if the sample rate changed */
 	if(mi->CurrentState.samplerate != mi->status->sampleRate)
 	{
 		what_changed |= MPD_CST_AUDIOFORMAT;
 		mi->CurrentState.samplerate = mi->status->sampleRate;
 	}
+	
+	/* check if the sampling depth changed */
 	if(mi->CurrentState.bits != mi->status->bits)
 	{
 		what_changed |= MPD_CST_AUDIOFORMAT;
 		mi->CurrentState.bits = mi->status->bits;
 	}
+	
+	/* Check if the amount of audio channels changed */
 	if(mi->CurrentState.channels != mi->status->channels)
 	{
 		what_changed |= MPD_CST_AUDIOFORMAT;
 		mi->CurrentState.channels = mi->status->channels;
 	}
-	/* deprecated */
-/*	if(mi->status_changed != NULL)
-	{u
-		mi->status_changed(mi, mi->status_changed_signal_pointer);
-	}
-*/
 
+	/* Check if the updating changed,
+	 * If it stopped, also update the stats for the new db-time.
+	 */
 	if(mi->CurrentState.updatingDb != mi->status->updatingDb )
 	{
-		/* deprecated */
-/*		if(mi->updating_changed != NULL)
-		{
-			mi->updating_changed(mi, mi->status->updatingDb,mi->updating_signal_pointer);
-		}
-*/		what_changed |= MPD_CST_UPDATING;
+		what_changed |= MPD_CST_UPDATING;
 		if(!mi->status->updatingDb)
 		{
 			mpd_stats_update_real(mi, &what_changed);
@@ -236,16 +210,18 @@ int mpd_status_update(MpdObj *mi)
 		mi->CurrentState.updatingDb = mi->status->updatingDb;
 	}
 
+	/* Run the callback */
 	if((mi->the_status_changed_callback != NULL) && what_changed)
 	{
 		mi->the_status_changed_callback( mi, what_changed, mi->the_status_changed_signal_userdata );
 	}
+
 	/* We could have lost connection again during signal handling... so before we return check again if we are connected */
 	if(!mpd_check_connected(mi))
 	{
-		return TRUE;
+		return MPD_NOT_CONNECTED;
 	}
-	return FALSE;
+	return MPD_OK;
 }
 
 /* returns TRUE when status is availible, when not availible and connected it tries to grab it */
@@ -254,7 +230,7 @@ int mpd_status_check(MpdObj *mi)
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_INFO,"not connected\n");
-		return FALSE;
+		return MPD_NOT_CONNECTED;
 	}
 	if(mi->status == NULL)
 	{
@@ -262,10 +238,10 @@ int mpd_status_check(MpdObj *mi)
 		if(mpd_status_update(mi))
 		{
 			debug_printf(DEBUG_INFO, "failed to update status\n");
-			return FALSE;
+			return MPD_STATUS_FAILED;
 		}
 	}
-	return TRUE;
+	return MPD_OK;
 }
 
 
@@ -273,8 +249,8 @@ int mpd_stats_get_total_songs(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING, "failed to check mi == NULL\n");
-		return -2;
+		debug_printf(DEBUG_ERROR, "failed to check mi == NULL\n");
+		return MPD_ARGS_ERROR;
 	}
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
 	{
@@ -288,13 +264,13 @@ int mpd_stats_get_total_artists(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING, "failed to check mi == NULL\n");
-		return -2;
+		debug_printf(DEBUG_ERROR, "failed to check mi == NULL\n");
+		return MPD_ARGS_ERROR;
 	}
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING,"Failed to get status\n");
-		return MPD_STATUS_FAILED;
+		debug_printf(DEBUG_ERROR,"Failed to get status\n");
+		return MPD_STATS_FAILED;
 	}
 	return mi->stats->numberOfArtists;
 }
@@ -303,13 +279,13 @@ int mpd_stats_get_total_albums(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING,"failed to check mi == NULL\n");
-		return -2;
+		debug_printf(DEBUG_ERROR,"failed to check mi == NULL\n");
+		return MPD_ARGS_ERROR;
 	}
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"Failed to get status\n");
-		return MPD_STATUS_FAILED;
+		return MPD_STATS_FAILED;
 	}
 	return mi->stats->numberOfAlbums;
 }
@@ -319,13 +295,13 @@ int mpd_stats_get_uptime(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING,"failed to check mi == NULL\n");
-		return -2;
+		debug_printf(DEBUG_ERROR,"failed to check mi == NULL\n");
+		return MPD_ARGS_ERROR;
 	}
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"Failed to get status\n");
-		return MPD_STATUS_FAILED;
+		return MPD_STATS_FAILED;
 	}
 	return mi->stats->uptime;
 }
@@ -334,13 +310,13 @@ int mpd_stats_get_playtime(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING, "failed to check mi == NULL\n");
-		return -2;
+		debug_printf(DEBUG_ERROR, "failed to check mi == NULL\n");
+		return MPD_ARGS_ERROR;
 	}
 	if(!mpd_stats_check(mi) || !mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"Failed to get status\n");
-		return MPD_STATUS_FAILED;
+		return MPD_STATS_FAILED;
 	}
 	return mi->stats->playTime;
 }
@@ -348,8 +324,8 @@ int mpd_status_get_volume(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING, "failed to check mi == NULL\n");
-		return -2;
+		debug_printf(DEBUG_ERROR, "failed to check mi == NULL\n");
+		return MPD_ARGS_ERROR;
 	}
 	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
 	{
@@ -364,8 +340,8 @@ int mpd_status_get_bitrate(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING,"failed to check mi == NULL\n");
-		return -2;
+		debug_printf(DEBUG_ERROR,"failed to check mi == NULL\n");
+		return MPD_ARGS_ERROR;
 	}
 	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
 	{
@@ -379,8 +355,8 @@ int mpd_status_get_channels(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING,"failed to check mi == NULL\n");
-		return -2;
+		debug_printf(DEBUG_ERROR,"failed to check mi == NULL\n");
+		return MPD_ARGS_ERROR;
 	}
 	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
 	{
@@ -394,8 +370,8 @@ unsigned int mpd_status_get_samplerate(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
-		debug_printf(DEBUG_WARNING,"failed to check mi == NULL\n");
-		return -2;
+		debug_printf(DEBUG_ERROR,"failed to check mi == NULL\n");
+		return MPD_ARGS_ERROR;
 	}
 	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
 	{
@@ -410,7 +386,7 @@ int mpd_status_get_bits(MpdObj *mi)
 	if(mi == NULL)
 	{
 		debug_printf(DEBUG_WARNING,"failed to check mi == NULL\n");
-		return -2;
+		return MPD_ARGS_ERROR;
 	}
 	if(!mpd_status_check(mi) || !mpd_check_connected(mi))
 	{
@@ -431,18 +407,13 @@ int mpd_status_get_total_song_time(MpdObj *mi)
 {
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING, "failed to check mi == NULL\n");
-		return -2;
+		debug_printf(DEBUG_ERROR, "failed to check mi == NULL\n");
+		return MPD_ARGS_ERROR;
 	}
 	if(!mpd_status_check(mi))
 	{
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
 		return MPD_STATUS_FAILED;
-	}
-	if(mi->status == NULL)
-	{
-		debug_printf(DEBUG_ERROR, "mi->status is NULL even after check\n");
-		return -2;
 	}
 	return mi->status->totalTime;
 }

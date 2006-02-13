@@ -637,10 +637,6 @@ void mpd_sendStatusCommand(mpd_Connection * connection) {
 mpd_Status * mpd_getStatus(mpd_Connection * connection) {
 	mpd_Status * status;
 
-	/*mpd_executeCommand(connection,"status\n");
-
-	  if(connection->error) return NULL;*/
-
 	if(connection->doneProcessing || (connection->listOks && 
 				connection->doneListOk))
 	{
