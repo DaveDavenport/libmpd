@@ -73,7 +73,7 @@ MpdData * mpd_database_get_artists(MpdObj *mi)
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"lock failed\n");
+		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return NULL;
 	}
 
@@ -108,7 +108,7 @@ MpdData * mpd_database_get_albums(MpdObj *mi,char *artist)
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"lock failed\n");
+		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return NULL;
 	}
 
@@ -142,7 +142,7 @@ MpdData * mpd_database_get_complete(MpdObj *mi)
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"lock failed\n");
+		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return NULL;
 	}
 	mpd_sendListallInfoCommand(mi->connection, "/");
@@ -181,7 +181,7 @@ MpdData *mpd_database_token_find(MpdObj *mi , char *string)
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"lock failed\n");
+		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return NULL;
 	}
 
@@ -275,7 +275,7 @@ int mpd_database_delete_playlist(MpdObj *mi,char *path)
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"lock failed\n");
+		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 

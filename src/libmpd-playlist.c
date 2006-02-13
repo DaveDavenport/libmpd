@@ -46,7 +46,7 @@ int mpd_playlist_get_playlist_length(MpdObj *mi)
 	}
 	if(mpd_status_check(mi) != MPD_OK)
 	{
-		debug_printf(DEBUG_WARNING,"mpd_player_get_playlist_length: Failed grabbing status\n");
+		debug_printf(DEBUG_ERROR,"mpd_player_get_playlist_length: Failed grabbing status\n");
 		return MPD_NOT_CONNECTED;
 	}
 	return mi->status->playlistLength;
@@ -95,6 +95,10 @@ mpd_Song * mpd_playlist_get_song(MpdObj *mi, int songid)
 {
 	mpd_Song *song = NULL;
 	mpd_InfoEntity *ent = NULL;
+	if(songid < 0){
+		debug_printf(DEBUG_ERROR, "songid < 0 Failed");
+		return NULL;
+	}
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_ERROR, "mpd_playlist_get_song: Not Connected\n");
@@ -160,7 +164,7 @@ mpd_Song * mpd_playlist_get_current_song(MpdObj *mi)
 	}
 	/* only update song when playing/pasing */
 	if(mi->CurrentSong == NULL && 
-			(mpd_player_get_state(mi) != MPD_PLAYER_STOP || mpd_player_get_state(mi) != MPD_PLAYER_UNKNOWN))
+			(mpd_player_get_state(mi) != MPD_PLAYER_STOP && mpd_player_get_state(mi) != MPD_PLAYER_UNKNOWN))
 	{
 		/* TODO: this to use the geT_current_song_id function */
 		mi->CurrentSong = mpd_playlist_get_song(mi, mpd_player_get_current_song_id(mi));
@@ -172,34 +176,6 @@ mpd_Song * mpd_playlist_get_current_song(MpdObj *mi)
 	}
 	return mi->CurrentSong;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 int mpd_playlist_clear(MpdObj *mi)
 {
@@ -227,12 +203,12 @@ int mpd_playlist_shuffle(MpdObj *mi)
 {
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_playlist_shuffle: not connected\n");
+		debug_printf(DEBUG_WARNING,"not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"mpd_playlist_shuffle: lock failed\n");
+		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 

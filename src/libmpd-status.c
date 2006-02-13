@@ -58,7 +58,7 @@ int mpd_status_update(MpdObj *mi)
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"lock failed\n");
+		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 
@@ -446,7 +446,7 @@ int mpd_status_set_volume(MpdObj *mi,int volume)
 
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"lock failed\n");
+		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 
@@ -486,7 +486,7 @@ int mpd_status_set_crossfade(MpdObj *mi,int crossfade_time)
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"lock failed\n");
+		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 	mpd_sendCrossfadeCommand(mi->connection, crossfade_time);
@@ -528,7 +528,7 @@ int mpd_stats_update_real(MpdObj *mi, ChangedStatusType* what_changed)
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"lock failed\n");
+		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 
@@ -561,6 +561,7 @@ int mpd_stats_update_real(MpdObj *mi, ChangedStatusType* what_changed)
 
 	if(mpd_unlock_conn(mi))
 	{
+		debug_printf(DEBUG_ERROR, "unlock failed");
 		return MPD_LOCK_FAILED;
 	}
 	return MPD_OK;

@@ -83,7 +83,7 @@ static void mpd_init_MpdServerState(MpdServerState *state)
 
 static MpdObj * mpd_create()
 {
-	MpdObj * mi = malloc(sizeof(MpdObj));
+	MpdObj * mi = malloc(sizeof(*mi));
 	if( mi == NULL )
 	{
 		/* should never happen on linux */
@@ -931,7 +931,7 @@ MpdData * mpd_server_get_output_devices(MpdObj *mi)
 	/* TODO: Check version */
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"lock failed\n");
+		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return NULL;
 	}
 
@@ -962,7 +962,7 @@ int mpd_server_set_output_device(MpdObj *mi,int device_id,int state)
 	}
 	if(mpd_lock_conn(mi))
 	{
-		debug_printf(DEBUG_WARNING,"lock failed\n");
+		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
 	if(state)
