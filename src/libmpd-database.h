@@ -65,8 +65,9 @@ MpdData * mpd_database_get_complete(MpdObj *mi);
  *
  * Force mpd to update (parts of )the database.
  *
+ * @returns a #MpdError
  */
-void		mpd_database_update_dir		(MpdObj *mi, char *path);
+int 	mpd_database_update_dir		(MpdObj *mi, char *path);
 
 
 

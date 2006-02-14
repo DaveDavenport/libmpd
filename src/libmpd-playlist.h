@@ -95,9 +95,9 @@ int		mpd_playlist_shuffle			(MpdObj *mi);
  * @param new_pos The new position in the playlist.
  *
  * Moves a song in the playlist. This uses the position of the song, not the id
- *
+ * @returns a #MpdError
  */
-void		mpd_playlist_move_pos		(MpdObj *mi, int old_pos, int new_pos);
+int		mpd_playlist_move_pos		(MpdObj *mi, int old_pos, int new_pos);
 
 
 /**
@@ -106,8 +106,9 @@ void		mpd_playlist_move_pos		(MpdObj *mi, int old_pos, int new_pos);
  * @param new_id The id of the song to move too.
  *
  * Moves a song in the playlist. This uses the id of the song, not the position
+ * @returns a #MpdError
  */
-void		mpd_playlist_move_id		(MpdObj *mi, int old_id, int new_id);
+int		mpd_playlist_move_id		(MpdObj *mi, int old_id, int new_id);
 
 
 /**
@@ -132,24 +133,30 @@ int		mpd_playlist_get_playlist_length	(MpdObj *mi);
  * @param path the path of the song to be added.
  *
  * Add's a song to the playlist, use #mpd_playlist_queue_add to add multiple songs.
+ *
+ * @returns a #MpdError
  */
-void		mpd_playlist_add			(MpdObj *mi, char *path);
+int		mpd_playlist_add			(MpdObj *mi, char *path);
 
 /**
  * @param mi a #MpdObj
  * @param songid a song id.
  *
  * Delete's a single song by it's id.
+ *
+ * @returns a #MpdError
  */
-void mpd_playlist_delete_id(MpdObj *mi, int songid);
+int mpd_playlist_delete_id(MpdObj *mi, int songid);
 
 /**
  * @param mi a #MpdObj
  * @param songpos a song pos.
  *
  * Delete's a single song by it's position.
+ *
+ * @returns a #MpdError
  */
-void mpd_playlist_delete_pos(MpdObj *mi, int songpos);	
+int mpd_playlist_delete_pos(MpdObj *mi, int songpos);	
 
 /*@}*/
 /** \defgroup advsearch Playlist Advanced Search 
@@ -193,8 +200,9 @@ MpdData *	mpd_playlist_find_adv		(MpdObj *mi,int exact, ...);
  *
  * This queue's an add command. The actuall add isn't done until #mpd_playlist_queue_commit is called
  *
+ * @returns a #MpdError
  */
-void	mpd_playlist_queue_add		(MpdObj *mi,char *path);
+int	mpd_playlist_queue_add		(MpdObj *mi,char *path);
 
 
 
@@ -204,8 +212,9 @@ void	mpd_playlist_queue_add		(MpdObj *mi,char *path);
  *
  * This queue's an load command. The actuall load isn't done until #mpd_playlist_queue_commit is called
  *
+ * @returns a #MpdError
  */
-void	mpd_playlist_queue_load		(MpdObj *mi,char *path);
+int	mpd_playlist_queue_load		(MpdObj *mi,char *path);
 
 
 /**
@@ -213,9 +222,9 @@ void	mpd_playlist_queue_load		(MpdObj *mi,char *path);
  * @param id The songid of the song you want to delete
  *
  * This queue's an delete song from playlist command. The actually delete isn't done until #mpd_playlist_queue_commit is called
- *
+ * @returns a #MpdError
  */
-void	mpd_playlist_queue_delete_id	(MpdObj *mi,int id);
+int	mpd_playlist_queue_delete_id	(MpdObj *mi,int id);
 
 
 /**
@@ -223,16 +232,20 @@ void	mpd_playlist_queue_delete_id	(MpdObj *mi,int id);
  * @param songpos a song pos.
  *
  * Queue's the deletion of a single song by it's position.
+ *
+ * @returns a #MpdError
  */
-void 	mpd_playlist_queue_delete_pos	(MpdObj *mi,int songpos);
+int  	mpd_playlist_queue_delete_pos	(MpdObj *mi,int songpos);
 
 
 /**
  * @param mi a #MpdObj
  * 
  * Commits the queue'd commands in a command list. This is an efficient way of doing alot of add's/removes.
+ *
+ * @returns a #MpdError
  */
-void	mpd_playlist_queue_commit		(MpdObj *mi);
+int	mpd_playlist_queue_commit		(MpdObj *mi);
 
 /*@}*/
 
@@ -244,7 +257,7 @@ void	mpd_playlist_queue_commit		(MpdObj *mi);
  */
 /*@{*/
 
-void 		mpd_playlist_update_dir		(MpdObj *mi, char *path) __attribute__((deprecated));
+int 		mpd_playlist_update_dir		(MpdObj *mi, char *path) __attribute__((deprecated));
 MpdData *	mpd_playlist_get_albums		(MpdObj *mi, char *artist) __attribute__((deprecated));
 MpdData *	mpd_playlist_get_artists	(MpdObj *mi) __attribute__((deprecated));
 MpdData *	mpd_playlist_get_directory	(MpdObj *mi,char *path);

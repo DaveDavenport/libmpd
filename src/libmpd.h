@@ -71,6 +71,8 @@ typedef enum {
 	MPD_DATABASE_PLAYLIST_EXIST  = -60,
 	/** Playlist is empty */
 	MPD_PLAYLIST_EMPTY = -70,
+	/** Playlist queue is empty */
+	MPD_PLAYLIST_QUEUE_EMPTY = -75,
 	/** Player isn't Playing */
 	MPD_PLAYER_NOT_PLAYING = -80,
 

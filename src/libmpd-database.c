@@ -29,22 +29,22 @@
 #include "libmpd.h"
 #include "libmpd-internal.h"
 
-void mpd_database_update_dir(MpdObj *mi, char *path)
+int mpd_database_update_dir(MpdObj *mi, char *path)
 {
 	if(path == NULL || !strlen(path))
 	{
-		debug_printf(DEBUG_WARNING, "path != NULL  and strlen(path) > 0 failed");
-		return;
+		debug_printf(DEBUG_ERROR, "path != NULL  and strlen(path) > 0 failed");
+		return MPD_ARGS_ERROR;
 	}
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"not connected\n");
-		return;
+		return MPD_NOT_CONNECTED;
 	}
 	if(mpd_lock_conn(mi))
 	{
 		debug_printf(DEBUG_ERROR,"lock failed\n");
-		return;
+		return MPD_LOCK_FAILED;
 	}
 
 	mpd_sendUpdateCommand(mi->connection,path);
@@ -59,7 +59,7 @@ void mpd_database_update_dir(MpdObj *mi, char *path)
 	/* What I think you should do is to force a direct status updated
 	 */
 	mpd_status_update(mi);
-	return;
+	return MPD_OK;
 }
 
 MpdData * mpd_database_get_artists(MpdObj *mi)
