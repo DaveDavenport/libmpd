@@ -788,27 +788,38 @@ MpdData* mpd_data_concatenate( MpdData  * const first, MpdData  * const second)
 	free(second_head);
 	return (MpdData*)first_head->first;
 }
-
+/** This function looks broken.  This should be tested
+ * Shamefully I don't know this part of the code to well 
+ */
 MpdData * mpd_data_delete_item(MpdData *data)
 {
 	MpdData_real *temp = NULL, *data_real = (MpdData_real*)data;
 	if(data_real == NULL) return NULL;
 	if(data_real->head->first == data_real)
 	{
+		/* make temp the first item, and reset the head->first pointer */
 		temp = data_real->head->first = data_real->next;
+		/* there is no item before this. */
 		data_real->prev = NULL;
+		/*  if it was the last item in the list, we need to free the list */
+		if(temp == NULL){
+			mpd_data_free(data);
+		}
 	}
 	else
 	{
-		if (data_real->prev)
-		{
-			temp = data_real->prev->next = data_real->next;
-			temp = data_real->prev;
-		}
+
 		if (data_real->next)
 		{
 			data_real->next->prev = data_real->prev;
 			temp = data_real->next;
+		}                                               		
+		if (data_real->prev)
+		{
+			/* the next item of the previous is the next item of the current */
+			data_real->prev->next = data_real->next;
+			/* temp is the previous item */
+			temp = data_real->prev;
 		}
 	}
 
