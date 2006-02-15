@@ -168,18 +168,18 @@ int mpd_playlist_delete_pos(MpdObj *mi, int songpos);
 /* mpd svn only functions 0.12.0 */
 /* TODO: rewrite this */
 
-/**
- * @param mi a #MpdObj
- * @param field The table field
- * @returns a #MpdData
- */
-MpdData *	mpd_playlist_get_unique_tags		(MpdObj *mi, int field,...);
-/**
- * @param mi a #MpdObj
- * @param exact 1 for exact search 0 for fuzzy
- * @returns a #MpdData
- */
-MpdData *	mpd_playlist_find_adv		(MpdObj *mi,int exact, ...);
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*@}*/
 
@@ -256,16 +256,19 @@ int	mpd_playlist_queue_commit		(MpdObj *mi);
  * They are present for backwards compatibility
  */
 /*@{*/
-
+/*
 int 		mpd_playlist_update_dir		(MpdObj *mi, char *path) __attribute__((deprecated));
 MpdData *	mpd_playlist_get_albums		(MpdObj *mi, char *artist) __attribute__((deprecated));
 MpdData *	mpd_playlist_get_artists	(MpdObj *mi) __attribute__((deprecated));
-MpdData *	mpd_playlist_get_directory	(MpdObj *mi,char *path);
-MpdData *	mpd_playlist_find		(MpdObj *mi, int table, char *string, int exact);
+MpdData *	mpd_playlist_get_directory	(MpdObj *mi,char *path)__attribute__((deprecated));
+MpdData *	mpd_playlist_find		(MpdObj *mi, int table, char *string, int exact) __attribute__((deprecated));
 MpdData *	mpd_playlist_token_find		(MpdObj *mi, char *string) __attribute__((deprecated));
 
 int		mpd_playlist_delete			(MpdObj *mi,char *path) __attribute__((deprecated));
 int		mpd_playlist_save			(MpdObj *mi,char *path) __attribute__((deprecated));
+MpdData *	mpd_playlist_get_unique_tags		(MpdObj *mi, int field,...) __attribute__((deprecated));
+MpdData *	mpd_playlist_find_adv		(MpdObj *mi,int exact, ...) __attribute__((deprecated));
 
+*/
 /*@}*/
 #endif

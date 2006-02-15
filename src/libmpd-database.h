@@ -112,5 +112,30 @@ int mpd_database_delete_playlist(MpdObj *mi,char *path);
  */ 
 int		mpd_database_save_playlist			(MpdObj *mi, char *name);
 
+
+/**
+ * @param mi a #MpdObj
+ * @param field The table field
+ * @returns a #MpdData
+ */
+MpdData *	mpd_database_get_unique_tags		(MpdObj *mi, int field,...);
+/**
+ * @param mi a #MpdObj
+ * @param exact 1 for exact search 0 for fuzzy
+ * @returns a #MpdData
+ */
+MpdData *	mpd_database_find_adv		(MpdObj *mi,int exact, ...);
+
+/**
+ * @param mi a #MpdObj
+ * @param table table
+ * @param string string to search for
+ * @param exact if #TRUE only return exact matches
+ *
+ * @returns a #MpdData list
+ */
+MpdData * mpd_database_find(MpdObj *mi, int table, char *string, int exact);
+
+MpdData * mpd_database_get_directory(MpdObj *mi,char *path);
 /*@}*/
 #endif
