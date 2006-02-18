@@ -86,6 +86,8 @@ RANLIB = @RANLIB@
 RC = @RC@
 STRIP = @STRIP@
 VERSION = @VERSION@
+
+EXTRA_DIST = testcase.c
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config.h
 CONFIG_CLEAN_FILES = 
