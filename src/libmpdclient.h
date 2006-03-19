@@ -600,7 +600,7 @@ void mpd_commitSearch(mpd_Connection *connection);
  */
 void mpd_startFieldSearch(mpd_Connection * connection,int field);
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 
