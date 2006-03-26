@@ -723,7 +723,7 @@ MpdData *mpd_database_get_playlist_content(MpdObj *mi,char *playlist)
 		debug_printf(DEBUG_WARNING, "only works with mpd higher then 0.12.0");
 		return NULL;
 	}
-	if(mpd_server_check_command_allowed(mi, "listPlaylistInfo") != MPD_SERVER_COMMAND_ALLOWED)
+	if(mpd_server_check_command_allowed(mi, "listplaylistinfo") != MPD_SERVER_COMMAND_ALLOWED)
 	{
 		debug_printf(DEBUG_WARNING, "Listing playlist content not supported or allowed");
 		return NULL;

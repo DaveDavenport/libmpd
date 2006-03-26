@@ -1685,8 +1685,8 @@ void mpd_commitSearch(mpd_Connection *connection)
 void mpd_sendListPlaylistInfoCommand(mpd_Connection *connection, char *path)
 {
 	char *arg = mpd_sanitizeArg(path);
-	char *query = malloc(strlen("listPlaylistInfo")+strlen(arg)+5);
-	sprintf(query, "listPlaylistInfo \"%s\"\n",arg);
+	char *query = malloc(strlen("listplaylistinfo")+strlen(arg)+5);
+	sprintf(query, "listplaylistinfo \"%s\"\n",arg);
 	mpd_sendInfoCommand(connection, query);
 	free(arg);
 	free(query);
