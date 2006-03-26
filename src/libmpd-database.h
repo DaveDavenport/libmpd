@@ -137,5 +137,17 @@ MpdData *	mpd_database_find_adv		(MpdObj *mi,int exact, ...);
 MpdData * mpd_database_find(MpdObj *mi, int table, char *string, int exact);
 
 MpdData * mpd_database_get_directory(MpdObj *mi,char *path);
+
+
+/**
+ * @param mi a #MpdObj
+ * @param playlist the playlist you need the content off.
+ *
+ * Only works with patched mpd.
+ * Check for %mpd_server_command_allowed(mi, "listPlaylistInfo");
+ *
+ * @returns a #MpdData list
+ */
+MpdData *mpd_database_get_playlist_content(MpdObj *mi,char *playlist);
 /*@}*/
 #endif

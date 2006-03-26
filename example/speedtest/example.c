@@ -8,7 +8,7 @@
 int main(int argc, char ** argv) {
 	char *string;
 	mpd_Connection * conn;
-	conn = mpd_newConnection("192.150.0.111",6600,10);
+	conn = mpd_newConnection("localhost",6600,10);
 
 	if(conn->error) {
 		fprintf(stderr,"%s\n",conn->errorStr);
@@ -26,6 +26,16 @@ int main(int argc, char ** argv) {
 	}
 	mpd_finishCommand(conn);
 //	}
+//
+//
+//
+//
+
+	mpd_sendListPlaylistInfoCommand(conn, "test2");
+	mpd_InfoEntity *ent = NULL;
+	while((ent = mpd_getNextInfoEntity(conn))){
+		printf("%s\n", ent->info.song->artist);
+	}
 	mpd_closeConnection(conn);
 
 	return 0;

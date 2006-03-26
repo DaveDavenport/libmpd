@@ -600,6 +600,9 @@ void mpd_commitSearch(mpd_Connection *connection);
  */
 void mpd_startFieldSearch(mpd_Connection * connection,int field);
 
+void mpd_sendListPlaylistInfoCommand(mpd_Connection *connection, char *path);
+
+
 #ifdef __cplusplus
 }
 #endif
