@@ -525,6 +525,7 @@ int mpd_disconnect(MpdObj *mi)
 		}
 		*/
 	mpd_server_free_commands(mi);
+	debug_printf(DEBUG_INFO, "Disconnect completed\n");
 	return MPD_OK;
 }
 
