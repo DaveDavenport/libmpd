@@ -277,7 +277,8 @@ MpdData * mpd_playlist_get_changes(MpdObj *mi,int old_playlist_id)
 	if(old_playlist_id == -1)
 	{
 		debug_printf(DEBUG_INFO,"get fresh playlist\n");
-		mpd_sendPlaylistIdCommand(mi->connection, -1);
+		mpd_sendPlChangesCommand (mi->connection, 0);
+/*		mpd_sendPlaylistIdCommand(mi->connection, -1); */
 	}
 	else
 	{
