@@ -136,6 +136,77 @@ mpd_Song * mpd_playlist_get_song(MpdObj *mi, int songid)
 	return song;
 }
 
+mpd_Song * mpd_playlist_get_song_from_pos(MpdObj *mi, int songpos)
+{
+	mpd_Song *song = NULL;
+	mpd_InfoEntity *ent = NULL;
+	if(songpos < 0){
+		debug_printf(DEBUG_ERROR, "songpos < 0 Failed");
+		return NULL;
+	}
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_ERROR, "Not Connected\n");
+		return NULL;
+	}
+
+	if(mpd_lock_conn(mi))
+	{
+		return NULL;
+	}
+	debug_printf(DEBUG_INFO, "Trying to grab song with id: %i\n", songpos);
+	mpd_sendPlaylistInfoCommand(mi->connection, songpos);
+	ent = mpd_getNextInfoEntity(mi->connection);
+	mpd_finishCommand(mi->connection);
+
+	if(mpd_unlock_conn(mi))
+	{
+		/*TODO free entity. for now this can never happen */
+		return NULL;
+	}
+
+	if(ent == NULL)
+	{
+		debug_printf(DEBUG_ERROR, "Failed to grab song from mpd\n");
+		return NULL;
+	}
+
+	if(ent->type != MPD_INFO_ENTITY_TYPE_SONG)
+	{
+		mpd_freeInfoEntity(ent);
+		debug_printf(DEBUG_ERROR, "Failed to grab corect song type from mpd\n");
+		return NULL;
+	}
+	song = ent->info.song;
+	ent->info.song = NULL;
+
+	mpd_freeInfoEntity(ent);
+
+	return song;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 mpd_Song * mpd_playlist_get_current_song(MpdObj *mi)
 {

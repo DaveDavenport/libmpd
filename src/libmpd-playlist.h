@@ -60,6 +60,18 @@ mpd_Song *	mpd_playlist_get_song			(MpdObj *mi, int songid);
 
 /**
  * @param mi a #MpdObj
+ * @param songpos a Songpos
+ *
+ * returns the mpd_Song for playlist entry with songpos.
+ *
+ * @returns a mpd_Song
+ */
+
+mpd_Song * mpd_playlist_get_song_from_pos(MpdObj *mi, int songpos);
+
+
+/**
+ * @param mi a #MpdObj
  *
  * returns the mpd_Song for the currently playing song
  *
