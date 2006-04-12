@@ -262,6 +262,7 @@ int mpd_playlist_clear(MpdObj *mi)
 	mi->CurrentState.songid = -1;
 	/* unlock */
 	mpd_unlock_conn(mi);
+	mpd_status_update(mi);
 	return FALSE;
 }
 
@@ -508,6 +509,7 @@ int mpd_playlist_queue_commit(MpdObj *mi)
 	mpd_sendCommandListEnd(mi->connection);
 	mpd_finishCommand(mi->connection);
 	mpd_unlock_conn(mi);
+	mpd_status_update(mi);
 	return MPD_OK;
 }
 int mpd_playlist_queue_delete_id(MpdObj *mi,int id)
