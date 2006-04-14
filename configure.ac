@@ -12,9 +12,10 @@ EXTRA_CFLAGS=
 EXTRA_LDFLAGS=
 case $host in
   *-*-mingw32* | *-*-windows)
-    EXTRA_CFLAGS="-mno-cygwin -mwindows -mms-bitfields"
+    EXTRA_CFLAGS="-mno-cygwin -mwindows -mms-bitfields -fno-strict-aliasing"
     EXTRA_LDFLAGS="-export-all-symbols -mwindows -no-undefined -lregex -lws2_32 -mms-bitfields" ;;
   *-*-cygwin*)
+    EXTRA_CFLAGS="-fno-strict-aliasing"
     EXTRA_LDFLAGS="-export-all-symbols -mms-bitfields";;
 esac
 AC_SUBST(EXTRA_CFLAGS)
