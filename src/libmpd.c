@@ -342,7 +342,7 @@ int mpd_set_password(MpdObj *mi, char *password)
 int mpd_send_password(MpdObj *mi)
 {
 	if(!mi) return MPD_ARGS_ERROR;
-	if(mi->password && mpd_check_connected(mi))
+	if(mi->password && mpd_check_connected(mi) && strlen(mi->password))
 	{
 		if(mpd_lock_conn(mi))
 		{
