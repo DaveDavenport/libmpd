@@ -133,6 +133,26 @@ int		mpd_playlist_move_id		(MpdObj *mi, int old_id, int new_id);
  */
 MpdData *	mpd_playlist_get_changes		(MpdObj *mi,int old_playlist_id);
 
+
+
+
+
+
+
+
+
+/**
+ * @param mi a #MpdObj
+ * @param old_playlist_id The id of the old playlist you want to get the changes with.
+ *
+ * Get's a list of the song id/pos that changed between the current and the old playlist
+ * Check if this command is availible.
+ *
+ * @returns a #MpdData list
+ */
+MpdData * mpd_playlist_get_changes_posid(MpdObj *mi,int old_playlist_id);
+
+
 /**
  * @param mi	a #MpdObj
  *

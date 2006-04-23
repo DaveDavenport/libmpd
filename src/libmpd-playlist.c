@@ -385,6 +385,124 @@ MpdData * mpd_playlist_get_changes(MpdObj *mi,int old_playlist_id)
 }
 
 
+
+MpdData * mpd_playlist_get_changes_posid(MpdObj *mi,int old_playlist_id)
+{
+	MpdData *data = NULL;
+	mpd_InfoEntity *ent = NULL;
+	debug_printf(DEBUG_INFO, "Fetching using new plchangesposid command");
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"not connected\n");
+		return NULL;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		debug_printf(DEBUG_WARNING,"lock failed\n");
+		return NULL;
+	}
+
+	if(old_playlist_id == -1)
+	{
+		debug_printf(DEBUG_INFO,"get fresh playlist\n");
+		mpd_sendPlChangesPosIdCommand (mi->connection, 0);
+/*		mpd_sendPlaylistIdCommand(mi->connection, -1); */
+	}
+	else
+	{
+		mpd_sendPlChangesPosIdCommand (mi->connection, old_playlist_id);
+	}
+
+	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
+	{
+		if(ent->type == MPD_INFO_ENTITY_TYPE_SONG)
+		{
+			data = mpd_new_data_struct_append(data);
+			data->type = MPD_DATA_TYPE_SONG;
+			data->song = ent->info.song;
+			ent->info.song = NULL;
+		}
+		mpd_freeInfoEntity(ent);
+	}
+	mpd_finishCommand(mi->connection);
+
+	/* unlock */
+	if(mpd_unlock_conn(mi))
+	{
+		debug_printf(DEBUG_WARNING,"mpd_playlist_get_changes: unlock failed.\n");
+		mpd_data_free(data);
+		return NULL;
+	}
+	if(data == NULL)
+	{
+		return NULL;
+	}
+	return mpd_data_get_first(data);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 int mpd_playlist_queue_add(MpdObj *mi,char *path)
 {
 	if(!mpd_check_connected(mi))

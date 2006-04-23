@@ -396,6 +396,8 @@ void mpd_sendPlaylistIdCommand(mpd_Connection * connection, int songId);
 
 /* use this to get the changes in the playlist since version _playlist_ */
 void mpd_sendPlChangesCommand(mpd_Connection * connection, long long playlist);
+/* use this to only get the position and id of the changed song */
+void mpd_sendPlChangesPosIdCommand(mpd_Connection * connection, long long playlist);
 
 /* recursivel fetches all songs/dir/playlists in "dir* (no metadata is 
  * returned) */
