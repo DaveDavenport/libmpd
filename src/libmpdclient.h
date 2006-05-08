@@ -93,6 +93,7 @@ typedef enum mpd_TagItems
 	MPD_TAG_ITEM_COMPOSER,
 	MPD_TAG_ITEM_PERFORMER,
 	MPD_TAG_ITEM_COMMENT,
+	MPD_TAG_ITEM_DISC,
 	MPD_TAG_ITEM_FILENAME,
 	MPD_TAG_NUM_OF_ITEM_TYPES
 }mpd_TagItems;
@@ -265,8 +266,14 @@ typedef struct _mpd_Song {
 	char *date;
 
 	/* added by qball */
+	/* Genre */
 	char *genre;
+	/* Composer */
 	char *composer;
+	/* Disc */
+	char *disc;
+	/* Comment */
+	char *comment;
 
 	/* length of song in seconds, check that it is not MPD_SONG_NO_TIME  */
 	int time;

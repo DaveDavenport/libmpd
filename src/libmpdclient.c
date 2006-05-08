@@ -84,6 +84,7 @@ char * mpdTagItemKeys[MPD_TAG_NUM_OF_ITEM_TYPES] =
 	"Composer",
 	"Performer",
 	"Comment",
+	"Disc",
 	"filename"
 };
 
@@ -855,6 +856,8 @@ static void mpd_initSong(mpd_Song * song) {
 	/* added by Qball */
 	song->genre = NULL;
 	song->composer = NULL;
+	song->disc = NULL;
+	song->comment = NULL;
 
 	song->time = MPD_SONG_NO_TIME;
 	song->pos = MPD_SONG_NO_NUM;
@@ -863,14 +866,16 @@ static void mpd_initSong(mpd_Song * song) {
 
 static void mpd_finishSong(mpd_Song * song) {
 	if(song->file) free(song->file);
-	if(song->artist) free(song->artist);
-	if(song->album) free(song->album);
-	if(song->title) free(song->title);
-	if(song->track) free(song->track);
-	if(song->name) free(song->name);
-	if(song->date) free(song->date);
-	if(song->genre) free(song->genre);
-	if(song->composer) free(song->composer);
+	if(song->artist) 	free(song->artist);
+	if(song->album) 	free(song->album);
+	if(song->title) 	free(song->title);
+	if(song->track) 	free(song->track);
+	if(song->name) 		free(song->name);
+	if(song->date) 		free(song->date);
+	if(song->genre) 	free(song->genre);
+	if(song->composer) 	free(song->composer);
+	if(song->disc)		free(song->disc);
+	if(song->comment)	free(song->comment);
 }
 
 mpd_Song * mpd_newSong() {
@@ -898,6 +903,8 @@ mpd_Song * mpd_songDup(mpd_Song * song) {
 	if(song->date) ret->date = strdup(song->date);
 	if(song->genre) ret->genre= strdup(song->genre);
 	if(song->composer) ret->composer= strdup(song->composer);
+	if(song->disc) ret->disc = strdup(song->disc);
+	if(song->comment) ret->comment = strdup(song->comment);
 	ret->time = song->time;
 	ret->pos = song->pos;
 	ret->id = song->id;
@@ -1103,6 +1110,15 @@ mpd_InfoEntity * mpd_getNextInfoEntity(mpd_Connection * connection) {
 					strcmp(re->name, "Composer") == 0) {
 				entity->info.song->composer = strdup(re->value);
 			}                                                    			
+			else if(!entity->info.song->disc &&
+					strcmp(re->name, "Disc") == 0) {
+				entity->info.song->disc = strdup(re->value);
+			}
+			else if(!entity->info.song->comment &&
+					strcmp(re->name, "Comment") == 0) {    			
+				entity->info.song->comment = strdup(re->value);
+			}
+			
 
 		}
 		else if(entity->type == MPD_INFO_ENTITY_TYPE_DIRECTORY) {
