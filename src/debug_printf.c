@@ -15,7 +15,7 @@ int debug_level = 0;
 
 void debug_set_level(DebugLevel dl)
 {
-	debug_level = (dl<0)?0:((dl > DEBUG_ERROR)?DEBUG_ERROR:dl);
+	debug_level = (dl<0)?DEBUG_NO_OUTPUT:((dl > DEBUG_INFO)?DEBUG_INFO:dl);
 }
 
 
