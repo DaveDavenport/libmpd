@@ -261,7 +261,7 @@ mpd_Connection * mpd_newConnection(const char * host, int port, float timeout) {
 			}
 		}
 	}
-
+	freeaddrinfo(addrinfo);
 	if (connection->sock == 0) {
 		snprintf(connection->errorStr,MPD_BUFFER_MAX_LENGTH,
 				"problems connecting to \"%s\" on port"
