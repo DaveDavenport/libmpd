@@ -184,11 +184,12 @@ mpd_Connection * mpd_newConnection(const char * host, int port, float timeout) {
 	int err;
 	int error;
 	char * rt;
-	char * output;
+	char * output =  NULL;
 	char service[20];
 	mpd_Connection * connection = malloc(sizeof(mpd_Connection));
 	struct timeval tv;
-	struct addrinfo hints, *res;
+	struct addrinfo hints;
+	struct addrinfo *res = NULL;
 	struct addrinfo *addrinfo = NULL;
 	fd_set fds;
 	strcpy(connection->buffer,"");
@@ -212,10 +213,18 @@ mpd_Connection * mpd_newConnection(const char * host, int port, float timeout) {
 		return connection;
 	}
 #endif
+	/**
+	 * Setup hints
+	 */
+	hints.ai_flags          = 0;
+	hints.ai_family         = PF_UNSPEC;
+	hints.ai_socktype       = SOCK_STREAM;
+	hints.ai_protocol       = IPPROTO_TCP;
+	hints.ai_addrlen        = 0;
+	hints.ai_addr           = NULL;
+	hints.ai_canonname      = NULL;
+	hints.ai_next           = NULL;
 
-	memset(&hints, 0, sizeof(hints));
-	hints.ai_family = PF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
 
 	snprintf(service, sizeof(service), "%d", port);
 
@@ -242,7 +251,7 @@ mpd_Connection * mpd_newConnection(const char * host, int port, float timeout) {
 		/* connect stuff */
 		{
 #ifdef WIN32
-			int iMode = 1; // 0 = blocking, else non-blocking
+			int iMode = 1; /* 0 = blocking, else non-blocking*/
 			ioctlsocket(connection->sock, FIONBIO, (u_long FAR*) &iMode);
 			if(connect(connection->sock,res->ai_addr,res->ai_addrlen) == SOCKET_ERROR
 				&& WSAGetLastError() != WSAEWOULDBLOCK)
@@ -256,13 +265,15 @@ mpd_Connection * mpd_newConnection(const char * host, int port, float timeout) {
 			{
 				/* try the next address family */
 				close(connection->sock);
-				connection->sock = 0;
+				connection->sock = -1;
 				continue;
 			}
+
+			break;
 		}
 	}
 	freeaddrinfo(addrinfo);
-	if (connection->sock == 0) {
+	if (connection->sock < 0) {
 		snprintf(connection->errorStr,MPD_BUFFER_MAX_LENGTH,
 				"problems connecting to \"%s\" on port"
 				" %i: %s",host,port, strerror(errno));
@@ -294,6 +305,7 @@ mpd_Connection * mpd_newConnection(const char * host, int port, float timeout) {
 		}
 		else if(err<0) {
 			switch(errno) {
+				case EINPROGRESS:
 				case EINTR:
 					continue;
 				default:
