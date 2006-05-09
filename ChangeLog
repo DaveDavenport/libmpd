@@ -1,3 +1,6 @@
+06-03-2006 Jelmer Vernooij <jelmer@samba.org>
+	* Fixed IPv6 support
+
 29-10-2005 Qball <Qball@qballcow.nl>
 	* Fixed signal bitmasks... they where overlapping....
 	* Fixed signal being called if nothing changed
