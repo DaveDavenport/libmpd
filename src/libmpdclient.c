@@ -305,7 +305,9 @@ mpd_Connection * mpd_newConnection(const char * host, int port, float timeout) {
 		}
 		else if(err<0) {
 			switch(errno) {
+#ifndef WIN32
 				case EINPROGRESS:
+#endif
 				case EINTR:
 					continue;
 				default:
