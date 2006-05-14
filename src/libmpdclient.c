@@ -243,6 +243,7 @@ mpd_Connection * mpd_newConnection(const char * host, int port, float timeout) {
 		if((connection->sock = socket(res->ai_family,SOCK_STREAM,res->ai_protocol))<0) {
 			strcpy(connection->errorStr,"problems creating socket");
 			connection->error = MPD_ERROR_SYSTEM;
+			freeaddrinfo(addrinfo);
 			return connection;
 		}
 
