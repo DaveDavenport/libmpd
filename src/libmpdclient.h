@@ -609,8 +609,22 @@ void mpd_commitSearch(mpd_Connection *connection);
  */
 void mpd_startFieldSearch(mpd_Connection * connection,int field);
 
+/**
+ * @param connection a MpdConnection
+ * @param path	the path to the playlist. 
+ * 
+ * List the content, with full metadata, of a stored playlist.
+ * 
+ */
 void mpd_sendListPlaylistInfoCommand(mpd_Connection *connection, char *path);
-
+/**
+ * @param connection a MpdConnection
+ * @param path	the path to the playlist. 
+ * 
+ * List the content of a stored playlist.
+ * 
+ */
+void mpd_sendListPlaylistCommand(mpd_Connection *connection, char *path);
 
 #ifdef __cplusplus
 }

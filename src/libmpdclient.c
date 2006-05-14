@@ -88,16 +88,6 @@ static char * mpd_sanitizeArg(const char * arg) {
 	register const char *c;
 	register char *rc;
 
-	/* 
-	   unsigned int count = 0;
-
-	   c = arg;
-	   for(i = strlen(arg); i != 0; --i) {
-	   if(*c=='"' || *c=='\\') count++;
-	   c++;
-	   }
-	   ret = malloc(strlen(arg)+count+1);
-	   */
 	/* instead of counting in that loop above, just
 	 * use a bit more memory and half running time
 	 */
@@ -560,9 +550,6 @@ static void mpd_getNextReturnElement(mpd_Connection * connection) {
 	pos = tok - output;
 	tok[0]='\0';
 	value = tok+1;
-	//name = (char *)malloc(pos+1);
-	//strncpy(name, output, pos);
-	//name[pos] = '\0';
 	if(value && value[0]==' ') {
 		mpd_setReturnElement(connection, output, &(value[1]));
 	}
@@ -683,14 +670,13 @@ mpd_Status * mpd_getStatus(mpd_Connection * connection) {
 			status->songid = atoi(re->value);
 		}
 		else if(strcmp(re->name,"time")==0) {
-			char * copy;
-			char * temp;
-			copy = strdup(re->value);
-			status->elapsedTime = atoi(copy);
-			temp = strchr(copy, ':');
-			if (temp)
-				status->totalTime = atoi(++temp);
-			free(copy);
+			char * tok = strchr(re->value,':');
+			/* the second strchr below is a safety check */
+			if (tok && (strchr(tok,0) > (tok+1))) {
+				/* atoi stops at the first non-[0-9] char: */
+				status->elapsedTime = atoi(re->value);
+				status->totalTime = atoi(tok+1);
+			}
 		}
 		else if(strcmp(re->name,"error")==0) {
 			status->error = strdup(re->value);
@@ -839,16 +825,16 @@ static void mpd_initSong(mpd_Song * song) {
 
 static void mpd_finishSong(mpd_Song * song) {
 	if(song->file) free(song->file);
-	if(song->artist) 	free(song->artist);
-	if(song->album) 	free(song->album);
-	if(song->title) 	free(song->title);
-	if(song->track) 	free(song->track);
-	if(song->name) 		free(song->name);
-	if(song->date) 		free(song->date);
-	if(song->genre) 	free(song->genre);
-	if(song->composer) 	free(song->composer);
-	if(song->disc)		free(song->disc);
-	if(song->comment)	free(song->comment);
+	if(song->artist) free(song->artist);
+	if(song->album) free(song->album);
+	if(song->title) free(song->title);
+	if(song->track) free(song->track);
+	if(song->name) free(song->name);
+	if(song->date) free(song->date);
+	if(song->genre) free(song->genre);
+	if(song->composer) free(song->composer);
+	if(song->disc) free(song->disc);
+	if(song->comment) free(song->comment);
 }
 
 mpd_Song * mpd_newSong() {
@@ -1685,12 +1671,35 @@ void mpd_commitSearch(mpd_Connection *connection)
 	}
 }
 
-
+/**
+ * @param connection a MpdConnection
+ * @param path	the path to the playlist. 
+ * 
+ * List the content, with full metadata, of a stored playlist.
+ * 
+ */
 void mpd_sendListPlaylistInfoCommand(mpd_Connection *connection, char *path)
 {
 	char *arg = mpd_sanitizeArg(path);
 	char *query = malloc(strlen("listplaylistinfo")+strlen(arg)+5);
 	sprintf(query, "listplaylistinfo \"%s\"\n",arg);
+	mpd_sendInfoCommand(connection, query);
+	free(arg);
+	free(query);
+}
+
+/**
+ * @param connection a MpdConnection
+ * @param path	the path to the playlist. 
+ * 
+ * List the content of a stored playlist.
+ * 
+ */
+void mpd_sendListPlaylistCommand(mpd_Connection *connection, char *path)
+{
+	char *arg = mpd_sanitizeArg(path);
+	char *query = malloc(strlen("listplaylist")+strlen(arg)+5);
+	sprintf(query, "listplaylist \"%s\"\n",arg);
 	mpd_sendInfoCommand(connection, query);
 	free(arg);
 	free(query);
