@@ -1111,13 +1111,13 @@ static char * mpd_getNextReturnElementNamed(mpd_Connection * connection,
 	return NULL;
 }
 
-	char * mpd_getNextTag(mpd_Connection * connection,int table) {
-		if(table >= 0 && table < MPD_TAG_NUM_OF_ITEM_TYPES)
-		{
-			return mpd_getNextReturnElementNamed(connection,mpdTagItemKeys[table]);
-		}
-		return NULL;
+char * mpd_getNextTag(mpd_Connection * connection,int table) {
+	if(table >= 0 && table < MPD_TAG_NUM_OF_ITEM_TYPES)
+	{
+		return mpd_getNextReturnElementNamed(connection,mpdTagItemKeys[table]);
 	}
+	return NULL;
+}
 char * mpd_getNextArtist(mpd_Connection * connection) {
 	return mpd_getNextReturnElementNamed(connection,"Artist");
 }
@@ -1569,7 +1569,9 @@ void mpd_sendNotCommandsCommand(mpd_Connection * connection) {
 void mpd_sendCommandsCommand(mpd_Connection * connection) {
 	mpd_executeCommand(connection,"commands\n");
 }
-
+/**
+ * Get the next returned command
+ */
 char * mpd_getNextCommand(mpd_Connection * connection) {
 	return mpd_getNextReturnElementNamed(connection,"command");
 }
