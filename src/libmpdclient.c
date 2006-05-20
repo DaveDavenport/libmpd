@@ -50,6 +50,7 @@
 
 #ifdef WIN32
 #include <ws2tcpip.h>
+#include <wspiapi.h>
 #include <winsock.h>
 #else
 #include <netinet/in.h>
