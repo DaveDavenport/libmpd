@@ -22,7 +22,10 @@ void status_changed(MpdObj *mi, ChangedStatusType what)
 /*1*/	if(what&MPD_CST_SONGID)
 	{
 		mpd_Song *song = mpd_playlist_get_current_song(mi);
-		printf(GREEN"Song:"RESET" %s - %s\n", song->artist, song->title);
+		if(song)
+		{
+			printf(GREEN"Song:"RESET" %s - %s\n", song->artist, song->title);
+		}
 	}
 
 
@@ -104,11 +107,14 @@ int main(int argc, char **argv)
 	int run = 1;
 	MpdObj *obj = NULL;
 	fdstdin = open("/dev/stdin", O_NONBLOCK|O_RDONLY);
-	obj = mpd_new("localhost", 6600, NULL);
+	obj = mpd_new("localhost", 6600, "blaat");
+	mpd_set_connection_timeout(obj, 10);
+	fprintf(stderr,"\n\n%d\n",mpd_connect(obj));
 	mpd_signal_connect_status_changed(obj,(StatusChangedCallback)status_changed, NULL);
 	if(!mpd_connect(obj))
 	{
 		char buffer[20];
+		mpd_send_password(obj);
 		memset(buffer, '\0', 20);
 		do{
 			if(read(fdstdin, buffer, 1) > 0)

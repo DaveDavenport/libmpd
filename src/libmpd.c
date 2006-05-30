@@ -583,6 +583,11 @@ int mpd_connect(MpdObj *mi)
 		/* TODO: make seperate error message? */
 		return MPD_NOT_CONNECTED;
 	}
+	if(mpd_check_error(mi) != MPD_OK)
+	{
+		/* TODO: make seperate error message? */
+		return MPD_NOT_CONNECTED;
+	}
 
 	/* set connected state */
 	mi->connected = TRUE;
