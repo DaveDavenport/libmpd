@@ -863,6 +863,10 @@ void mpd_data_free(MpdData *data)
 				if(data_real->song) mpd_freeSong(data_real->song);
 			} else if (data_real->type == MPD_DATA_TYPE_OUTPUT_DEV) {
 				mpd_freeOutputElement(data_real->output_dev);
+			} else if(data_real->type == MPD_DATA_TYPE_DIRECTORY) {
+				if(data_real->directory)free(data_real->directory);
+			} else if(data_real->type == MPD_DATA_TYPE_PLAYLIST) {
+				if(data_real->playlist)free(data_real->playlist);				
 			} else {
 				free((void*)(data_real->tag));
 			}
