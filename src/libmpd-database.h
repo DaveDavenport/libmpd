@@ -124,7 +124,7 @@ MpdData *	mpd_database_get_unique_tags		(MpdObj *mi, int field,...);
  * @param exact 1 for exact search 0 for fuzzy
  * @returns a #MpdData
  */
-MpdData *	mpd_database_find_adv		(MpdObj *mi,int exact, ...);
+MpdData *	mpd_database_find_adv		(MpdObj *mi,int exact, ...) __attribute__((deprecated));
 
 /**
  * @param mi a #MpdObj
@@ -149,5 +149,39 @@ MpdData * mpd_database_get_directory(MpdObj *mi,char *path);
  * @returns a #MpdData list
  */
 MpdData *mpd_database_get_playlist_content(MpdObj *mi,char *playlist);
+
+
+/**
+ * @param mi A #MpdObj
+ * @param path an Path to a file
+ *
+ * Grabs the song info for a single file. Make sure you pass an url to a song
+ * and not a directory, that might result in strange behauviour.
+ *
+ * @returns a #mpd_Song
+ */
+mpd_Song * mpd_database_get_fileinfo(MpdObj *mi,const char *path);
+
+/**
+ * @param mi A #MpdObj
+ * @param field A #mpd_TagItems
+ *
+ * Adds a constraint to the search 
+ */
+void mpd_database_search_add_constraint(MpdObj *mi, mpd_TagItems field, char *name);
+
+/**
+ * @param mi A #MpdObj
+ * @param exact a boolean indicating if the search is fuzzy or exact
+ *
+ * Starts a search, you can add "constraints" by calling mpd_database_search_add_constraint
+ * 
+ * This function requires mpd 0.12.0 or higher 
+ */
+
+void mpd_database_search_start(MpdObj *mi, int exact);
+
+MpdData * mpd_database_search_commit(MpdObj *mi);
+
 /*@}*/
 #endif

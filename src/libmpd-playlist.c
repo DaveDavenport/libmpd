@@ -112,7 +112,7 @@ mpd_Song * mpd_playlist_get_song(MpdObj *mi, int songid)
 
 	if(mpd_unlock_conn(mi))
 	{
-		/*TODO free entity. for now this can never happen */
+		if(ent) mpd_freeInfoEntity(ent);
 		return NULL;
 	}
 
@@ -125,7 +125,7 @@ mpd_Song * mpd_playlist_get_song(MpdObj *mi, int songid)
 	if(ent->type != MPD_INFO_ENTITY_TYPE_SONG)
 	{
 		mpd_freeInfoEntity(ent);
-		debug_printf(DEBUG_ERROR, "Failed to grab corect song type from mpd\n");
+		debug_printf(DEBUG_ERROR, "Failed to grab correct song type from mpd\n");
 		return NULL;
 	}
 	song = ent->info.song;

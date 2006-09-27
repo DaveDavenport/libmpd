@@ -768,3 +768,189 @@ MpdData *mpd_database_get_playlist_content(MpdObj *mi,char *playlist)
 	}
 	return mpd_data_get_first(data);
 }
+/**
+ * @param mi A #MpdObj
+ * @param path an Path to a file
+ *
+ * Grabs the song info for a single file. Make sure you pass an url to a song
+ * and not a directory, that might result in strange behauviour.
+ *
+ * @returns a #mpd_Song
+ */
+mpd_Song * mpd_database_get_fileinfo(MpdObj *mi,const char *path)
+{
+	mpd_Song *song = NULL;
+	mpd_InfoEntity *ent = NULL;
+	/**
+	 * Check path for availibility and length
+	 */
+	if(path == NULL || path[0] == '\0')
+	{
+		debug_printf(DEBUG_ERROR, "path == NULL || strlen(path) == 0");
+		return NULL;
+	}
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_ERROR, "Not Connected\n");
+		return NULL;
+	}
+	/* lock, so we can work on mi->connection */
+	if(mpd_lock_conn(mi) != MPD_OK)
+	{
+		debug_printf(DEBUG_ERROR, "Failed to lock connection");
+		return NULL;
+	}
+	/* send the request */
+	mpd_sendListallInfoCommand(mi->connection, path);
+	/* get the first (and only) result */
+	ent = mpd_getNextInfoEntity(mi->connection);
+	/* finish and clean up libmpdclient */
+	mpd_finishCommand(mi->connection);
+	/* unlock again */
+	if(mpd_unlock_conn(mi))
+	{
+		if(ent) mpd_freeInfoEntity(ent);
+		debug_printf(DEBUG_ERROR, "Failed to unlock");
+		return NULL;
+	}
+
+	if(ent == NULL)
+	{
+		debug_printf(DEBUG_ERROR, "Failed to grab song from mpd\n");
+		return NULL;
+	}
+
+	if(ent->type != MPD_INFO_ENTITY_TYPE_SONG)
+	{
+		mpd_freeInfoEntity(ent);
+		debug_printf(DEBUG_ERROR, "Failed to grab correct song type from mpd, path might not be a file\n");
+		return NULL;
+	}
+	/* get the song */
+	song = ent->info.song;
+	/* remove reference to song from the entity */
+	ent->info.song = NULL;
+	/* free the entity */
+	mpd_freeInfoEntity(ent);
+
+	return song;
+}
+/**
+ * @param mi A #MpdObj
+ * @param exact a boolean indicating if the search is fuzzy or exact
+ *
+ * Starts a search, you can add "constraints" by calling mpd_database_search_add_constraint
+ * 
+ * This function requires mpd 0.12.0 or higher 
+ */
+
+void mpd_database_search_start(MpdObj *mi, int exact)
+{
+	/**
+	 * Check argument
+	 */
+	if(mi == NULL || exact > 1 || exact < 0) 
+	{
+		debug_printf(DEBUG_ERROR, "Argument error");
+		return ;
+	}
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_ERROR, "Not Connected\n");
+		return ;
+	}
+	if(!mpd_server_check_version(mi, 0,12,0))
+	{
+		debug_printf(DEBUG_ERROR, "Advanced search requires mpd 0.12.0 or higher");
+		return ;
+	}
+	/* lock, so we can work on mi->connection */
+	if(mpd_lock_conn(mi) != MPD_OK)
+	{
+		debug_printf(DEBUG_ERROR, "Failed to lock connection");
+		return ;
+	}
+	mpd_startSearch(mi->connection, exact);
+	/* unlock, let the error handler handle any possible error.
+	 */
+	mpd_unlock_conn(mi);
+	return;
+}
+/**
+ * @param mi A #MpdObj
+ * @param field A #mpd_TagItems
+ *
+ * Adds a constraint to the search 
+ */
+void mpd_database_search_add_constraint(MpdObj *mi, mpd_TagItems field, char *name)
+{
+	if(mi == NULL || name == NULL || name[0] == '\0')
+	{
+		debug_printf(DEBUG_ERROR,"Failed to parse arguments");
+		return ;
+	}
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_ERROR, "Not Connected\n");
+		return ;
+	}
+	if(!mpd_server_check_version(mi, 0,12,0))
+	{
+		debug_printf(DEBUG_ERROR, "Advanced search requires mpd 0.12.0 or higher");
+		return ;
+	}
+	/* lock, so we can work on mi->connection */
+	if(mpd_lock_conn(mi) != MPD_OK)
+	{
+		debug_printf(DEBUG_ERROR, "Failed to lock connection");
+		return ;
+	}
+	mpd_addConstraintSearch(mi->connection, field, name);
+	/* unlock, let the error handler handle any possible error.
+	 */
+	mpd_unlock_conn(mi);
+	return;
+}
+
+MpdData * mpd_database_search_commit(MpdObj *mi)
+{
+	mpd_InfoEntity *ent = NULL;
+	MpdData *data = NULL;
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"not connected\n");
+		return NULL;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		debug_printf(DEBUG_ERROR,"lock failed\n");
+		return NULL;
+	}
+	mpd_commitSearch(mi->connection);
+	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
+	{
+		if(ent->type == MPD_INFO_ENTITY_TYPE_SONG)
+		{
+			data = mpd_new_data_struct_append(data);
+			data->type = MPD_DATA_TYPE_SONG;
+			data->song = ent->info.song;
+			ent->info.song = NULL;
+		}
+		mpd_freeInfoEntity(ent);
+	}
+	mpd_finishCommand(mi->connection);
+
+	/* unlock */
+	if(mpd_unlock_conn(mi))
+	{
+		debug_printf(DEBUG_ERROR, "Failed to unlock connection");
+		if(data)mpd_data_free(data);
+		return NULL;
+	}
+	if(data == NULL)
+	{
+		return NULL;
+	}
+	return mpd_data_get_first(data);
+}
+
