@@ -30,6 +30,8 @@
 #include "libmpd.h"
 #include "libmpd-internal.h"
 
+static void mpd_free_queue_ob(MpdObj *mi);
+static void mpd_server_free_commands(MpdObj *mi);
 
 #ifndef HAVE_STRNDUP
 /**
@@ -135,6 +137,10 @@ static MpdObj * mpd_create()
 
 	/* set queue to NULL */
 	mi->queue = NULL;
+	/* search stuff */
+	mi->search_type = MPD_SEARCH_TYPE_NONE;
+	/* no need to initialize, but set it to anything anyway*/
+	mi->search_field = MPD_TAG_ITEM_ARTIST;
 
 	/* commands */
 	mi->commands = NULL;
@@ -179,6 +185,8 @@ void mpd_free(MpdObj *mi)
 	{
 		mpd_freeSong(mi->CurrentSong);
 	}
+	mpd_free_queue_ob(mi);
+	mpd_server_free_commands(mi);		
 	free(mi);
 }
 
@@ -520,21 +528,24 @@ int mpd_disconnect(MpdObj *mi)
 	mi->CurrentState.channels = 0; 
 	mi->CurrentState.bits = 0;
 
+	/* search stuff */
+	mi->search_type = MPD_SEARCH_TYPE_NONE;
+	/* no need to initialize, but set it to anything anyway*/
+	mi->search_field = MPD_TAG_ITEM_ARTIST;
+
+
+
+	
 	memcpy(&(mi->OldState), &(mi->CurrentState) , sizeof(MpdServerState));
+
+	mpd_free_queue_ob(mi);
+	mpd_server_free_commands(mi);	
 	/*don't reset errors */
-
-
 	if(mi->the_connection_changed_callback != NULL)
 	{
 		mi->the_connection_changed_callback( mi, FALSE, mi->the_connection_changed_signal_userdata );
 	}
-	/* deprecated */
-	/*	if(mi->disconnect != NULL)
-		{
-		mi->disconnect(mi, mi->disconnect_pointer);
-		}
-		*/
-	mpd_server_free_commands(mi);
+	
 	debug_printf(DEBUG_INFO, "Disconnect completed\n");
 	return MPD_OK;
 }
@@ -889,7 +900,7 @@ static void mpd_free_queue_ob(MpdObj *mi)
 	}
 	if(mi->queue == NULL)
 	{
-		debug_printf(DEBUG_ERROR, "mi->queue != NULL failed");
+		debug_printf(DEBUG_INFO, "mi->queue != NULL failed");
 		return;
 	}	
 	mi->queue = mi->queue->first;

@@ -118,7 +118,7 @@ int		mpd_database_save_playlist			(MpdObj *mi, char *name);
  * @param field The table field
  * @returns a #MpdData
  */
-MpdData *	mpd_database_get_unique_tags		(MpdObj *mi, int field,...);
+MpdData *	mpd_database_get_unique_tags		(MpdObj *mi, int field,...) __attribute__((deprecated));
 /**
  * @param mi a #MpdObj
  * @param exact 1 for exact search 0 for fuzzy
@@ -182,6 +182,6 @@ void mpd_database_search_add_constraint(MpdObj *mi, mpd_TagItems field, char *na
 void mpd_database_search_start(MpdObj *mi, int exact);
 
 MpdData * mpd_database_search_commit(MpdObj *mi);
-
+void mpd_database_search_field_start(MpdObj *mi, mpd_TagItems field);
 /*@}*/
 #endif
