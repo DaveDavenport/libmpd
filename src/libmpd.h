@@ -558,7 +558,13 @@ long unsigned mpd_server_get_database_update_time(MpdObj * mi);
  */
 int mpd_server_check_version(MpdObj * mi, int major, int minor, int micro);
 
+/**
+ * @param mi a #MpdObj
+ *
+ * @return a string with version or NULL when not connected
+ */
 
+char *mpd_server_get_version(MpdObj *mi);
 /**
  * @param mi a #MpdObj
  * @param command the command to check

@@ -429,6 +429,17 @@ static void mpd_server_free_commands(MpdObj *mi)
 	}
 }
 
+char *mpd_server_get_version(MpdObj *mi)
+{
+	char *retval = NULL;
+	if(!mi || !mpd_check_connected(mi))
+		return NULL;
+	retval = malloc(10*sizeof(char));
+	snprintf(retval,10,"%i.%i.%i", mi->connection->version[0], mi->connection->version[1], mi->connection->version[2]);
+	/* always make sure the string is terminated */
+	retval[9] = '\0';
+	return retval;
+}
 
 int mpd_server_get_allowed_commands(MpdObj *mi)
 {
