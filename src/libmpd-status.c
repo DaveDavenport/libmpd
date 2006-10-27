@@ -320,6 +320,38 @@ int mpd_stats_get_playtime(MpdObj *mi)
 	}
 	return mi->stats->playTime;
 }
+
+int mpd_stats_get_db_playtime(MpdObj *mi)
+{
+	if(mi == NULL)
+	{
+		debug_printf(DEBUG_ERROR, "failed to check mi == NULL\n");
+		return MPD_ARGS_ERROR;
+	}
+	if(mpd_stats_check(mi) != MPD_OK)
+	{
+		debug_printf(DEBUG_WARNING,"Failed to get stats\n");
+		return MPD_STATS_FAILED;
+	}
+	return mi->stats->dbPlayTime;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 int mpd_status_get_volume(MpdObj *mi)
 {
 	if(mi == NULL)

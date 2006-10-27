@@ -228,6 +228,14 @@ int		mpd_stats_get_total_albums		(MpdObj *mi);
  * @returns time that mpd is running in seconds
  */
 int		mpd_stats_get_uptime			(MpdObj *mi);
+/**
+ * @param mi a #MpdObj
+ *
+ * Gets the total time of the database
+ *
+ * @returns the total time of the database
+ */
+int 		mpd_stats_get_db_playtime		(MpdObj *mi);
 
 
 
