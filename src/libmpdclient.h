@@ -94,7 +94,7 @@ typedef enum mpd_TagItems
 	MPD_TAG_ITEM_FILENAME,
 	MPD_TAG_ITEM_ANY,
 	MPD_TAG_NUM_OF_ITEM_TYPES
-}mpd_TagItems;
+} mpd_TagItems;
 
 extern char * mpdTagItemKeys[MPD_TAG_NUM_OF_ITEM_TYPES];
 
@@ -439,7 +439,7 @@ char * mpd_getNextArtist(mpd_Connection * connection);
 
 char * mpd_getNextAlbum(mpd_Connection * connection);
 
-char * mpd_getNextTag(mpd_Connection *connection, int table);
+char * mpd_getNextTag(mpd_Connection *connection, int type);
 
 /* list artist or albums by artist, arg1 should be set to the artist if
  * listing albums by a artist, otherwise NULL for listing all artists or albums
@@ -549,6 +549,7 @@ void mpd_freeOutputElement(mpd_OutputEntity * output);
  * Queries mpd for the allowed commands
  */
 void mpd_sendCommandsCommand(mpd_Connection * connection);
+
 /**
  * @param connection a #mpd_Connection
  *
@@ -573,6 +574,7 @@ char *mpd_getNextCommand(mpd_Connection *connection);
  *
  */
 void mpd_sendListPlaylistInfoCommand(mpd_Connection *connection, char *path);
+
 /**
  * @param connection a MpdConnection
  * @param path	the path to the playlist.
@@ -589,27 +591,29 @@ void mpd_sendListPlaylistCommand(mpd_Connection *connection, char *path);
  * starts a search, use mpd_addConstraintSearch to add
  * a constraint to the search, and mpd_commitSearch to do the actual search
  */
-void mpd_startSearch(mpd_Connection * connection,int exact);
+void mpd_startSearch(mpd_Connection *connection, int exact);
+
 /**
  * @param connection a #mpd_Connection
- * @param field
+ * @param type
  * @param name
- *
  */
-void mpd_addConstraintSearch(mpd_Connection *connection, int field, char *name);
+void mpd_addConstraintSearch(mpd_Connection *connection, int type, char *name);
+
 /**
  * @param connection a #mpd_Connection
- *
  */
 void mpd_commitSearch(mpd_Connection *connection);
 
 /**
  * @param connection a #mpd_Connection
- * @param field The field to search
+ * @param type The type to search for
  *
  * starts a search for fields... f.e. get a list of artists would be:
+ * @code
  * mpd_startFieldSearch(connection, MPD_TAG_ITEM_ARTIST);
  * mpd_commitSearch(connection);
+ * @endcode
  *
  * or get a list of artist in genre "jazz" would be:
  * @code
@@ -619,10 +623,10 @@ void mpd_commitSearch(mpd_Connection *connection);
  * @endcode
  *
  * mpd_startSearch will return  a list of songs (and you need mpd_getNextInfoEntity)
- * this one will return a list of only one field (the field specified with field) and you need
+ * this one will return a list of only one field (the one specified with type) and you need
  * mpd_getNextTag to get the results
  */
-void mpd_startFieldSearch(mpd_Connection * connection,int field);
+void mpd_startFieldSearch(mpd_Connection *connection, int type);
 #ifdef __cplusplus
 }
 #endif
