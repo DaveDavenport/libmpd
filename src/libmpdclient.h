@@ -30,10 +30,6 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-/** \defgroup libmpdclient Libmpdclient low level functions
- * Libmpdclient library that libmpd wraps.
- */
-/*@{*/
 #ifndef LIBMPDCLIENT_H
 #define LIBMPDCLIENT_H
 
@@ -44,7 +40,7 @@
 #include <sys/time.h>
 #include <stdarg.h>
 #define MPD_BUFFER_MAX_LENGTH	50000
-#define MPD_ERRORSTR_MAX_LENGTH	 1023
+#define MPD_ERRORSTR_MAX_LENGTH	1000
 #define MPD_WELCOME_MESSAGE	"OK MPD "
 
 #define MPD_ERROR_TIMEOUT	10 /* timeout trying to talk to mpd */
@@ -452,6 +448,8 @@ void mpd_sendListCommand(mpd_Connection * connection, int table,
 
 void mpd_sendAddCommand(mpd_Connection * connection, const char * file);
 
+int mpd_sendAddIdCommand(mpd_Connection *connection, const char *file);
+
 void mpd_sendDeleteCommand(mpd_Connection * connection, int songNum);
 
 void mpd_sendDeleteIdCommand(mpd_Connection * connection, int songNum);
@@ -628,14 +626,8 @@ void mpd_commitSearch(mpd_Connection *connection);
  * mpd_getNextTag to get the results
  */
 void mpd_startFieldSearch(mpd_Connection *connection, int type);
-
-
-
-
-int mpd_sendAddIdCommand(mpd_Connection *connection, const char *file);
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-/*@}*/
