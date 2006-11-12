@@ -153,8 +153,8 @@ void mpd_free(MpdObj *mi)
 	if(mi->connected)
 	{
 		/* disconnect */
-		mpd_disconnect(mi);
 		debug_printf(DEBUG_WARNING, "Connection still running, disconnecting\n");
+		mpd_disconnect(mi);
 	}
 	if(mi->hostname)
 	{

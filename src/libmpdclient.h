@@ -628,6 +628,11 @@ void mpd_commitSearch(mpd_Connection *connection);
  * mpd_getNextTag to get the results
  */
 void mpd_startFieldSearch(mpd_Connection *connection, int type);
+
+
+
+
+int mpd_sendAddIdCommand(mpd_Connection *connection, const char *file);
 #ifdef __cplusplus
 }
 #endif

@@ -190,6 +190,20 @@ int mpd_playlist_delete_id(MpdObj *mi, int songid);
  */
 int mpd_playlist_delete_pos(MpdObj *mi, int songpos);	
 
+/** 
+ * @param mi a #MpdObj
+ * @param path a path to a song
+ *
+ * Add a single path and return the id
+ * Only use this to add a single list, if you need to add multiple songs,
+ * use the #mpd_playlist_queue_add for improved performance
+ *
+ * @returns a #MpdError or the songid of the added song
+ */
+
+int mpd_playlist_add_get_id(MpdObj *mi, char *path);
+
+
 /*@}*/
 /** \defgroup advsearch Playlist Advanced Search 
  * \ingroup Playlist

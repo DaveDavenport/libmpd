@@ -440,69 +440,6 @@ MpdData * mpd_playlist_get_changes_posid(MpdObj *mi,int old_playlist_id)
 	return mpd_data_get_first(data);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 int mpd_playlist_queue_add(MpdObj *mi,char *path)
 {
 	if(!mpd_check_connected(mi))
@@ -686,6 +623,31 @@ int mpd_playlist_queue_delete_pos(MpdObj *mi,int songpos)
 	mi->queue->id = songpos;
 	mi->queue->path = NULL;
 	return MPD_OK;
+}
+
+int mpd_playlist_add_get_id(MpdObj *mi, char *path)
+{
+	int songid = -1;
+	if(mi == NULL || path == NULL)
+	{
+		debug_printf(DEBUG_ERROR, "mi == NULL || path == NULL failed");
+		return MPD_ARGS_ERROR;
+	}
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"mpd_playlist_add: not connected\n");
+		return MPD_NOT_CONNECTED;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		debug_printf(DEBUG_WARNING,"lock failed\n");
+		return MPD_LOCK_FAILED;
+	}
+	songid = mpd_sendAddIdCommand(mi->connection, path);
+	mpd_finishCommand(mi->connection);
+
+	mpd_unlock_conn(mi);
+	return songid; 
 }
 
 /* deprecated stuff */
