@@ -33,6 +33,7 @@
 static void mpd_free_queue_ob(MpdObj *mi);
 static void mpd_server_free_commands(MpdObj *mi);
 
+char *libmpd_version = LIBMPD_VERSION;
 #ifndef HAVE_STRNDUP
 /**
  * Not every platfarm has strndup, so here we have a nice little custom implementation
