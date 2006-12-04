@@ -35,4 +35,5 @@ example/Makefile
 example/testcase/Makefile
 libmpd.pc
 src/libmpd-version.h
+doc/libmpd.doxy
 ])

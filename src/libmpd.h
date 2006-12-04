@@ -203,7 +203,7 @@ MpdObj *mpd_new(char *hostname, int port, char *password);
 int mpd_set_hostname(MpdObj * mi, char *hostname);
 
 /** 
- * @paran mi a #MpdObj
+ * @param mi a #MpdObj
  *
  * gets the set hostname 
  * returns: a const char

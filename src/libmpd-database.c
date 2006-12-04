@@ -781,7 +781,7 @@ mpd_Song * mpd_database_get_fileinfo(MpdObj *mi,const char *path)
 {
 	mpd_Song *song = NULL;
 	mpd_InfoEntity *ent = NULL;
-	/**
+	/*
 	 * Check path for availibility and length
 	 */
 	if(path == NULL || path[0] == '\0')
@@ -839,7 +839,7 @@ mpd_Song * mpd_database_get_fileinfo(MpdObj *mi,const char *path)
 
 void mpd_database_search_field_start(MpdObj *mi, mpd_TagItems field)
 {
-	/**
+	/*
 	 * Check argument
 	 */
 	if(mi == NULL || field >= MPD_TAG_NUM_OF_ITEM_TYPES || field < 0) 
@@ -864,7 +864,7 @@ void mpd_database_search_field_start(MpdObj *mi, mpd_TagItems field)
 		return ;
 	}
 	mpd_startFieldSearch(mi->connection, field);
-	/** Set search type */
+	/* Set search type */
 	mi->search_type = MPD_SEARCH_TYPE_LIST;
 	mi->search_field = field;
 	/* unlock, let the error handler handle any possible error.
@@ -890,7 +890,7 @@ void mpd_database_search_field_start(MpdObj *mi, mpd_TagItems field)
 
 void mpd_database_search_start(MpdObj *mi, int exact)
 {
-	/**
+	/*
 	 * Check argument
 	 */
 	if(mi == NULL || exact > 1 || exact < 0) 
@@ -915,7 +915,7 @@ void mpd_database_search_start(MpdObj *mi, int exact)
 		return ;
 	}
 	mpd_startSearch(mi->connection, exact);
-	/** Set search type */
+	/* Set search type */
 	mi->search_type = (exact)? MPD_SEARCH_TYPE_FIND:MPD_SEARCH_TYPE_SEARCH;
 	/* unlock, let the error handler handle any possible error.
 	 */
@@ -928,9 +928,9 @@ void mpd_database_search_start(MpdObj *mi, int exact)
  *
  * Adds a constraint to the search 
  */
-void mpd_database_search_add_constraint(MpdObj *mi, mpd_TagItems field, char *name)
+void mpd_database_search_add_constraint(MpdObj *mi, mpd_TagItems field, char *value)
 {
-	if(mi == NULL || name == NULL || name[0] == '\0')
+	if(mi == NULL || value == NULL || value[0] == '\0')
 	{
 		debug_printf(DEBUG_ERROR,"Failed to parse arguments");
 		return;
@@ -956,7 +956,7 @@ void mpd_database_search_add_constraint(MpdObj *mi, mpd_TagItems field, char *na
 		debug_printf(DEBUG_ERROR, "Failed to lock connection");
 		return ;
 	}
-	mpd_addConstraintSearch(mi->connection, field, name);
+	mpd_addConstraintSearch(mi->connection, field, value);
 	/* unlock, let the error handler handle any possible error.
 	 */
 	mpd_unlock_conn(mi);
@@ -1009,7 +1009,7 @@ MpdData * mpd_database_search_commit(MpdObj *mi)
 		}
 	}
 	mpd_finishCommand(mi->connection);
-	/**
+	/*
 	 * reset search type
 	 */
 	mi->search_type = MPD_SEARCH_TYPE_NONE;
