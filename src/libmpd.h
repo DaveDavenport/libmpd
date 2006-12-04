@@ -17,6 +17,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
+/**
+ * \example testcase.c
+ * A small example of a console client using libmpd.
+ */
+
 /** \defgroup 1Basic Basic
  */
 /*@{*/

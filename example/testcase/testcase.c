@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 	int run = 1;
 	MpdObj *obj = NULL;
 	fdstdin = open("/dev/stdin", O_NONBLOCK|O_RDONLY);
-	obj = mpd_new("localhost", 6600, "blaat");
+	obj = mpd_new("localhost", 6600,NULL); 
 	mpd_set_connection_timeout(obj, 10);
 	fprintf(stderr,"\n\n%d\n",mpd_connect(obj));
 	mpd_signal_connect_status_changed(obj,(StatusChangedCallback)status_changed, NULL);
