@@ -1,5 +1,5 @@
-#include "libmpd.h"
-#include "debug_printf.h"
+#include <libmpd.h>
+#include <debug_printf.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,11 +15,14 @@
 #define YELLOW "\x1b[33;06m"
 
 extern int debug_level;
-
+void error_callback(MpdObj *mi,int errorid, char *msg, void *userdata)
+{
+	printf(RED"Error "RESET""GREEN"%i:"RESET" '%s'\n", errorid, msg);
+} 
 
 void status_changed(MpdObj *mi, ChangedStatusType what)
 {
-/*1*/	if(what&MPD_CST_SONGID)
+	if(what&MPD_CST_SONGID)
 	{
 		mpd_Song *song = mpd_playlist_get_current_song(mi);
 		if(song)
@@ -28,10 +31,7 @@ void status_changed(MpdObj *mi, ChangedStatusType what)
 		}
 	}
 
-
-
-
-/*3*/	if(what&MPD_CST_STATE)
+	if(what&MPD_CST_STATE)
 	{
 		printf(GREEN"State:"RESET);
 		switch(mpd_player_get_state(mi))
@@ -49,21 +49,21 @@ void status_changed(MpdObj *mi, ChangedStatusType what)
 				break;
 		}
 	}
-/*4*/	if(what&MPD_CST_REPEAT){
+	if(what&MPD_CST_REPEAT){
 		printf(GREEN"Repeat:"RESET" %s\n", mpd_player_get_repeat(mi)? "On":"Off");
 	}
-/*5*/	if(what&MPD_CST_RANDOM){
+	if(what&MPD_CST_RANDOM){
 		printf(GREEN"Random:"RESET" %s\n", mpd_player_get_random(mi)? "On":"Off");
 	}
-/*6*/	if(what&MPD_CST_VOLUME){
+	if(what&MPD_CST_VOLUME){
 		printf(GREEN"Volume:"RESET" %03i%%\n", 
 				mpd_status_get_volume(mi));
 	}
-/*7*/	if(what&MPD_CST_CROSSFADE){
+	if(what&MPD_CST_CROSSFADE){
 		printf(GREEN"X-Fade:"RESET" %i sec.\n",
 				mpd_status_get_crossfade(mi));
 	}
-/*8*/	if(what&MPD_CST_UPDATING)
+	if(what&MPD_CST_UPDATING)
 	{
 		if(mpd_status_db_is_updating(mi))
 		{
@@ -74,43 +74,58 @@ void status_changed(MpdObj *mi, ChangedStatusType what)
 			printf(GREEN"Updating DB finished"RESET"\n");
 		}
 	}
-/*9*/	if(what&MPD_CST_DATABASE)
+	if(what&MPD_CST_DATABASE)
 	{
 		printf(GREEN"Databased changed"RESET"\n");
 	}
-/*10*/	if(what&MPD_CST_PLAYLIST)
+	if(what&MPD_CST_PLAYLIST)
 	{
 		printf(GREEN"Playlist changed"RESET"\n");
 	}
 	/* not yet implemented signals */
-/*11*/	if(what&MPD_CST_AUDIO){
+	if(what&MPD_CST_AUDIO){
 		printf(GREEN"Audio Changed"RESET"\n");
 	}
-/*12*/	if(what&MPD_CST_TOTAL_TIME){
+	if(what&MPD_CST_TOTAL_TIME){
 		printf(GREEN"Total song time changed:"RESET" %02i:%02i\n",
 				mpd_status_get_total_song_time(mi)/60,
 				mpd_status_get_total_song_time(mi)%60);
 	}
-/*13*/	if(what&MPD_CST_ELAPSED_TIME){
-/*		printf(GREEN"Time elapsed changed:"RESET" %02i:%02i\n",
+	if(what&MPD_CST_ELAPSED_TIME){
+		/*		printf(GREEN"Time elapsed changed:"RESET" %02i:%02i\n",
 				mpd_status_get_elapsed_song_time(mi)/60,
 				mpd_status_get_elapsed_song_time(mi)%60);
-*/	}
-	if(what&MPD_CST_PERMISSION){
-		printf(YELLOW"Permission:"RESET" Changed\n");
-	}
+				*/	}
+		if(what&MPD_CST_PERMISSION){
+			printf(YELLOW"Permission:"RESET" Changed\n");
+		}
 }
 
 int main(int argc, char **argv)
 {
 	int fdstdin = 0;
-	int run = 1;
+	int run = 1, iport = 6600;
+	char *hostname = getenv("MPD_HOST");
+	char *port = getenv("MPD_PORT");
+	char *password = getenv("MPD_PASSWORD");
 	MpdObj *obj = NULL;
+	/* Make the input non blocking */
 	fdstdin = open("/dev/stdin", O_NONBLOCK|O_RDONLY);
-	obj = mpd_new("localhost", 6600,NULL); 
-	mpd_set_connection_timeout(obj, 10);
-	fprintf(stderr,"\n\n%d\n",mpd_connect(obj));
+	/* set correct hostname */	
+	if(!hostname) {
+		hostname = "localhost";
+	}
+	if(port){
+		iport = atoi(port);
+	}
+	/* Create mpd object */
+	obj = mpd_new(hostname, iport,password); 
+	/* Connect signals */
+	mpd_signal_connect_error(obj,(ErrorCallback)error_callback, NULL);
 	mpd_signal_connect_status_changed(obj,(StatusChangedCallback)status_changed, NULL);
+	/* Set timeout */
+	mpd_set_connection_timeout(obj, 10);
+
 	if(!mpd_connect(obj))
 	{
 		char buffer[20];
@@ -124,8 +139,8 @@ int main(int argc, char **argv)
 					case '\n':
 						break;
 					case 'b':
-					       mpd_player_next(obj);
-					       break;
+						mpd_player_next(obj);
+						break;
 					case 'z':
 						mpd_player_prev(obj);
 						break;
@@ -169,7 +184,7 @@ int main(int argc, char **argv)
 						}
 					case 'p':
 						memset(buffer, '\0',20);
-						if(read(fdstdin,buffer, 5))
+						if(read(fdstdin,buffer, 20))
 						{
 							int id = atoi(buffer);
 							printf(GREEN"Playing:"RESET" %i\n", id);
@@ -199,7 +214,25 @@ int main(int argc, char **argv)
 						mpd_status_set_volume(obj, mpd_status_get_volume(obj)-5);
 						break;
 					case 'd':
-						debug_level = 3;
+						debug_level = (debug_level > 0)?0:3;
+						printf(YELLOW"Debug:"RESET" %s\n", (debug_level >0)? "Enabled":"Disabled");
+						break;
+					case 'h':
+						printf("\th:\t\tHelp\n"\
+							"\td:\t\tToggle debug on/off\n"\
+							"\t+:\t\tIncrease volume\n"\
+							"\t-:\t\tDecrease volume\n"\
+						        "\ta <pass>:\t Authentificate with pass\n"\
+							"\tp <id>:\t Play song with id\n"\
+							"\tl:\t\tList the playlist\n"\
+							"\ts:\t\tToggle shuffle mode\n"\
+							"\tr:\t\tToggle repeat\n"\
+							"\tq:\t\tQuit\n"\
+							"\tv:\t\tStop\n"\
+							"\tc:\t\tPause\n"\
+							"\tx:\t\tPlay\n"\
+							"\tz:\t\tPrevious\n"\
+							"\tb:\t\tNext\n");	
 						break;
 					default:
 						printf("buffer: %s\n", buffer);
