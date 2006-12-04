@@ -159,8 +159,9 @@ MpdData * mpd_database_get_directory(MpdObj *mi,char *path);
 MpdData *mpd_database_get_playlist_content(MpdObj *mi,char *playlist);
 
 /*@}*/
-/** \defgroup advsearch Playlist Advanced Search 
- * \ingroup Database 
+
+/** \defgroup advsearch Database Advanced Search 
+ * \ingroup 80database 
  *  These functions only function when connected to mpd version 0.12.0 or higher
  */
 /*@{*/
