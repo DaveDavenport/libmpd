@@ -45,7 +45,7 @@ extern "C" {
 #define FALSE 0
 #endif
 #include "libmpd-version.h"
-extern char *libmpd_version;
+
 
 /**
  * Enum that represent the errors libmpd functions can return 

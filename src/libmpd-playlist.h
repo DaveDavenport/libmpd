@@ -133,14 +133,6 @@ int		mpd_playlist_move_id		(MpdObj *mi, int old_id, int new_id);
  */
 MpdData *	mpd_playlist_get_changes		(MpdObj *mi,int old_playlist_id);
 
-
-
-
-
-
-
-
-
 /**
  * @param mi a #MpdObj
  * @param old_playlist_id The id of the old playlist you want to get the changes with.
@@ -202,30 +194,6 @@ int mpd_playlist_delete_pos(MpdObj *mi, int songpos);
  */
 
 int mpd_playlist_add_get_id(MpdObj *mi, char *path);
-
-
-/*@}*/
-/** \defgroup advsearch Playlist Advanced Search 
- * \ingroup Playlist
- *  These functions only function when connected to mpd version 0.12.0 or higher
- */
-/*@{*/
-
-/* mpd svn only functions 0.12.0 */
-/* TODO: rewrite this */
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*@}*/
 
@@ -296,25 +264,4 @@ int	mpd_playlist_queue_commit		(MpdObj *mi);
 /*@}*/
 
 
-/** \defgroup playlistdeprecated Deprecated functions
- * \ingroup Playlist
- * These functions are removed from the playlist module, because they read/control the database.
- * They are present for backwards compatibility
- */
-/*@{*/
-/*
-int 		mpd_playlist_update_dir		(MpdObj *mi, char *path) __attribute__((deprecated));
-MpdData *	mpd_playlist_get_albums		(MpdObj *mi, char *artist) __attribute__((deprecated));
-MpdData *	mpd_playlist_get_artists	(MpdObj *mi) __attribute__((deprecated));
-MpdData *	mpd_playlist_get_directory	(MpdObj *mi,char *path)__attribute__((deprecated));
-MpdData *	mpd_playlist_find		(MpdObj *mi, int table, char *string, int exact) __attribute__((deprecated));
-MpdData *	mpd_playlist_token_find		(MpdObj *mi, char *string) __attribute__((deprecated));
-
-int		mpd_playlist_delete			(MpdObj *mi,char *path) __attribute__((deprecated));
-int		mpd_playlist_save			(MpdObj *mi,char *path) __attribute__((deprecated));
-MpdData *	mpd_playlist_get_unique_tags		(MpdObj *mi, int field,...) __attribute__((deprecated));
-MpdData *	mpd_playlist_find_adv		(MpdObj *mi,int exact, ...) __attribute__((deprecated));
-
-*/
-/*@}*/
 #endif

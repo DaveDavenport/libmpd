@@ -19,7 +19,9 @@ typedef enum _DebugLevel {
 } DebugLevel;
 
 /**
- * Set the debug level
+ * @param dl a #DebugLevel
+ *
+ * Set the debug level. if set to DEBUG_INFO everything is printed to stdout.
  */
 void debug_set_level(DebugLevel dl);
 

@@ -136,6 +136,14 @@ MpdData *	mpd_database_find_adv		(MpdObj *mi,int exact, ...) __attribute__((depr
  */
 MpdData * mpd_database_find(MpdObj *mi, int table, char *string, int exact);
 
+/**
+ * @param mi a #MpdObj
+ * @param path a NULL terminated path string
+ *
+ * Gets the contents of a directory, it can return songs, directories and playlists
+ *
+ * @returns a #MpdData list with songs, directories and playlists
+ */
 MpdData * mpd_database_get_directory(MpdObj *mi,char *path);
 
 
@@ -150,7 +158,12 @@ MpdData * mpd_database_get_directory(MpdObj *mi,char *path);
  */
 MpdData *mpd_database_get_playlist_content(MpdObj *mi,char *playlist);
 
-
+/*@}*/
+/** \defgroup advsearch Playlist Advanced Search 
+ * \ingroup Database 
+ *  These functions only function when connected to mpd version 0.12.0 or higher
+ */
+/*@{*/
 /**
  * @param mi A #MpdObj
  * @param path an Path to a file
@@ -175,13 +188,60 @@ void mpd_database_search_add_constraint(MpdObj *mi, mpd_TagItems field, char *na
  * @param exact a boolean indicating if the search is fuzzy or exact
  *
  * Starts a search, you can add "constraints" by calling mpd_database_search_add_constraint
- * 
+ * For Example if you want all songs by Eric Clapton you could do:
+ *
+ * @code
+ * mpd_database_search_start(mi, TRUE);
+ * mpd_database_search_add_constraint(mi, MPD_TAG_ITEM_ARTIST, "Eric Clapton");
+ * data= mpd_database_search_commit(mi);
+ * @endcode
+ *
+ * If you only want the songs from the album unplugged:
+ *
+ * @code
+ * mpd_database_search_start(mi, TRUE);
+ * mpd_database_search_add_constraint(mi, MPD_TAG_ITEM_ARTIST, "Eric Clapton");
+ * mpd_database_search_add_constraint(mi, MPD_TAG_ITEM_ALBUM, "Unplugged");
+ * data= mpd_database_search_commit(mi);
+ * @endcode
+ *
  * This function requires mpd 0.12.0 or higher 
  */
 
 void mpd_database_search_start(MpdObj *mi, int exact);
 
-MpdData * mpd_database_search_commit(MpdObj *mi);
+/**
+ * @param mi a #MpdObj
+ * @param field a #mpd_TagItems
+ *
+ * Starts a field search, f.e. if you want a list of all albums, you do;
+ * 
+ * @code 
+ * mpd_database_search_field_start(mi, MPD_TAG_ITEM_ALBUM);
+ * data = mpd_database_search_commit(mi);
+ * @endcode
+ * 
+ * You can add constraints using mpd_database_search_add_constraint, for example if you want 
+ * all albums by eric clapton:
+ * 
+ * @code
+ * mpd_database_search_field_start(mi, MPD_TAG_ITEM_ALBUM);
+ * mpd_database_search_add_constraint(mi, MPD_TAG_ITEM_ARTIST, "Eric Clapton");
+ * data = mpd_database_search_commit(mi);
+ * @endcode
+ */
 void mpd_database_search_field_start(MpdObj *mi, mpd_TagItems field);
+
+/**
+ * @param mi A #MpdObj
+ *
+ * Commits the search and gathers the result in a #MpdData list.
+ *
+ * @returns a #MpdData list with the search result,or NULL when nothing is found
+ */
+MpdData * mpd_database_search_commit(MpdObj *mi);
+
+
+
 /*@}*/
 #endif
