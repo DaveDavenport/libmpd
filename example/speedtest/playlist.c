@@ -15,9 +15,10 @@ int main(int argc, char *argv)
 		{
 			data = mpd_data_get_next(data);
 		}
-		mpd_status_update(obj);
+/*		mpd_status_update(obj);
 		printf("play: %i\n", mpd_server_check_command_allowed(obj, "play"));
 		printf("playlist: %i\n", mpd_server_check_command_allowed(obj, "playlist"));
+*/
 /*		data = mpd_playlist_get_artists(obj);
 		while(data != NULL)
 		{

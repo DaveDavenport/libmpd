@@ -1,3 +1,7 @@
+01-01-2006 Qball <qball@sarine.nl>
+	* src/libmpdclient.c:	Adding performer tag
+	* src/libmpdclient.h:	Adding performer tag
+
 06-03-2006 Jelmer Vernooij <jelmer@samba.org>
 	* Fixed IPv6 support
 
