@@ -75,7 +75,8 @@ mpd_Song * mpd_playlist_get_song_from_pos(MpdObj *mi, int songpos);
  *
  * returns the mpd_Song for the currently playing song
  *
- * @returns a mpd_Song
+ * @returns a mpd_Song, this is an internally cached version, and should not be free'ed. It's also not guaranteed to stay valid (it will be inside the same function if no other mpd_* function gets called.)
+ * if you need to keep it around, make a copy.
  */
 mpd_Song *	mpd_playlist_get_current_song		(MpdObj *mi);
 
