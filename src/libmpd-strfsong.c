@@ -177,6 +177,12 @@ static unsigned int _strfsong(char *s,
 			temp = song->date ? strdup(song->date) : NULL;		
 		else if (memcmp("%genre%", p, n) == 0)
 			temp = song->genre ? strdup(song->genre) : NULL;		
+		else if (memcmp("%performer%", p, n) == 0)
+			temp = song->performer ? strdup(song->performer) : NULL;		
+		else if (memcmp("%composer%", p, n) == 0)
+			temp = song->composer ? strdup(song->composer) : NULL;		
+		else if (memcmp("%track%",p,n) == 0)
+			temp = song->track? strdup(song->track): NULL;
 		else if (memcmp("%plpos%", p, n) == 0 || memcmp("%songpos%",p,n) == 0){
 			temp = NULL;
 			if(song->pos >= 0){

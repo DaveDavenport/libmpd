@@ -1,4 +1,7 @@
-01-01-2006 Qball <qball@sarine.nl>
+26-01-2007 Qball <Qball@sarine.nl>
+	* src/libmpd-strfsong.c: Add performer to strfsong
+
+01-01-2007 Qball <qball@sarine.nl>
 	* src/libmpdclient.c:	Adding performer tag
 	* src/libmpdclient.h:	Adding performer tag
 
