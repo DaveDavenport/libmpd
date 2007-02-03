@@ -1680,7 +1680,7 @@ void mpd_startFieldSearch(mpd_Connection *connection, int type)
 	connection->request = malloc(strlen(strtype)+6 /* "list"+space+\0 */);
 
 	sprintf(connection->request, "list %c%s",
-	        tolower(strtype[0]), strtype+1);
+	        (char)tolower(strtype[0]), strtype+1);
 }
 
 void mpd_addConstraintSearch(mpd_Connection *connection, int type, char *name)
@@ -1715,7 +1715,7 @@ void mpd_addConstraintSearch(mpd_Connection *connection, int type, char *name)
 	                              5 /* two spaces+two quotes+\0 */);
 
 	sprintf(connection->request, "%s %c%s \"%s\"", connection->request,
-	        tolower(strtype[0]), strtype+1, arg);
+	        (char)tolower(strtype[0]), strtype+1, arg);
 
 	free(arg);
 }
