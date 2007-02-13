@@ -883,6 +883,7 @@ static void mpd_finishSong(mpd_Song * song) {
 	if(song->date) free(song->date);
 	if(song->genre) free(song->genre);
 	if(song->composer) free(song->composer);
+	if(song->performer) free(song->performer);
 	if(song->disc) free(song->disc);
 	if(song->comment) free(song->comment);
 }
