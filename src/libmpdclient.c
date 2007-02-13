@@ -912,6 +912,7 @@ mpd_Song * mpd_songDup(mpd_Song * song) {
 	if(song->date) ret->date = strdup(song->date);
 	if(song->genre) ret->genre= strdup(song->genre);
 	if(song->composer) ret->composer= strdup(song->composer);
+	if(song->performer) ret->performer= strdup(song->performer);
 	if(song->disc) ret->disc = strdup(song->disc);
 	if(song->comment) ret->comment = strdup(song->comment);
 	ret->time = song->time;
