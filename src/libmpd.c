@@ -912,7 +912,7 @@ static void mpd_free_queue_ob(MpdObj *mi)
 	}
 	if(mi->queue == NULL)
 	{
-		debug_printf(DEBUG_INFO, "mi->queue != NULL failed");
+		debug_printf(DEBUG_INFO, "mi->queue != NULL failed, nothing to clean.");
 		return;
 	}	
 	mi->queue = mi->queue->first;
