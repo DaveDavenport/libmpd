@@ -1,5 +1,5 @@
 /* libmpdclient
-   (c)2003-2007 by Warren Dukes (warren.dukes@gmail.com)
+   (c)2003-2006 by Warren Dukes (warren.dukes@gmail.com)
    This project's homepage is: http://www.musicpd.org
 
    Redistribution and use in source and binary forms, with or without
@@ -614,7 +614,6 @@ static void mpd_getNextReturnElement(mpd_Connection * connection) {
 	else {
 		snprintf(connection->errorStr,MPD_ERRORSTR_MAX_LENGTH,
 					"error parsing: %s:%s",name,value);
-		connection->errorStr[MPD_ERRORSTR_MAX_LENGTH] = '\0';
 		connection->error = 1;
 	}
 }
@@ -883,7 +882,6 @@ static void mpd_finishSong(mpd_Song * song) {
 	if(song->date) free(song->date);
 	if(song->genre) free(song->genre);
 	if(song->composer) free(song->composer);
-	if(song->performer) free(song->performer);
 	if(song->disc) free(song->disc);
 	if(song->comment) free(song->comment);
 }
@@ -913,7 +911,6 @@ mpd_Song * mpd_songDup(mpd_Song * song) {
 	if(song->date) ret->date = strdup(song->date);
 	if(song->genre) ret->genre= strdup(song->genre);
 	if(song->composer) ret->composer= strdup(song->composer);
-	if(song->performer) ret->performer= strdup(song->performer);
 	if(song->disc) ret->disc = strdup(song->disc);
 	if(song->comment) ret->comment = strdup(song->comment);
 	ret->time = song->time;
@@ -1244,44 +1241,17 @@ void mpd_sendCurrentSongCommand(mpd_Connection * connection) {
 void mpd_sendSearchCommand(mpd_Connection * connection, int table,
 		const char * str)
 {
-	char st[10];
-	char * string;
-	char * sanitStr = mpd_sanitizeArg(str);
-	if(table == MPD_TABLE_ARTIST) strcpy(st,"artist");
-	else if(table == MPD_TABLE_ALBUM) strcpy(st,"album");
-	else if(table == MPD_TABLE_TITLE) strcpy(st,"title");
-	else if(table == MPD_TABLE_FILENAME) strcpy(st,"filename");
-	else {
-		connection->error = 1;
-		strcpy(connection->errorStr,"unknown table for search");
-		return;
-	}
-	string = malloc(strlen("search")+strlen(sanitStr)+strlen(st)+6);
-	sprintf(string,"search %s \"%s\"\n",st,sanitStr);
-	mpd_sendInfoCommand(connection,string);
-	free(string);
-	free(sanitStr);
+	mpd_startSearch(connection, 0);
+	mpd_addConstraintSearch(connection, table, str);
+	mpd_commitSearch(connection);
 }
 
 void mpd_sendFindCommand(mpd_Connection * connection, int table,
 		const char * str)
 {
-	char st[10];
-	char * string;
-	char * sanitStr = mpd_sanitizeArg(str);
-	if(table == MPD_TABLE_ARTIST) strcpy(st,"artist");
-	else if(table == MPD_TABLE_ALBUM) strcpy(st,"album");
-	else if(table == MPD_TABLE_TITLE) strcpy(st,"title");
-	else {
-		connection->error = 1;
-		strcpy(connection->errorStr,"unknown table for find");
-		return;
-	}
-	string = malloc(strlen("find")+strlen(sanitStr)+strlen(st)+6);
-	sprintf(string,"find %s \"%s\"\n",st,sanitStr);
-	mpd_sendInfoCommand(connection,string);
-	free(string);
-	free(sanitStr);
+	mpd_startSearch(connection, 1);
+	mpd_addConstraintSearch(connection, table, str);
+	mpd_commitSearch(connection);
 }
 
 void mpd_sendListCommand(mpd_Connection * connection, int table,
@@ -1661,6 +1631,18 @@ void mpd_startSearch(mpd_Connection *connection, int exact)
 	else connection->request = strdup("search");
 }
 
+void mpd_startPlaylistSearch(mpd_Connection *connection, int exact)
+{
+	if (connection->request) {
+		strcpy(connection->errorStr, "search already in progress");
+		connection->error = 1;
+		return;
+	}
+
+	if (exact) connection->request = strdup("playlistfind");
+	else connection->request = strdup("playlistsearch");
+}
+
 void mpd_startFieldSearch(mpd_Connection *connection, int type)
 {
 	char *strtype;
@@ -1682,10 +1664,10 @@ void mpd_startFieldSearch(mpd_Connection *connection, int type)
 	connection->request = malloc(strlen(strtype)+6 /* "list"+space+\0 */);
 
 	sprintf(connection->request, "list %c%s",
-	        (char)tolower(strtype[0]), strtype+1);
+	        tolower(strtype[0]), strtype+1);
 }
 
-void mpd_addConstraintSearch(mpd_Connection *connection, int type, char *name)
+void mpd_addConstraintSearch(mpd_Connection *connection, int type, const char *name)
 {
 	char *strtype;
 	char *arg;
@@ -1717,7 +1699,7 @@ void mpd_addConstraintSearch(mpd_Connection *connection, int type, char *name)
 	                              5 /* two spaces+two quotes+\0 */);
 
 	sprintf(connection->request, "%s %c%s \"%s\"", connection->request,
-	        (char)tolower(strtype[0]), strtype+1, arg);
+	        tolower(strtype[0]), strtype+1, arg);
 
 	free(arg);
 }
@@ -1775,4 +1757,28 @@ void mpd_sendListPlaylistCommand(mpd_Connection *connection, char *path)
 	mpd_sendInfoCommand(connection, query);
 	free(arg);
 	free(query);
+}
+
+void mpd_sendPlaylistClearCommand(mpd_Connection *connection, char* path)
+{
+	char *sPath = mpd_sanitizeArg(path);
+	char *string = malloc(strlen("playlistclear")+strlen(sPath)+5);
+	sprintf(string, "playlistclear \"%s\"\n", sPath);
+	mpd_executeCommand(connection, string);
+	free(sPath);
+	free(string);
+}
+
+void mpd_sendPlaylistAddCommand(mpd_Connection *connection,
+                                char *playlist, char* path)
+{
+	char *sPlaylist = mpd_sanitizeArg(playlist);
+	char *sPath = mpd_sanitizeArg(path);
+	char *string = malloc(strlen("playlistadd")+strlen(sPlaylist)+
+	                      strlen(sPath)+8);
+	sprintf(string, "playlistadd \"%s\" \"%s\"\n", sPlaylist, sPath);
+	mpd_executeCommand(connection, string);
+	free(sPlaylist);
+	free(sPath);
+	free(string);
 }

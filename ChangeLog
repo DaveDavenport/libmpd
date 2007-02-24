@@ -1,3 +1,7 @@
+24-02-2007 Qball <Qball@Sarine.nl>
+	* configure.ac:	Bump version to 0.13.1 because of api change
+	* src/libmpd-playlist.c: Add support for server side search.
+
 23-02-2007 Qball <Qball@sarine.nl>
 	* src/libmpd.c:	Make debug message a bit less retarted.
 

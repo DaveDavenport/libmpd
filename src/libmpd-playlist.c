@@ -650,37 +650,92 @@ int mpd_playlist_add_get_id(MpdObj *mi, char *path)
 	return songid; 
 }
 
-/* deprecated stuff */
-/*
-int mpd_playlist_update_dir(MpdObj *mi, char *path){ return mpd_database_update_dir(mi,path);}
-MpdData * mpd_playlist_get_albums(MpdObj *mi, char *artist) { return mpd_database_get_albums(mi,artist);}
-MpdData * mpd_playlist_get_artists(MpdObj *mi) { return mpd_database_get_artists(mi);}
-MpdData * mpd_playlist_token_find(MpdObj *mi, char *string) {return mpd_database_token_find(mi,string);}
-int mpd_playlist_delete(MpdObj *mi, char  *path) {return mpd_database_delete_playlist(mi, path);}
-int mpd_playlist_save(MpdObj *mi, char  *path) {return mpd_database_save_playlist(mi, path);}
-
-MpdData * mpd_playlist_find(MpdObj *mi, int table, char *string, int exact) {return mpd_database_find(mi, table, string, exact); }
-
-MpdData * mpd_playlist_get_unique_tags(MpdObj *mi, int field, ...) 
-{ 
-	MpdData *retv = NULL;
-	va_list arglist;
-	va_start(arglist,field);
-	retv = mpd_database_get_unique_tags(mi, field, arglist);
-	va_end(arglist);
-	return retv;
+void mpd_playlist_search_start(MpdObj *mi, int exact)
+{
+	/*
+	 * Check argument
+	 */
+	if(mi == NULL || exact > 1 || exact < 0) 
+	{
+		debug_printf(DEBUG_ERROR, "Argument error");
+		return ;
+	}
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_ERROR, "Not Connected\n");
+		return ;
+	}
+	if(!mpd_server_check_version(mi, 0,12,1))
+	{
+		debug_printf(DEBUG_ERROR, "Advanced search requires mpd 0.12.2 or higher");
+		return ;
+	}
+	/* lock, so we can work on mi->connection */
+	if(mpd_lock_conn(mi) != MPD_OK)
+	{
+		debug_printf(DEBUG_ERROR, "Failed to lock connection");
+		return ;
+	}
+	mpd_startPlaylistSearch(mi->connection, exact);
+	/* Set search type */
+	mi->search_type = (exact)? MPD_SEARCH_TYPE_PLAYLIST_FIND:MPD_SEARCH_TYPE_PLAYLIST_SEARCH;
+	/* unlock, let the error handler handle any possible error.
+	 */
+	mpd_unlock_conn(mi);
+	return;
 }
 
-MpdData * mpd_playlist_find_adv(MpdObj *mi, int exact, ...)
-{ 
-	MpdData *retv = NULL;
-	va_list arglist;
-	va_start(arglist,exact);   
-	retv = mpd_database_find_adv(mi, exact, arglist);
-	va_end(arglist);
-	return retv;
+void mpd_playlist_search_add_constraint(MpdObj *mi, mpd_TagItems field, char *value)
+{
+	mpd_database_search_add_constraint(mi, field, value);
 }
-
-MpdData * mpd_playlist_get_directory(MpdObj *mi, char *path) {return mpd_database_get_directory(mi, path);}
-*/
-
+MpdData * mpd_playlist_search_commit(MpdObj *mi)
+{
+	mpd_InfoEntity *ent = NULL;
+	MpdData *data = NULL;
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"not connected\n");
+		return NULL;
+	}
+	if(mi->search_type < MPD_SEARCH_TYPE_PLAYLIST_FIND )
+	{
+		debug_printf(DEBUG_ERROR, "no or wrong search in progress to commit");
+		return NULL;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		debug_printf(DEBUG_ERROR,"lock failed\n");
+		return NULL;
+	}
+	mpd_commitSearch(mi->connection);
+	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
+	{
+		if(ent->type == MPD_INFO_ENTITY_TYPE_SONG)
+		{
+			data = mpd_new_data_struct_append(data);
+			data->type = MPD_DATA_TYPE_SONG;
+			data->song = ent->info.song;
+			ent->info.song = NULL;
+		}
+		mpd_freeInfoEntity(ent);
+	}
+	mpd_finishCommand(mi->connection);
+	/*
+	 * reset search type
+	 */
+	mi->search_type = MPD_SEARCH_TYPE_NONE;
+	mi->search_field = MPD_TAG_ITEM_ARTIST;
+	/* unlock */
+	if(mpd_unlock_conn(mi))
+	{
+		debug_printf(DEBUG_ERROR, "Failed to unlock connection");
+		if(data)mpd_data_free(data);
+		return NULL;
+	}
+	if(data == NULL)
+	{
+		return NULL;
+	}
+	return mpd_data_get_first(data);
+}
