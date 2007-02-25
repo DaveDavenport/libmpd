@@ -1,12 +1,14 @@
 echo "running aclocal"
-aclocal
+aclocal || exit 1
 echo "running autoheader"
-autoheader
+autoheader || exit 1
 echo "running libtoolize"
-libtoolize --force
+libtoolize --force || exit 1
 echo "running automake"
-automake -a -c
+automake -a -c || exit 1
 echo "running autoconf"
-autoconf
+autoconf || exit 1
 echo "running configure"
-./configure "$@"
+if test x$NOCONFIGURE = x; then
+	./configure "$@" || exit 1
+fi
