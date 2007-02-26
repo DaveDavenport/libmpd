@@ -169,7 +169,7 @@ mpd_Song * mpd_database_get_fileinfo(MpdObj *mi,const char *path);
  *
  * Adds a constraint to the search 
  */
-void mpd_database_search_add_constraint(MpdObj *mi, mpd_TagItems field, char *value);
+void mpd_database_search_add_constraint(MpdObj *mi, mpd_TagItems field, const char *value);
 
 /**
  * @param mi A #MpdObj

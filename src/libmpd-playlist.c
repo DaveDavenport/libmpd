@@ -685,7 +685,7 @@ void mpd_playlist_search_start(MpdObj *mi, int exact)
 	return;
 }
 
-void mpd_playlist_search_add_constraint(MpdObj *mi, mpd_TagItems field, char *value)
+void mpd_playlist_search_add_constraint(MpdObj *mi, mpd_TagItems field,const char *value)
 {
 	mpd_database_search_add_constraint(mi, field, value);
 }

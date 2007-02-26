@@ -928,7 +928,7 @@ void mpd_database_search_start(MpdObj *mi, int exact)
  *
  * Adds a constraint to the search 
  */
-void mpd_database_search_add_constraint(MpdObj *mi, mpd_TagItems field, char *value)
+void mpd_database_search_add_constraint(MpdObj *mi, mpd_TagItems field, const char *value)
 {
 	if(mi == NULL || value == NULL || value[0] == '\0')
 	{

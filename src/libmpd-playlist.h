@@ -265,7 +265,7 @@ int	mpd_playlist_queue_commit		(MpdObj *mi);
 
 MpdData * mpd_playlist_search_commit(MpdObj *mi);
 
-void mpd_playlist_search_add_constraint(MpdObj *mi, mpd_TagItems field, char *value);
+void mpd_playlist_search_add_constraint(MpdObj *mi, mpd_TagItems field, const char *value);
 
 
 void mpd_playlist_search_start(MpdObj *mi, int exact);
