@@ -791,8 +791,8 @@ MpdData* mpd_data_concatenate( MpdData  * const first, MpdData  * const second)
 {
 	MpdData_real *first_real  = (MpdData_real*)first;
 	MpdData_real *second_real = (MpdData_real*)second;
-	MpdData_head *first_head  = mpd_data_get_head(first);
-	MpdData_head *second_head = mpd_data_get_head(second);
+	MpdData_head *first_head  = NULL;
+	MpdData_head *second_head = NULL; 
 	MpdDataPool *pool;
 
 	if ( first == NULL ) {
@@ -804,6 +804,9 @@ MpdData* mpd_data_concatenate( MpdData  * const first, MpdData  * const second)
 		if ( second == NULL )
 			return (MpdData*)first_real;
 	}
+
+	first_head = mpd_data_get_head(first);
+	second_head = mpd_data_get_head(second);
 
 	/* find last element in first data list */	
 	while (!mpd_data_is_last((MpdData*)first_real)) first_real = (MpdData_real*)mpd_data_get_next_real((MpdData*)first_real, FALSE);
