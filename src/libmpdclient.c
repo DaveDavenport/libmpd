@@ -757,6 +757,8 @@ mpd_Status * mpd_getStatus(mpd_Connection * connection) {
 			return NULL;
 		}
 	}
+	if(status->state == MPD_STATUS_STATE_STOP)
+		status->songid = -1;
 
 	if(connection->error) {
 		free(status);

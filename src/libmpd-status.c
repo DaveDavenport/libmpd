@@ -574,7 +574,7 @@ int mpd_stats_update_real(MpdObj *mi, ChangedStatusType* what_changed)
 	{
 		debug_printf(DEBUG_ERROR,"Failed to grab stats from mpd\n");
 	}
-	else if(mi->stats->dbUpdateTime != mi->OldState.dbUpdateTime)
+	else if(mi->OldState.dbUpdateTime != 0 && mi->stats->dbUpdateTime != mi->OldState.dbUpdateTime)  
 	{
 		debug_printf(DEBUG_INFO, "database updated\n");
 		what_changed_here |= MPD_CST_DATABASE;
