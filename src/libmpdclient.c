@@ -137,15 +137,17 @@ static int mpd_connect(mpd_Connection * connection, const char * host, int port,
 	error = getaddrinfo(host, service, &hints, &addrinfo);
 
 	if (error) {
-		snprintf(connection->errorStr,MPD_ERRORSTR_MAX_LENGTH,
-				"host \"%s\" not found: %s",host, gai_strerror(error));
+		snprintf(connection->errorStr, MPD_ERRORSTR_MAX_LENGTH,
+		         "host \"%s\" not found: %s",
+		         host, gai_strerror(error));
 		connection->error = MPD_ERROR_UNKHOST;
 		return -1;
 	}
 
 	for (res = addrinfo; res; res = res->ai_next) {
 		/* create socket */
-		connection->sock = socket(res->ai_family, SOCK_STREAM, res->ai_protocol);
+		connection->sock = socket(res->ai_family, SOCK_STREAM,
+		                          res->ai_protocol);
 		if (connection->sock < 0) {
 			snprintf(connection->errorStr, MPD_ERRORSTR_MAX_LENGTH,
 			         "problems creating socket: %s",
@@ -155,22 +157,24 @@ static int mpd_connect(mpd_Connection * connection, const char * host, int port,
 			return -1;
 		}
 
-		mpd_setConnectionTimeout(connection,timeout);
+		mpd_setConnectionTimeout(connection, timeout);
 
 		/* connect stuff */
- 		if (do_connect_fail(connection, res->ai_addr, res->ai_addrlen)) {
+ 		if (do_connect_fail(connection,
+		                    res->ai_addr, res->ai_addrlen)) {
  			/* try the next address family */
  			closesocket(connection->sock);
  			connection->sock = -1;
  			continue;
 		}
 	}
+
 	freeaddrinfo(addrinfo);
 
 	if (connection->sock < 0) {
-		snprintf(connection->errorStr,MPD_ERRORSTR_MAX_LENGTH,
-				"problems connecting to \"%s\" on port"
-				" %i: %s",host,port, strerror(errno));
+		snprintf(connection->errorStr, MPD_ERRORSTR_MAX_LENGTH,
+		         "problems connecting to \"%s\" on port %i: %s",
+		         host, port, strerror(errno));
 		connection->error = MPD_ERROR_CONNPORT;
 
 		return -1;
@@ -759,6 +763,8 @@ mpd_Status * mpd_getStatus(mpd_Connection * connection) {
 	}
 	if(status->state == MPD_STATUS_STATE_STOP)
 		status->songid = -1;
+
+
 
 	if(connection->error) {
 		free(status);
@@ -1602,23 +1608,46 @@ void mpd_freeOutputElement(mpd_OutputEntity * output) {
  * odd naming, but it gets the not allowed commands
  */
 
-void mpd_sendNotCommandsCommand(mpd_Connection * connection) {
-	mpd_executeCommand(connection,"notcommands\n");
+void mpd_sendNotCommandsCommand(mpd_Connection * connection)
+{
+	mpd_executeCommand(connection, "notcommands\n");
 }
 
 /**
  * mpd_sendCommandsCommand
  * odd naming, but it gets the allowed commands
  */
-
-void mpd_sendCommandsCommand(mpd_Connection * connection) {
-	mpd_executeCommand(connection,"commands\n");
+void mpd_sendCommandsCommand(mpd_Connection * connection)
+{
+	mpd_executeCommand(connection, "commands\n");
 }
+
 /**
  * Get the next returned command
  */
-char * mpd_getNextCommand(mpd_Connection * connection) {
-	return mpd_getNextReturnElementNamed(connection,"command");
+char * mpd_getNextCommand(mpd_Connection * connection)
+{
+	return mpd_getNextReturnElementNamed(connection, "command");
+}
+
+void mpd_sendUrlHandlersCommand(mpd_Connection * connection)
+{
+	mpd_executeCommand(connection, "urlhandlers");
+}
+
+char * mpd_getNextHandler(mpd_Connection * connection)
+{
+	return mpd_getNextReturnElementNamed(connection, "handler");
+}
+
+void mpd_sendTagTypesCommand(mpd_Connection * connection)
+{
+	mpd_executeCommand(connection, "tagtypes");
+}
+
+char * mpd_getNextTagType(mpd_Connection * connection)
+{
+	return mpd_getNextReturnElementNamed(connection, "tagtype");
 }
 
 void mpd_startSearch(mpd_Connection *connection, int exact)
