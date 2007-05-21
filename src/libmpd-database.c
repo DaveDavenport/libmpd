@@ -1027,3 +1027,87 @@ MpdData * mpd_database_search_commit(MpdObj *mi)
 	}
 	return mpd_data_get_first(data);
 }
+
+/**
+ * @param mi A #MpdObj
+ *
+ * Starts a search, you can add "constraints" by calling mpd_database_search_add_constraint
+ * to get the result call mpd_database_search_stats_commit
+ * 
+ * This function requires mpd 0.13.0 or higher 
+ */
+
+void mpd_database_search_stats_start(MpdObj *mi)
+{
+	/*
+	 * Check argument
+	 */
+	if(mi == NULL) 
+	{
+		debug_printf(DEBUG_ERROR, "Argument error");
+		return ;
+	}
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_ERROR, "Not Connected\n");
+		return ;
+	}
+	if(!mpd_server_check_version(mi, 0,12,0))
+	{
+		debug_printf(DEBUG_ERROR, "Advanced search requires mpd 0.12.0 or higher");
+		return ;
+	}
+	/* lock, so we can work on mi->connection */
+	if(mpd_lock_conn(mi) != MPD_OK)
+	{
+		debug_printf(DEBUG_ERROR, "Failed to lock connection");
+		return ;
+	}
+	mpd_startStatsSearch(mi->connection);
+	/* Set search type */
+	mi->search_type = MPD_SEARCH_TYPE_STATS;
+	/* unlock, let the error handler handle any possible error.
+	 */
+	mpd_unlock_conn(mi);
+	return;
+}
+
+MpdDBStats * mpd_database_search_stats_commit(MpdObj *mi)
+{
+	MpdDBStats *data = NULL;
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"not connected\n");
+		return NULL;
+	}
+	if(mi->search_type != MPD_SEARCH_TYPE_STATS)
+	{
+		debug_printf(DEBUG_ERROR, "no/wrong search in progress to commit");
+		return NULL;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		debug_printf(DEBUG_ERROR,"lock failed\n");
+		return NULL;
+	}
+	mpd_commitSearch(mi->connection);
+
+	data = (MpdDBStats *) mpd_getSearchStats(mi->connection);
+	/* unlock */
+	if(mpd_unlock_conn(mi))
+	{
+		debug_printf(DEBUG_ERROR, "Failed to unlock connection");
+		if(data)mpd_freeSearchStats((mpd_SearchStats *)data);
+		return NULL;
+	}
+	if(data == NULL)
+	{
+		return NULL;
+	}
+	return data;
+}
+
+void mpd_database_search_free_stats(MpdDBStats *data)
+{
+	mpd_freeSearchStats(data);
+}

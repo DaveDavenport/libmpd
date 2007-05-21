@@ -254,4 +254,26 @@ MpdData *	mpd_database_get_unique_tags		(MpdObj *mi, int field,...) __attribute_
 MpdData *	mpd_database_find_adv		(MpdObj *mi,int exact, ...) __attribute__((deprecated));
 /*@}*/
 
+
+typedef mpd_SearchStats MpdDBStats;
+
+/**
+ * @param mi A #MpdObj
+ *
+ * Starts a search, you can add "constraints" by calling mpd_database_search_add_constraint
+ * to get the result call mpd_database_search_stats_commit
+ * 
+ * This function requires mpd 0.13.0 or higher 
+ */
+
+void mpd_database_search_stats_start(MpdObj *mi);
+
+
+
+MpdDBStats * mpd_database_search_stats_commit(MpdObj *mi);
+
+
+
+void mpd_database_search_free_stats(MpdDBStats *data);
+
 #endif
