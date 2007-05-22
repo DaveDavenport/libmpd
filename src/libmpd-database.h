@@ -275,5 +275,9 @@ MpdDBStats * mpd_database_search_stats_commit(MpdObj *mi);
 
 
 void mpd_database_search_free_stats(MpdDBStats *data);
+void mpd_database_playlist_list_add(MpdObj *mi, const char *path, const char *file);
 
+void mpd_database_playlist_list_delete(MpdObj *mi, const char *path, int pos);
+
+MpdData * mpd_database_get_directory_recursive(MpdObj *mi, const char *path);
 #endif

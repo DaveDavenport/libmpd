@@ -1111,3 +1111,93 @@ void mpd_database_search_free_stats(MpdDBStats *data)
 {
 	mpd_freeSearchStats(data);
 }
+
+
+void mpd_database_playlist_list_delete(MpdObj *mi, const char *path, int pos)
+{
+	if(!path )
+		return;
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "not connected\n");
+		return;
+	}
+	if (mpd_status_check(mi) != MPD_OK) {
+		debug_printf(DEBUG_WARNING, "Failed to get status\n");
+		return;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		return ;
+	}
+
+	mpd_sendPlaylistDeleteCommand(mi->connection, (char *)path,pos);
+	mpd_finishCommand(mi->connection);
+
+	mpd_unlock_conn(mi);
+}
+void mpd_database_playlist_list_add(MpdObj *mi, const char *path, const char *file)
+{
+	if(!path )
+		return;
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "not connected\n");
+		return;
+	}
+	if (mpd_status_check(mi) != MPD_OK) {
+		debug_printf(DEBUG_WARNING, "Failed to get status\n");
+		return;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		return ;
+	}
+
+	mpd_sendPlaylistAddCommand(mi->connection, (char *)path,(char *)file);
+	mpd_finishCommand(mi->connection);
+
+	mpd_unlock_conn(mi);
+}
+
+MpdData * mpd_database_get_directory_recursive(MpdObj *mi, const char *path)
+{
+	MpdData *data = NULL;
+	mpd_InfoEntity *ent = NULL;
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"not connected\n");
+		return NULL;
+	}
+	if(path == '\0' || path[0] == '\0')
+	{
+		debug_printf(DEBUG_ERROR, "argumant invalid\n");
+		return NULL;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		debug_printf(DEBUG_ERROR,"lock failed\n");
+		return NULL;
+	}
+	mpd_sendListallInfoCommand(mi->connection,path); 
+	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
+	{
+
+		if (ent->type == MPD_INFO_ENTITY_TYPE_SONG)
+		{
+			data = mpd_new_data_struct_append(data);
+			data->type = MPD_DATA_TYPE_SONG;
+			data->song = ent->info.song;
+			ent->info.song = NULL;
+		}
+		mpd_freeInfoEntity(ent);
+	}
+	mpd_finishCommand(mi->connection);
+
+	/* unlock */
+	mpd_unlock_conn(mi);
+	if(data == NULL)
+	{
+		return NULL;
+	}
+	return mpd_data_get_first(data);
+}
+
