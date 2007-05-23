@@ -1094,7 +1094,6 @@ char ** mpd_server_get_url_handlers(MpdObj *mi)
   mpd_sendUrlHandlersCommand(mi->connection);
   while((temp = mpd_getNextHandler(mi->connection)) != NULL)
   {
-      printf("%s\n", temp);
       retv = realloc(retv,(i+2)*sizeof(*retv));
       retv[i]   = temp;
       retv[i+1] = NULL;
