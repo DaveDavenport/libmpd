@@ -1076,6 +1076,37 @@ int mpd_server_check_command_allowed(MpdObj *mi, const char *command)
 	return MPD_SERVER_COMMAND_NOT_SUPPORTED;
 }
 
+char ** mpd_server_get_url_handlers(MpdObj *mi)
+{
+  char *temp = NULL;
+  int i=0;
+  char **retv = NULL;
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"not connected\n");
+		return FALSE;
+	}
+  if(mpd_lock_conn(mi))
+  {
+    debug_printf(DEBUG_ERROR,"lock failed\n");
+    return NULL;
+  }                                           
+  mpd_sendUrlHandlersCommand(mi->connection);
+  while((temp = mpd_getNextHandler(mi->connection)))
+  {
+      retv = realloc(retv,(i+2)*sizeof(*retv));
+      retv[i]   = temp;
+      retv[i+1] = NULL;
+      i++;
+  } 
+  mpd_finishCommand(mi->connection);
+
+
+  mpd_unlock_conn(mi);
+  return retv;
+}
+
+
 /** MISC **/
 
 regex_t ** mpd_misc_tokenize(char *string)

@@ -582,8 +582,16 @@ char *mpd_server_get_version(MpdObj *mi);
  */
 int mpd_server_check_command_allowed(MpdObj * mi, const char *command);
 
-/*@}*/
 
+
+/**
+ * @param mi a #MpdObj
+ *
+ * @returns an array with urlhandlers (NULL terminated).
+ */
+char ** mpd_server_get_url_handlers(MpdObj *mi);
+
+/*@}*/
 	
 /** \defgroup Misc Misc
  * Helper functions.
