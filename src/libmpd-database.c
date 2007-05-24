@@ -1112,6 +1112,33 @@ void mpd_database_search_free_stats(MpdDBStats *data)
 	mpd_freeSearchStats(data);
 }
 
+void mpd_database_playlist_clear(MpdObj *mi, const char *path)
+{
+	if(!path )
+		return;
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "not connected\n");
+		return;
+	}
+	if (mpd_status_check(mi) != MPD_OK) {
+		debug_printf(DEBUG_WARNING, "Failed to get status\n");
+		return;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		return ;
+	}
+
+	mpd_sendPlaylistClearCommand(mi->connection, (char *)path);
+	mpd_finishCommand(mi->connection);
+
+	mpd_unlock_conn(mi);
+}
+
+
+
+
+
 
 void mpd_database_playlist_list_delete(MpdObj *mi, const char *path, int pos)
 {
