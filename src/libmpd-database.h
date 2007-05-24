@@ -281,4 +281,6 @@ void mpd_database_playlist_list_delete(MpdObj *mi, const char *path, int pos);
 
 MpdData * mpd_database_get_directory_recursive(MpdObj *mi, const char *path);
 void mpd_database_playlist_clear(MpdObj *mi,const char *path);
+
+void mpd_database_playlist_rename(MpdObj *mi, const char *old, const char *new);
 #endif

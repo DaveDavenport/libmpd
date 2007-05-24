@@ -1227,4 +1227,28 @@ MpdData * mpd_database_get_directory_recursive(MpdObj *mi, const char *path)
 	}
 	return mpd_data_get_first(data);
 }
+void mpd_database_playlist_rename(MpdObj *mi, const char *old, const char *new)
+{
+	if(!new || !old)
+	{
+		debug_printf(DEBUG_ERROR, "old != NULL && new != NULL failed");
+		return;
+	}
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "not connected\n");
+		return;
+	}
+	if (mpd_status_check(mi) != MPD_OK) {
+		debug_printf(DEBUG_WARNING, "Failed to get status\n");
+		return;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		return ;
+	}
 
+	mpd_sendRenameCommand(mi->connection, (char *)old,(char *)new);
+	mpd_finishCommand(mi->connection);
+
+	mpd_unlock_conn(mi);
+}
