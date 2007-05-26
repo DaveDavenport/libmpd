@@ -219,7 +219,7 @@ int mpd_check_error(MpdObj *mi)
 	if(mi->error == MPD_ERROR_ACK)
 	{
 
-		debug_printf(DEBUG_ERROR,"clearing errors in mpd_Connection");
+		debug_printf(DEBUG_ERROR,"clearing errors in mpd_Connection: %i-%s", mi->connection->errorCode, mi->connection->errorStr);
 		mpd_clearError(mi->connection);
 		if (mi->the_error_callback)
 		{
