@@ -1252,3 +1252,25 @@ void mpd_database_playlist_rename(MpdObj *mi, const char *old, const char *new)
 
 	mpd_unlock_conn(mi);
 }
+
+int mpd_database_playlist_move(MpdObj *mi, const char *playlist, int old_pos, int new_pos)
+{
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"not connected\n");
+		return MPD_NOT_CONNECTED;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		debug_printf(DEBUG_ERROR,"lock failed\n");
+		return MPD_LOCK_FAILED;
+	}
+
+	mpd_sendPlaylistMoveCommand(mi->connection,(char *)playlist,old_pos, new_pos);
+	mpd_finishCommand(mi->connection);
+
+	/* unlock */
+	mpd_unlock_conn(mi);
+	return MPD_OK;
+}
+
