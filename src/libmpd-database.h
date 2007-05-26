@@ -233,26 +233,7 @@ MpdData * mpd_database_search_commit(MpdObj *mi);
 
 /*@}*/
 
-/** \defgroup searchdeprecated Deprecated database search functions
- * \ingroup database
- * The following functions are deprecated
- */
-/*@{*/
-/**
- * @param mi a #MpdObj
- * @param field The table field
- * @returns a #MpdData
- */
-MpdData *	mpd_database_get_unique_tags		(MpdObj *mi, int field,...) __attribute__((deprecated));
-/**
- * @param mi a #MpdObj
- * @param exact 1 for exact search 0 for fuzzy
- *
- * WARNING: This function is deprecated, use mpd_database_search_start 
- * @returns a #MpdData
- */
-MpdData *	mpd_database_find_adv		(MpdObj *mi,int exact, ...) __attribute__((deprecated));
-/*@}*/
+
 
 
 typedef mpd_SearchStats MpdDBStats;
