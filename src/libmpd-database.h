@@ -234,7 +234,12 @@ MpdData * mpd_database_search_commit(MpdObj *mi);
 /*@}*/
 
 
-
+/*! \var typedef mpd_SearchStat MpdDBStats 
+    \brief A Structure containing numberOfSongs and playTime 
+    
+    int numberOfSongs
+	unsigned long playTime
+*/
 
 typedef mpd_SearchStats MpdDBStats;
 
@@ -250,19 +255,75 @@ typedef mpd_SearchStats MpdDBStats;
 void mpd_database_search_stats_start(MpdObj *mi);
 
 
-
+/**
+ * @param mi A #MpdObj
+ *
+ * Gets statistics results of a search.
+ * 
+ * return a #MpdDBStats
+ */
 MpdDBStats * mpd_database_search_stats_commit(MpdObj *mi);
 
-
-
+/**
+ * @param data a #MpdDBStats
+ *
+ * free's the #MpdDBStats structure.
+ */
 void mpd_database_search_free_stats(MpdDBStats *data);
+
+/**
+ * @param mi a #MpdObj
+ * @param path a string contains the path of the playlist
+ * @param file a string contains the path of the song to add
+ *
+ * Add a path to a stored playlist.
+ */
 void mpd_database_playlist_list_add(MpdObj *mi, const char *path, const char *file);
 
+/**
+ * @param mi a #MpdObj
+ * @param path a string contains the path of the playlist
+ * @param pos a int representing the position of a song
+ *
+ * Deletes the song at position pos from a playlist.
+ */
 void mpd_database_playlist_list_delete(MpdObj *mi, const char *path, int pos);
 
+/**
+ * @param mi a #MpdObj
+ * @param path a string containing the  path
+ *
+ * Recursively list all the songs directory path
+ *
+ * returns a #MpdData
+ */
 MpdData * mpd_database_get_directory_recursive(MpdObj *mi, const char *path);
+
+/**
+ * @param mi a #MpdObj
+ * @param path a string contains the path of the playlist
+ *
+ * Clears the content of a stored playlist, also used to create an empty playlist
+ *
+ */
 void mpd_database_playlist_clear(MpdObj *mi,const char *path);
 
+/**
+ * @param mi a #MpdObj
+ * @param old a string, old playlist name
+ * @param new  a string, new playlist name
+ * 
+ * Renames a stored playlist
+ */
 void mpd_database_playlist_rename(MpdObj *mi, const char *old, const char *new);
+
+/**
+ * @param mi a #MpdObj
+ * @param playlist a string contains the path of the playlist
+ * @param old_pos integer representing old position
+ * @param new_pos integer representing the position to move old_pos to.
+ *
+ * Moves songs in a stored playlists
+ */
 int mpd_database_playlist_move(MpdObj *mi, const char *playlist, int old_pos, int new_pos);
 #endif
