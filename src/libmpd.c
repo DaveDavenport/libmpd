@@ -561,8 +561,11 @@ int mpd_disconnect(MpdObj *mi)
 	debug_printf(DEBUG_INFO, "Disconnect completed\n");
 	return MPD_OK;
 }
-
 int mpd_connect(MpdObj *mi)
+{
+	return mpd_connect_real(mi,NULL);
+}
+int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
 {
 	if(mi == NULL)
 	{
@@ -599,8 +602,12 @@ int mpd_connect(MpdObj *mi)
 	{
 		mpd_lock_conn(mi);
 	}
-	/* make timeout configurable */
-	mi->connection = mpd_newConnection(mi->hostname,mi->port,mi->connection_timeout);
+	if(connection) {
+		mi->connection = connection;
+	} else {
+		/* make timeout configurable */
+		mi->connection = mpd_newConnection(mi->hostname,mi->port,mi->connection_timeout);
+	}
 	if(mi->connection == NULL)
 	{
 		/* TODO: make seperate error message? */

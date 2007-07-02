@@ -252,7 +252,7 @@ int mpd_set_port(MpdObj * mi, int port);
 int mpd_set_connection_timeout(MpdObj * mi, float timeout);
 
 
-	
+int mpd_connect_real(MpdObj *mi,mpd_Connection *connection);
 /**
  * @param mi a #MpdObj
  *
