@@ -497,8 +497,7 @@ int mpd_server_get_allowed_commands(MpdObj *mi)
 
 int mpd_disconnect(MpdObj *mi)
 {
-	/* set disconnect flag */
-	mi->connected = 0;
+
 	/* lock */
 	mpd_lock_conn(mi);
 	debug_printf(DEBUG_INFO, "disconnecting\n");
@@ -553,11 +552,17 @@ int mpd_disconnect(MpdObj *mi)
 	mpd_free_queue_ob(mi);
 	mpd_server_free_commands(mi);	
 	/*don't reset errors */
-	if(mi->the_connection_changed_callback != NULL)
+	/* Remove this signal, we don't actually disconnect */
+	if(mi->connected)
 	{
-		mi->the_connection_changed_callback( mi, FALSE, mi->the_connection_changed_signal_userdata );
+		/* set disconnect flag */
+		mi->connected = FALSE;
+
+		if(mi->the_connection_changed_callback != NULL)
+		{
+			mi->the_connection_changed_callback( mi, FALSE, mi->the_connection_changed_signal_userdata );
+		}
 	}
-	
 	debug_printf(DEBUG_INFO, "Disconnect completed\n");
 	return MPD_OK;
 }
