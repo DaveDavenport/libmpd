@@ -673,6 +673,7 @@ mpd_Status * mpd_getStatus(mpd_Connection * connection) {
 	status->repeat = 0;
 	status->random = 0;
 	status->playlist = -1;
+	status->playlistqueue = -1;
 	status->playlistLength = -1;
 	status->state = -1;
 	status->song = 0;
@@ -704,6 +705,9 @@ mpd_Status * mpd_getStatus(mpd_Connection * connection) {
 		}
 		else if(strcmp(re->name,"playlist")==0) {
 			status->playlist = strtol(re->value,NULL,10);
+		}
+		else if(strcmp(re->name,"playlistqueue")==0) {
+			status->playlistqueue = strtol(re->value,NULL,10);
 		}
 		else if(strcmp(re->name,"playlistlength")==0) {
 			status->playlistLength = atoi(re->value);
@@ -1951,5 +1955,24 @@ void mpd_sendPlaylistDeleteCommand(mpd_Connection *connection,
 	snprintf(string, len, "playlistdelete \"%s\" \"%i\"\n", sPlaylist, pos);
 	mpd_executeCommand(connection, string);
 	free(sPlaylist);
+	free(string);
+}
+
+void mpd_sendQueueInfoCommand(mpd_Connection * connection) {
+	mpd_sendInfoCommand(connection,"queueinfo\n");
+}
+
+void mpd_sendDequeueCommand(mpd_Connection * connection, int songPos) {
+	int len = strlen("dequeue")+2+INTLEN+3;
+	char *string = malloc(len);
+	snprintf(string, len, "dequeue \"%i\"\n", songPos);
+	mpd_executeCommand(connection,string);
+	free(string);
+}
+void mpd_sendQueueIdCommand(mpd_Connection * connection, int songId) {
+	int len = strlen("queueid")+2+INTLEN+3;
+	char *string = malloc(len);
+	snprintf(string, len, "queueid \"%i\"\n", songId);
+	mpd_executeCommand(connection,string);
 	free(string);
 }

@@ -44,6 +44,7 @@ typedef struct _MpdQueue MpdQueue;
 typedef struct _MpdServerState {
 	/* information needed to detect changes on mpd's side */
 	long long 	playlistid;
+	long long	queueid;
 	int 		songid;
 	int 		songpos;
 	int 		state;
@@ -132,7 +133,9 @@ typedef enum MpdQueueType {
 	MPD_QUEUE_LOAD,
 	MPD_QUEUE_DELETE_ID,
 	MPD_QUEUE_DELETE_POS,
-	MPD_QUEUE_COMMAND /* abuse!!! */
+	MPD_QUEUE_COMMAND, /* abuse!!! */
+	MPD_QUEUE_MPD_QUEUE_ADD,
+	MPD_QUEUE_MPD_QUEUE_REMOVE
 } MpdQueueType;
 
 typedef struct _MpdQueue { 

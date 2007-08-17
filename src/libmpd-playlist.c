@@ -185,29 +185,6 @@ mpd_Song * mpd_playlist_get_song_from_pos(MpdObj *mi, int songpos)
 	return song;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 mpd_Song * mpd_playlist_get_current_song(MpdObj *mi)
 {
 	if(!mpd_check_connected(mi))
@@ -557,7 +534,20 @@ int mpd_playlist_queue_commit(MpdObj *mi)
 				mpd_sendDeleteCommand(mi->connection, mi->queue->id);
 			}
 		}
-
+		else if (mi->queue->type == MPD_QUEUE_MPD_QUEUE_ADD)
+		{
+			if(mi->queue->id >= 0)
+			{
+				mpd_sendQueueIdCommand(mi->connection, mi->queue->id);
+			}
+		}
+		else if (mi->queue->type == MPD_QUEUE_MPD_QUEUE_REMOVE)
+		{
+			if(mi->queue->id >= 0)
+			{
+				mpd_sendDequeueCommand(mi->connection, mi->queue->id);
+			}
+		}
 
 		mpd_queue_get_next(mi);
 	}
@@ -738,4 +728,162 @@ MpdData * mpd_playlist_search_commit(MpdObj *mi)
 		return NULL;
 	}
 	return mpd_data_get_first(data);
+}
+
+MpdData * mpd_playlist_get_mpd_queue(MpdObj *mi)
+{
+	MpdData *data = NULL;
+	mpd_InfoEntity *ent = NULL;
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"not connected\n");
+		return NULL;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		debug_printf(DEBUG_WARNING,"lock failed\n");
+		return NULL;
+	}
+
+	mpd_sendQueueInfoCommand(mi->connection);
+	
+	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
+	{
+		if(ent->type == MPD_INFO_ENTITY_TYPE_SONG)
+		{
+			data = mpd_new_data_struct_append(data);
+			data->type = MPD_DATA_TYPE_SONG;
+			data->song = ent->info.song;
+			ent->info.song = NULL;
+		}
+		mpd_freeInfoEntity(ent);
+	}
+	mpd_finishCommand(mi->connection);
+
+	/* unlock */
+	if(mpd_unlock_conn(mi))
+	{
+		debug_printf(DEBUG_WARNING,"unlock failed.\n");
+		mpd_data_free(data);
+		return NULL;
+	}
+	if(data == NULL)
+	{
+		return NULL;
+	}
+	return mpd_data_get_first(data);
+}
+
+int mpd_playlist_mpd_queue_add(MpdObj *mi, int songid)
+{
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"not connected\n");
+		return MPD_NOT_CONNECTED;
+	}
+	if(songid < 0)
+	{
+		return MPD_ARGS_ERROR;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		debug_printf(DEBUG_WARNING,"lock failed\n");
+		return MPD_LOCK_FAILED;
+	}
+
+	mpd_sendQueueIdCommand(mi->connection,songid);
+	mpd_finishCommand(mi->connection);
+	/* unlock */
+	if(mpd_unlock_conn(mi))
+	{
+		return MPD_LOCK_FAILED;
+	}
+	/* always update the status */
+	mpd_status_queue_update(mi);
+	return MPD_OK;
+}
+int mpd_playlist_mpd_queue_remove(MpdObj *mi, int songpos)
+{
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"not connected\n");
+		return MPD_NOT_CONNECTED;
+	}
+	if(songpos < 0)
+	{
+		return MPD_ARGS_ERROR;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		debug_printf(DEBUG_WARNING,"lock failed\n");
+		return MPD_LOCK_FAILED;
+	}
+
+	mpd_sendDequeueCommand(mi->connection,songpos);
+	mpd_finishCommand(mi->connection);
+	/* unlock */
+	if(mpd_unlock_conn(mi))
+	{
+		return MPD_LOCK_FAILED;
+	}
+	/* always update the status */
+	mpd_status_queue_update(mi);
+	return MPD_OK;
+}
+
+int mpd_playlist_queue_mpd_queue_add(MpdObj *mi,int id)
+{
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"not connected\n");
+		return MPD_NOT_CONNECTED;
+	}
+
+	if(mi->queue == NULL)
+	{
+		mi->queue = mpd_new_queue_struct();
+		mi->queue->first = mi->queue;
+		mi->queue->next = NULL;
+		mi->queue->prev = NULL;
+	}
+	else
+	{
+		mi->queue->next = mpd_new_queue_struct();
+		mi->queue->next->first = mi->queue->first;
+		mi->queue->next->prev = mi->queue;
+		mi->queue = mi->queue->next;
+		mi->queue->next = NULL;
+	}
+	mi->queue->type = MPD_QUEUE_MPD_QUEUE_ADD;
+	mi->queue->id = id;
+	mi->queue->path = NULL;
+	return MPD_OK;
+}
+int mpd_playlist_queue_mpd_queue_remove(MpdObj *mi,int id)
+{
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"not connected\n");
+		return MPD_NOT_CONNECTED;
+	}
+
+	if(mi->queue == NULL)
+	{
+		mi->queue = mpd_new_queue_struct();
+		mi->queue->first = mi->queue;
+		mi->queue->next = NULL;
+		mi->queue->prev = NULL;
+	}
+	else
+	{
+		mi->queue->next = mpd_new_queue_struct();
+		mi->queue->next->first = mi->queue->first;
+		mi->queue->next->prev = mi->queue;
+		mi->queue = mi->queue->next;
+		mi->queue->next = NULL;
+	}
+	mi->queue->type = MPD_QUEUE_MPD_QUEUE_REMOVE;
+	mi->queue->id = id;
+	mi->queue->path = NULL;
+	return MPD_OK;
 }

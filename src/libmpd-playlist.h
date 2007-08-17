@@ -272,5 +272,61 @@ void mpd_playlist_search_start(MpdObj *mi, int exact);
 
 /*@}*/
 
+/** \defgroup playlistqueue Playlist Queue 
+ * \ingroup Playlist
+ *	Allow control of mpd's new playlsit queue 
+ */
+/*@{*/
+
+/**
+ * @param mi a #MpdObj
+ *
+ * Lists the playlist queue of mpd
+ *
+ * @returns a #MpdData list
+ */
+MpdData *mpd_playlist_get_mpd_queue(MpdObj *mi);
+
+/**
+ * @param mi a #MpdObj
+ * @param songid the id of the song to add
+ *
+ * Add the song from the playlist with id id.
+ *
+ * @returns a #MpdError
+ */
+int mpd_playlist_mpd_queue_add(MpdObj *mi, int songid);
+
+
+/**
+ * @param mi a #MpdObj
+ * @param songpos the pos of the song to remov
+ *
+ * Removes the song from the queue at position pos
+ * 
+ * @returns a #MpdError
+ */
+int mpd_playlist_mpd_queue_remove(MpdObj *mi, int songpos);
+
+/**
+ *
+ * @param mi a #MpdObj
+ * @param songid Add a song to the queue
+ *
+ * This only queues the add, use #mpd_playlist_queue_commit to actually commit it.
+ *
+ * @returns a #MpdError
+ */
+int mpd_playlist_queue_mpd_queue_add(MpdObj *mi,int id);
+/**
+ * @param mi a #MpdObj
+ * @param songpos the pos of the song to remov
+ *
+ * This only queues the remove, use #mpd_playlist_queue_commit to actually commit it.
+ * 
+ * @returns a #MpdError
+ */ 
+int mpd_playlist_queue_mpd_queue_remove(MpdObj *mi,int id);
+/*@}*/
 
 #endif

@@ -371,7 +371,9 @@ typedef enum {
 	/** The bitrate of the playing song has changed.    */ 
 	MPD_CST_BITRATE       = 0x4000,
 	/** the audio format of the playing song changed.*/
-	MPD_CST_AUDIOFORMAT   = 0x8000
+	MPD_CST_AUDIOFORMAT   = 0x8000,
+	/** the queue has changed */
+	MPD_CST_QUEUE		  = 0x10000
 } ChangedStatusType;
 
 
