@@ -674,6 +674,7 @@ mpd_Status * mpd_getStatus(mpd_Connection * connection) {
 	status->random = 0;
 	status->playlist = -1;
 	status->playlistqueue = -1;
+	status->storedplaylist = -1;
 	status->playlistLength = -1;
 	status->state = -1;
 	status->song = 0;
@@ -708,6 +709,9 @@ mpd_Status * mpd_getStatus(mpd_Connection * connection) {
 		}
 		else if(strcmp(re->name,"playlistqueue")==0) {
 			status->playlistqueue = strtol(re->value,NULL,10);
+		}
+		else if (strcmp(re->name, "storedplaylist") == 0 ) {
+			status->storedplaylist = strtol(re->value,NULL,10);
 		}
 		else if(strcmp(re->name,"playlistlength")==0) {
 			status->playlistLength = atoi(re->value);

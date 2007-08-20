@@ -175,6 +175,8 @@ typedef struct mpd_Status {
 	long long playlist;
 	/* playlistqueue, use this to determine when the queue has changed */
 	long long playlistqueue;
+	/* The id, used to determine is one of the playlists are changed */
+	long long storedplaylist;
 	/* use with MPD_STATUS_STATE_* to determine state of player */
 	int state;
 	/* crossfade setting in seconds */
