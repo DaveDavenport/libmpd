@@ -93,7 +93,7 @@ MpdData * mpd_database_get_artists(MpdObj *mi)
 	{
 		return NULL;
 	}
-	data = mpd_misc_sort_tag_list(data);
+/*	data = mpd_misc_sort_tag_list(data);*/
 	return mpd_data_get_first(data);
 }
 
