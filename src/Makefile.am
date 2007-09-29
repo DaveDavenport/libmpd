@@ -1,7 +1,7 @@
 INCLUDES = 				\
 	-I.				\
 	-I$(top_srcdir)			\
-	@EXTRA_CFLAGS@ -Werror -Wall -Wmissing-declarations 
+	@EXTRA_CFLAGS@ -Wall -Wmissing-declarations 
 
 
 lib_LTLIBRARIES = libmpd.la
