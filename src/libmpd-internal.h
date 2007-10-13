@@ -61,6 +61,7 @@ typedef struct _MpdServerState {
 	unsigned int	samplerate;
 	int		bits;
 	int		channels;
+    unsigned long   playlistLength;
 } MpdServerState;
 
 

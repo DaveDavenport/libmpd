@@ -104,6 +104,10 @@ int mpd_status_update(MpdObj *mi)
 		/* set MPD_CST_PLAYLIST to be changed */
 		what_changed |= MPD_CST_PLAYLIST;
 
+        if(mi->CurrentState.playlistLength == mi->status->playlistLength)
+        {
+            what_changed |= MPD_CST_SONGID; 
+        }
 		/* save new id */
 		mi->CurrentState.playlistid = mi->status->playlist;
 	}
@@ -232,7 +236,8 @@ int mpd_status_update(MpdObj *mi)
 		mi->the_status_changed_callback( mi, what_changed, mi->the_status_changed_signal_userdata );
 	}
 
-	/* We could have lost connection again during signal handling... so before we return check again if we are connected */
+    mi->CurrentState.playlistLength = mi->status->playlistLength;
+    /* We could have lost connection again during signal handling... so before we return check again if we are connected */
 	if(!mpd_check_connected(mi))
 	{
 		return MPD_NOT_CONNECTED;
