@@ -230,14 +230,15 @@ int mpd_status_update(MpdObj *mi)
 		mi->CurrentState.updatingDb = mi->status->updatingDb;
 	}
 
+    mi->CurrentState.playlistLength = mi->status->playlistLength;
+
 	/* Run the callback */
 	if((mi->the_status_changed_callback != NULL) && what_changed)
 	{
 		mi->the_status_changed_callback( mi, what_changed, mi->the_status_changed_signal_userdata );
 	}
 
-    mi->CurrentState.playlistLength = mi->status->playlistLength;
-    /* We could have lost connection again during signal handling... so before we return check again if we are connected */
+        /* We could have lost connection again during signal handling... so before we return check again if we are connected */
 	if(!mpd_check_connected(mi))
 	{
 		return MPD_NOT_CONNECTED;
