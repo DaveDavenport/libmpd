@@ -684,7 +684,7 @@ void mpd_sendDequeueCommand(mpd_Connection * connection, int songPos);
  * Id is the songid of the song to queue
  */
 void mpd_sendQueueIdCommand(mpd_Connection * connection, int songId);
-
+void mpd_sendClearErrorCommand(mpd_Connection * connection);
 #ifdef __cplusplus
 }
 #endif

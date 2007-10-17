@@ -83,6 +83,7 @@ static void mpd_init_MpdServerState(MpdServerState *state)
 	state->channels 	= 0;
 	state->bits 		= 0;
     state->playlistLength = 0;
+    state->error[0]            = '\0';
 
 }
 
@@ -547,7 +548,7 @@ int mpd_disconnect(MpdObj *mi)
 	mi->CurrentState.channels = 0; 
 	mi->CurrentState.bits = 0;
     mi->CurrentState.playlistLength = 0;
-
+    mi->CurrentState.error[0] = '\0';
 	/* search stuff */
 	mi->search_type = MPD_SEARCH_TYPE_NONE;
 	/* no need to initialize, but set it to anything anyway*/

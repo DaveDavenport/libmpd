@@ -1,6 +1,6 @@
 AC_INIT(src)
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(libmpd, 0.14.95, Qball@Sarine.nl)
+AM_INIT_AUTOMAKE(libmpd, 0.14.96, Qball@Sarine.nl)
 
 AC_PROG_CC
 AC_LIBTOOL_WIN32_DLL

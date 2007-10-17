@@ -43,25 +43,26 @@ typedef struct _MpdDataPool {
 typedef struct _MpdQueue MpdQueue;
 typedef struct _MpdServerState {
 	/* information needed to detect changes on mpd's side */
-	long long 	playlistid;
-	long long	queueid;
-	long long	storedplaylistid;
-	int 		songid;
-	int 		songpos;
-	int 		state;
+	long long 	    playlistid;
+	long long	    queueid;
+	long long	    storedplaylistid;
+	int 		    songid;
+	int 		    songpos;
+	int 		    state;
 	unsigned long	dbUpdateTime;	
-	int 		updatingDb;
-	int		random;
-	int		repeat;
-	int		volume;
-	int		xfade;
-	int 		totaltime;
-	int		elapsedtime;
-	int		bitrate;
+	int 		    updatingDb;
+	int		        random;
+	int		        repeat;
+	int		        volume;
+	int		        xfade;
+	int 		    totaltime;
+	int		        elapsedtime;
+	int		        bitrate;
 	unsigned int	samplerate;
-	int		bits;
-	int		channels;
+	int		        bits;
+	int		        channels;
     unsigned long   playlistLength;
+    char            error[512];
 } MpdServerState;
 
 

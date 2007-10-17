@@ -1980,3 +1980,6 @@ void mpd_sendQueueIdCommand(mpd_Connection * connection, int songId) {
 	mpd_executeCommand(connection,string);
 	free(string);
 }
+void mpd_sendClearErrorCommand(mpd_Connection * connection) {
+	mpd_executeCommand(connection,"clearerror\n");
+}

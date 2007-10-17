@@ -217,6 +217,18 @@ int mpd_status_update(MpdObj *mi)
 		mi->CurrentState.channels = mi->status->channels;
 	}
 
+    if(mi->status->error)
+    {
+        what_changed |= MPD_CST_SERVER_ERROR;
+        strcpy(mi->CurrentState.error,mi->status->error);
+        mpd_sendClearErrorCommand(mi->connection);
+        mpd_finishCommand(mi->connection);
+    }
+    else
+    {
+        mi->CurrentState.error[0] ='\0';
+    }
+
 	/* Check if the updating changed,
 	 * If it stopped, also update the stats for the new db-time.
 	 */
@@ -448,6 +460,15 @@ int mpd_status_get_bits(MpdObj *mi)
 		return MPD_STATUS_FAILED;
 	}
 	return mi->CurrentState.bits;
+}
+
+char * mpd_status_get_mpd_error(MpdObj *mi)
+{
+    if(mi->CurrentState.error[0] != '\0')
+    {
+        return strdup(mi->CurrentState.error);
+    }
+    return NULL;
 }
 
 /* TODO: error checking might be nice? */

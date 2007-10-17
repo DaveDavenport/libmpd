@@ -259,5 +259,9 @@ int		mpd_stats_get_playtime			(MpdObj *mi);
  */
 int 		mpd_status_db_is_updating		(MpdObj *mi);
 
+
+
+char * mpd_status_get_mpd_error(MpdObj *mi);
+
 /*@}*/
 #endif
