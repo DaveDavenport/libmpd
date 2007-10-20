@@ -219,32 +219,36 @@ static unsigned int _strfsong(char *s,
 				}
 			}
 		}
-		if(temp != NULL) {
-			unsigned int templen = strlen(temp);
-			found = TRUE;
-			if( length+templen > max )
-				templen = max-length;
-			strncat(s, temp, templen);
-			length+=templen;
-			free(temp);
-		}
+        else if (memcmp("%disc%", p, n) == 0)
+        {
+			temp = song->disc? strdup(song->disc) : NULL;		
+        }
+        if(temp != NULL) {
+            unsigned int templen = strlen(temp);
+            found = TRUE;
+            if( length+templen > max )
+                templen = max-length;
+            strncat(s, temp, templen);
+            length+=templen;
+            free(temp);
+        }
 
-		/* advance past the specifier */
-		p += n;
-	}
+        /* advance past the specifier */
+        p += n;
+    }
 
-	for(i=0; i < length;i++)
-	{
-		if(s[i] == '_') s[i] = ' ';
-	}	
+    for(i=0; i < length;i++)
+    {
+        if(s[i] == '_') s[i] = ' ';
+    }	
 
-	if(last) *last = p;
+    if(last) *last = p;
 
-	return length;
+    return length;
 }
 
 unsigned int mpd_song_markup(char *s, unsigned int max,const char *format, mpd_Song *song)
 {
-	return _strfsong(s, max, format, song, NULL);
+    return _strfsong(s, max, format, song, NULL);
 }
 
