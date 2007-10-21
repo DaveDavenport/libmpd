@@ -262,19 +262,47 @@ int  	mpd_playlist_queue_delete_pos	(MpdObj *mi,int songpos);
  */
 int	mpd_playlist_queue_commit		(MpdObj *mi);
 
+/*@}*/
 
+/** \defgroup playlistsearch Playlist Search 
+ * \ingroup Playlist
+ *	Allow server side search of the current playlist. 
+ */
+/*@{*/
+
+/**
+ * @param mi a #MpdObj 
+ * @param exact if #TRUE only return exact matches 
+ *
+ * Starts a playlist search. Add constraints using #mpd_playlist_search_add_constraint
+ * And execute the search with #mpd_playlist_search_commit
+ *
+ */
+void mpd_playlist_search_start(MpdObj *mi, int exact);
+
+/**
+ * @param mi a #MpdObj
+ *
+ * Executes the playlist search. This needs to be started with #mpd_playlist_search_start
+ *
+ * @returns a #MpdData list
+ */
 MpdData * mpd_playlist_search_commit(MpdObj *mi);
 
+/**
+ * @param mi A #MpdObj
+ * @param field A #mpd_TagItems
+ * @param value a string to match the field against
+ *
+ * Adds a constraint to the playlist search.
+ */
 void mpd_playlist_search_add_constraint(MpdObj *mi, mpd_TagItems field, const char *value);
-
-
-void mpd_playlist_search_start(MpdObj *mi, int exact);
 
 /*@}*/
 
 /** \defgroup playlistqueue Playlist Queue 
  * \ingroup Playlist
- *	Allow control of mpd's new playlsit queue 
+ *	Allow control of MPD new queue system 
  */
 /*@{*/
 
@@ -300,7 +328,7 @@ int mpd_playlist_mpd_queue_add(MpdObj *mi, int songid);
 
 /**
  * @param mi a #MpdObj
- * @param songpos the pos of the song to remov
+ * @param songpos the pos of the song to remove
  *
  * Removes the song from the queue at position pos
  * 
@@ -311,7 +339,7 @@ int mpd_playlist_mpd_queue_remove(MpdObj *mi, int songpos);
 /**
  *
  * @param mi a #MpdObj
- * @param songid Add a song to the queue
+ * @param id Add the song with id to the queue
  *
  * This only queues the add, use #mpd_playlist_queue_commit to actually commit it.
  *
@@ -320,13 +348,13 @@ int mpd_playlist_mpd_queue_remove(MpdObj *mi, int songpos);
 int mpd_playlist_queue_mpd_queue_add(MpdObj *mi,int id);
 /**
  * @param mi a #MpdObj
- * @param songpos the pos of the song to remov
+ * @param pos the pos of the song to remove
  *
  * This only queues the remove, use #mpd_playlist_queue_commit to actually commit it.
  * 
  * @returns a #MpdError
  */ 
-int mpd_playlist_queue_mpd_queue_remove(MpdObj *mi,int id);
+int mpd_playlist_queue_mpd_queue_remove(MpdObj *mi,int pos);
 /*@}*/
 
 #endif

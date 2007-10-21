@@ -183,6 +183,33 @@ int		mpd_status_set_crossfade		(MpdObj *mi, int crossfade_time);
 /**
  * @param mi a #MpdObj
  *
+ * Checks if mpd is updating it's music db.
+ * 
+ * @returns TRUE if mpd is still updating, FALSE if not.
+ */
+int 		mpd_status_db_is_updating		(MpdObj *mi);
+
+/**
+ * @param mi a #MpdObj
+ * 
+ * @returns the error message that mpd last reported, on NULL. Needs to be free'ed.
+ */
+
+char * mpd_status_get_mpd_error(MpdObj *mi);
+
+/*@}*/
+
+/**\defgroup 20stats Stats
+ * Functions to get mpd statistics
+ */
+/*@{*/
+
+
+
+
+/**
+ * @param mi a #MpdObj
+ *
  * Shouldn't be used from the program.
  */
 int		mpd_stats_update			(MpdObj *mi);
@@ -250,18 +277,6 @@ int		mpd_stats_get_playtime			(MpdObj *mi);
 
 
 
-/**
- * @param mi a #MpdObj
- *
- * Checks if mpd is updating it's music db.
- * 
- * @returns TRUE if mpd is still updating, FALSE if not.
- */
-int 		mpd_status_db_is_updating		(MpdObj *mi);
-
-
-
-char * mpd_status_get_mpd_error(MpdObj *mi);
 
 /*@}*/
 #endif

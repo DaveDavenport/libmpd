@@ -859,7 +859,7 @@ int mpd_playlist_queue_mpd_queue_add(MpdObj *mi,int id)
 	mi->queue->path = NULL;
 	return MPD_OK;
 }
-int mpd_playlist_queue_mpd_queue_remove(MpdObj *mi,int id)
+int mpd_playlist_queue_mpd_queue_remove(MpdObj *mi,int pos)
 {
 	if(!mpd_check_connected(mi))
 	{
@@ -883,7 +883,7 @@ int mpd_playlist_queue_mpd_queue_remove(MpdObj *mi,int id)
 		mi->queue->next = NULL;
 	}
 	mi->queue->type = MPD_QUEUE_MPD_QUEUE_REMOVE;
-	mi->queue->id = id;
+	mi->queue->id = pos;
 	mi->queue->path = NULL;
 	return MPD_OK;
 }

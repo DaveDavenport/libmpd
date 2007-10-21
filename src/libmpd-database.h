@@ -87,31 +87,6 @@ int 	mpd_database_update_dir		(MpdObj *mi, char *path);
  */
 MpdData *	mpd_database_token_find		(MpdObj *mi , char *string);
 
-
-
-/**
- * @param mi A #MpdObj
- * @param path path of the playlist
- *
- * Deletes a playlist.
- * @returns
- */
-
-int mpd_database_delete_playlist(MpdObj *mi,char *path);
-
-
-
-/**
- * @param mi a #MpdObj
- * @param name The name of the playlist
- *
- * Saves the current playlist to a file.
- *
- * @returns a #MpdError. #MPD_OK if succesfull,
- * #MPD_DATABASE_PLAYLIST_EXIST when the playlist allready exists.
- */ 
-int		mpd_database_save_playlist			(MpdObj *mi, char *name);
-
 /**
  * @param mi a #MpdObj
  * @param table table
@@ -132,25 +107,16 @@ MpdData * mpd_database_find(MpdObj *mi, int table, char *string, int exact);
  */
 MpdData * mpd_database_get_directory(MpdObj *mi,char *path);
 
-
 /**
  * @param mi a #MpdObj
- * @param playlist the playlist you need the content off.
+ * @param path a string containing the  path
  *
- * Only works with patched mpd.
- * Check for %mpd_server_command_allowed(mi, "listPlaylistInfo");
+ * Recursively list all the songs directory path
  *
- * @returns a #MpdData list
+ * returns a #MpdData
  */
-MpdData *mpd_database_get_playlist_content(MpdObj *mi,char *playlist);
+MpdData * mpd_database_get_directory_recursive(MpdObj *mi, const char *path);
 
-/*@}*/
-
-/** \defgroup advsearch Database Advanced Search 
- * \ingroup database 
- * The following functions provide an interface to the improved search capabilities of mpd 0.12.0. 
- */
-/*@{*/
 /**
  * @param mi A #MpdObj
  * @param path an Path to a file
@@ -161,6 +127,15 @@ MpdData *mpd_database_get_playlist_content(MpdObj *mi,char *playlist);
  * @returns a #mpd_Song
  */
 mpd_Song * mpd_database_get_fileinfo(MpdObj *mi,const char *path);
+
+/*@}*/
+
+/** \defgroup advsearch Database Advanced Search 
+ * \ingroup database 
+ * The following functions provide an interface to the improved search capabilities of mpd 0.12.0. 
+ */
+/*@{*/
+
 
 /**
  * @param mi A #MpdObj
@@ -232,13 +207,18 @@ MpdData * mpd_database_search_commit(MpdObj *mi);
 
 
 /*@}*/
-
+/** \defgroup databaseSearchStats Database Search Statistics
+ * \ingroup database
+ * A extention to the database search, that instead of returning the full results.
+ * Only reports back a few statistics about the result. 
+ * For now Number of Songs are reported and total playtime.
+ */
+/*@{*/
 
 /*! \var typedef mpd_SearchStat MpdDBStats 
     \brief A Structure containing numberOfSongs and playTime 
     
-    int numberOfSongs
-	unsigned long playTime
+    see #mpd_SearchStats
 */
 
 typedef mpd_SearchStats MpdDBStats;
@@ -246,8 +226,8 @@ typedef mpd_SearchStats MpdDBStats;
 /**
  * @param mi A #MpdObj
  *
- * Starts a search, you can add "constraints" by calling mpd_database_search_add_constraint
- * to get the result call mpd_database_search_stats_commit
+ * Starts a search, you can add constraints by calling #mpd_database_search_add_constraint.
+ * To get the result call #mpd_database_search_stats_commit
  * 
  * This function requires mpd 0.13.0 or higher 
  */
@@ -271,12 +251,53 @@ MpdDBStats * mpd_database_search_stats_commit(MpdObj *mi);
  */
 void mpd_database_search_free_stats(MpdDBStats *data);
 
+/*@}*/
+
+/** \defgroup databasePlaylist Database Playlist
+ * \ingroup database
+ */
+/*@{*/
+
+
+/**
+ * @param mi A #MpdObj
+ * @param path path of the playlist
+ *
+ * Deletes a playlist.
+ * @returns
+ */
+
+int mpd_database_delete_playlist(MpdObj *mi,char *path);
+
+/**
+ * @param mi a #MpdObj
+ * @param name The name of the playlist
+ *
+ * Saves the current playlist to a file.
+ *
+ * @returns a #MpdError. #MPD_OK if succesfull,
+ * #MPD_DATABASE_PLAYLIST_EXIST when the playlist allready exists.
+ */ 
+int		mpd_database_save_playlist			(MpdObj *mi, char *name);
+
+/**
+ * @param mi a #MpdObj
+ * @param playlist the playlist you need the content off.
+ *
+ * Check for #mpd_server_command_allowed(mi, "listplaylistinfo");
+ * Needs mpd 0.12.0 or higher.
+ *
+ * @returns a #MpdData list
+ */
+MpdData *mpd_database_get_playlist_content(MpdObj *mi,char *playlist);
+
 /**
  * @param mi a #MpdObj
  * @param path a string contains the path of the playlist
  * @param file a string contains the path of the song to add
  *
  * Add a path to a stored playlist.
+ * Needs 0.13.0
  */
 void mpd_database_playlist_list_add(MpdObj *mi, const char *path, const char *file);
 
@@ -286,25 +307,17 @@ void mpd_database_playlist_list_add(MpdObj *mi, const char *path, const char *fi
  * @param pos a int representing the position of a song
  *
  * Deletes the song at position pos from a playlist.
+ * Needs mpd 0.13.0
+ *
  */
 void mpd_database_playlist_list_delete(MpdObj *mi, const char *path, int pos);
-
-/**
- * @param mi a #MpdObj
- * @param path a string containing the  path
- *
- * Recursively list all the songs directory path
- *
- * returns a #MpdData
- */
-MpdData * mpd_database_get_directory_recursive(MpdObj *mi, const char *path);
 
 /**
  * @param mi a #MpdObj
  * @param path a string contains the path of the playlist
  *
  * Clears the content of a stored playlist, also used to create an empty playlist
- *
+ * Needs mpd 0.13.0
  */
 void mpd_database_playlist_clear(MpdObj *mi,const char *path);
 
@@ -314,6 +327,7 @@ void mpd_database_playlist_clear(MpdObj *mi,const char *path);
  * @param new  a string, new playlist name
  * 
  * Renames a stored playlist
+ * Needs mpd 0.13.0
  */
 void mpd_database_playlist_rename(MpdObj *mi, const char *old, const char *new);
 
@@ -324,6 +338,8 @@ void mpd_database_playlist_rename(MpdObj *mi, const char *old, const char *new);
  * @param new_pos integer representing the position to move old_pos to.
  *
  * Moves songs in a stored playlists
+ * Needs mpd 0.13.0
  */
 int mpd_database_playlist_move(MpdObj *mi, const char *playlist, int old_pos, int new_pos);
+/*@}*/
 #endif
