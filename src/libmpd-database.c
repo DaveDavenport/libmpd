@@ -918,9 +918,9 @@ void mpd_database_search_stats_start(MpdObj *mi)
 		debug_printf(DEBUG_ERROR, "Not Connected\n");
 		return ;
 	}
-	if(!mpd_server_check_version(mi, 0,12,0))
+	if(!mpd_server_check_version(mi, 0,13,0))
 	{
-		debug_printf(DEBUG_ERROR, "Advanced search requires mpd 0.12.0 or higher");
+		debug_printf(DEBUG_ERROR, "Advanced search requires mpd 0.13.0 or higher");
 		return ;
 	}
 	/* lock, so we can work on mi->connection */
