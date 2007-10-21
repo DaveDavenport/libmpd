@@ -284,7 +284,6 @@ int		mpd_database_save_playlist			(MpdObj *mi, char *name);
  * @param mi a #MpdObj
  * @param playlist the playlist you need the content off.
  *
- * Check for #mpd_server_command_allowed(mi, "listplaylistinfo");
  * Needs mpd 0.12.0 or higher.
  *
  * @returns a #MpdData list
