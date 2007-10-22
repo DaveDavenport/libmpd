@@ -21,6 +21,10 @@ esac
 AC_SUBST(EXTRA_CFLAGS)
 AC_SUBST(EXTRA_LDFLAGS)   
 
+PKG_CHECK_MODULES([glib], glib-2.0 >= 2.10)
+AC_SUBST(glib_LIBS)
+AC_SUBST(glib_CFLAGS)
+
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdlib.h string.h unistd.h])

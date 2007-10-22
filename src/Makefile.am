@@ -2,7 +2,8 @@ INCLUDES = 				\
 	-I.				\
 	-I$(top_srcdir)			\
 	@EXTRA_CFLAGS@ -Wall -Wmissing-declarations 
-
+AM_CFLAGS=@glib_CFLAGS@
+LIBS=@glib_CFLAGS@
 
 lib_LTLIBRARIES = libmpd.la
 

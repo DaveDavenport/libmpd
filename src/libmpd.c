@@ -25,6 +25,7 @@
 #include <regex.h>
 #include <stdarg.h>
 #include <config.h>
+#include <glib.h>
 #include "debug_printf.h"
 
 #include "libmpd.h"
@@ -705,7 +706,7 @@ void	mpd_signal_connect_connection_changed(MpdObj *mi, ConnectionChangedCallback
 MpdData *mpd_new_data_struct(void)
 {
 	MpdData_real* data;
-    data = malloc(sizeof(*data));
+    data = g_slice_new(MpdData_real);
 	data->type = 0;
 
 	data->tag_type = 0;
@@ -872,7 +873,7 @@ void mpd_data_free(MpdData *data)
             free((void*)(data_real->tag));
         }
         data_real = data_real->next;
-        free(temp);
+        g_slice_free1(sizeof(*temp), temp);
     }
 }
 
