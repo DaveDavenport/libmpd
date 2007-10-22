@@ -702,17 +702,10 @@ void	mpd_signal_connect_connection_changed(MpdObj *mi, ConnectionChangedCallback
 
 /* more playlist */
 /* MpdData Part */
-MpdData *mpd_new_data_struct(MpdData_head * const head)
+MpdData *mpd_new_data_struct(void)
 {
 	MpdData_real* data;
-	if (head->current->space_left == 0) {
-		head->current->next = malloc(sizeof(MpdDataPool));
-		head->current = head->current->next;
-		head->current->space_left = MPD_DATA_POOL_SIZE;
-		head->current->next = NULL;
-	}
-	data = &(head->current->pool[MPD_DATA_POOL_SIZE - head->current->space_left]);
-	head->current->space_left--;
+    data = malloc(sizeof(*data));
 	data->type = 0;
 
 	data->tag_type = 0;
@@ -723,30 +716,25 @@ MpdData *mpd_new_data_struct(MpdData_head * const head)
 	data->output_dev = NULL;
 	data->next = NULL;
 	data->prev = NULL;
-	data->head = head;
+    data->first = NULL;
 	return (MpdData*)data;
 }
 
-MpdData *mpd_new_data_struct_append(MpdData  * const data)
+MpdData *mpd_new_data_struct_append(MpdData  * data)
 {
 	MpdData_real *data_real = (MpdData_real*)data;
-	MpdData_head *head;
 	if(data_real == NULL)
 	{
-		head = (MpdData_head*)malloc(sizeof(MpdData_head));
-		head->current = head->pool = (MpdDataPool*)malloc(sizeof(MpdDataPool));
-		head->pool->space_left = MPD_DATA_POOL_SIZE;
-		head->pool->next = NULL;
-		data_real = (MpdData_real*)mpd_new_data_struct(head);
-		head->first = data_real;
+		data_real = (MpdData_real*)mpd_new_data_struct();
+        data_real->first = data_real;
 	}
 	else
 	{
-		data_real->next = (MpdData_real*)mpd_new_data_struct(data_real->head); 	
+		data_real->next = (MpdData_real*)mpd_new_data_struct(); 	
 		data_real->next->prev = data_real;
 		data_real = data_real->next;
 		data_real->next = NULL;
-
+        data_real->first = data_real->prev->first;
 	}
 	return (MpdData*)data_real;
 }
@@ -756,15 +744,8 @@ MpdData * mpd_data_get_first(MpdData const * const data)
 	MpdData_real const * const data_real = (MpdData_real const * const)data;
 	if(data_real != NULL)
 	{
-		if (data_real->head != NULL)
-		{
-			return (MpdData*)(mpd_data_get_head(data)->first);
-		} 
-		else 
-		{
-			return NULL;
-		}
-	}
+        return (MpdData*)data_real->first;
+    }
 	return NULL;
 }
 
@@ -804,18 +785,16 @@ int mpd_data_is_last(MpdData const * const data)
 	}
 	return FALSE;	
 }
-
+/*
 MpdData_head *mpd_data_get_head(MpdData const * const data) {
 	return ((MpdData_real*)data)->head;
 }
-
+*/
 MpdData* mpd_data_concatenate( MpdData  * const first, MpdData  * const second) 
 {
 	MpdData_real *first_real  = (MpdData_real*)first;
 	MpdData_real *second_real = (MpdData_real*)second;
-	MpdData_head *first_head  = NULL;
-	MpdData_head *second_head = NULL; 
-	MpdDataPool *pool;
+	MpdData_real *first_head  = NULL;
 
 	if ( first == NULL ) {
 		if ( second != NULL ) 
@@ -827,8 +806,7 @@ MpdData* mpd_data_concatenate( MpdData  * const first, MpdData  * const second)
 			return (MpdData*)first_real;
 	}
 
-	first_head = mpd_data_get_head(first);
-	second_head = mpd_data_get_head(second);
+	first_head = (MpdData_real *)mpd_data_get_first(first);
 
 	/* find last element in first data list */	
 	while (!mpd_data_is_last((MpdData*)first_real)) first_real = (MpdData_real*)mpd_data_get_next_real((MpdData*)first_real, FALSE);
@@ -840,90 +818,62 @@ MpdData* mpd_data_concatenate( MpdData  * const first, MpdData  * const second)
 	/* I need to set all the -> first correct */
 	while (second_real)
 	{
-		second_real->head = first_head;
+		second_real->first = first_head;
 		second_real = (MpdData_real*)mpd_data_get_next_real((MpdData*)second_real, FALSE);
 	} 
-	/* Need to concatenate the list of MpdDataPools 
-	 * Note that this is NOT efficient in any way...
-	 */
-	pool = first_head->current;
-	pool->next = second_head->pool;
-	first_head->current = second_head->current;
-	free(second_head);
-	return (MpdData*)first_head->first;
+
+	return (MpdData*)first_head;
 }
 /** This function looks broken.  This should be tested
  * Shamefully I don't know this part of the code to well 
  */
 MpdData * mpd_data_delete_item(MpdData *data)
 {
-	MpdData_real *temp = NULL, *data_real = (MpdData_real*)data;
-	if(data_real == NULL) return NULL;
-	if(data_real->head->first == data_real)
-	{
-		/* make temp the first item, and reset the head->first pointer */
-		temp = data_real->head->first = data_real->next;
-		/* there is no item before this. */
-		data_real->prev = NULL;
-		/*  if it was the last item in the list, we need to free the list */
-		if(temp == NULL){
-			mpd_data_free(data);
-		}
-	}
-	else
-	{
-
-		if (data_real->next)
-		{
-			data_real->next->prev = data_real->prev;
-			temp = data_real->next;
-		}                                               		
-		if (data_real->prev)
-		{
-			/* the next item of the previous is the next item of the current */
-			data_real->prev->next = data_real->next;
-			/* temp is the previous item */
-			temp = data_real->prev;
-		}
-	}
+    MpdData_real *temp = NULL, *data_real = (MpdData_real*)data;
+    if(data_real == NULL) return NULL;
 
 
-	return (MpdData *)temp;
+    if (data_real->next)
+    {
+        data_real->next->prev = data_real->prev;
+        temp = data_real->next;
+    }                                               		
+    if (data_real->prev)
+    {
+        /* the next item of the previous is the next item of the current */
+        data_real->prev->next = data_real->next;
+        /* temp is the previous item */
+        temp = data_real->prev;
+    }
+
+    return (MpdData *)temp;
 }
 
 void mpd_data_free(MpdData *data)
 {
-	MpdData_head *head;
-	MpdDataPool *pool, *temp_pool;
-	MpdData_real *data_real;
-	unsigned int i;
+	MpdData_real *data_real,*temp;
 	if(data == NULL)
 	{
 		debug_printf(DEBUG_ERROR, "data != NULL Failed");
 		return;
 	}
-	head = mpd_data_get_head(data);
-	pool = head->pool;
-	do {
-		for (i = 0; i < MPD_DATA_POOL_SIZE - pool->space_left; i++) {
-			data_real = &(pool->pool[i]);
-			if (data_real->type == MPD_DATA_TYPE_SONG) {
-				if(data_real->song) mpd_freeSong(data_real->song);
-			} else if (data_real->type == MPD_DATA_TYPE_OUTPUT_DEV) {
-				mpd_freeOutputElement(data_real->output_dev);
-			} else if(data_real->type == MPD_DATA_TYPE_DIRECTORY) {
-				if(data_real->directory)free(data_real->directory);
-			} else if(data_real->type == MPD_DATA_TYPE_PLAYLIST) {
-				if(data_real->playlist)free(data_real->playlist);				
-			} else {
-				free((void*)(data_real->tag));
-			}
-		}
-		temp_pool = pool->next;
-		free (pool);
-		pool = temp_pool;
-	} while ( pool );
-	free(head);
+	data_real = (MpdData_real *)mpd_data_get_first(data);
+    while(data_real){
+        temp = data_real;
+        if (data_real->type == MPD_DATA_TYPE_SONG) {
+            if(data_real->song) mpd_freeSong(data_real->song);
+        } else if (data_real->type == MPD_DATA_TYPE_OUTPUT_DEV) {
+            mpd_freeOutputElement(data_real->output_dev);
+        } else if(data_real->type == MPD_DATA_TYPE_DIRECTORY) {
+            if(data_real->directory)free(data_real->directory);
+        } else if(data_real->type == MPD_DATA_TYPE_PLAYLIST) {
+            if(data_real->playlist)free(data_real->playlist);				
+        } else {
+            free((void*)(data_real->tag));
+        }
+        data_real = data_real->next;
+        free(temp);
+    }
 }
 
 /* clean this up.. make one while loop */
