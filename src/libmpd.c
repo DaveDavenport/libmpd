@@ -825,19 +825,22 @@ MpdData* mpd_data_concatenate( MpdData  * const first, MpdData  * const second)
 
 	return (MpdData*)first_head;
 }
-/** This function looks broken.  This should be tested
- * Shamefully I don't know this part of the code to well 
+/** 
+ * Deletes an item from the list. It returns the next item in the list.
+ * if that is not available, it will return the last item
  */
 MpdData * mpd_data_delete_item(MpdData *data)
 {
     MpdData_real *temp = NULL, *data_real = (MpdData_real*)data;
     int first=0;
     if(data_real == NULL) return NULL;
+    /* if there is a next item, fix the prev pointer of the next item */
     if (data_real->next)
     {
         data_real->next->prev = data_real->prev;
         temp = data_real->next;
     }                                               		
+    /* if there is a previous item, fix the next pointer of the previous item */
     if (data_real->prev)
     {
         /* the next item of the previous is the next item of the current */
@@ -847,18 +850,18 @@ MpdData * mpd_data_delete_item(MpdData *data)
     }
 
     /* fix first,  if removed item is the first */  
-    if(temp->first == data_real)
-    {
-        MpdData_real *first,*node = temp;
-        /* get first */
-        for(;node->prev;node = node->prev);
-        first = node;
-        while(node){
-            node->first = first;
-            node = node->next;
+        if(temp && temp->first == data_real)
+        {
+            MpdData_real *first,*node = temp;
+            /* get first */
+            for(;node->prev;node = node->prev);
+            first = node;
+            while(node){
+                node->first = first;
+                node = node->next;
+            }
         }
-    }
-    /* make this a valid list */
+    /* make the removed row a valid list, so I can use the default free function to free it */
     data_real->next = NULL;
     data_real->prev = NULL;
     data_real->first = data_real;
