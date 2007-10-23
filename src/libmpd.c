@@ -832,7 +832,6 @@ MpdData* mpd_data_concatenate( MpdData  * const first, MpdData  * const second)
 MpdData * mpd_data_delete_item(MpdData *data)
 {
     MpdData_real *temp = NULL, *data_real = (MpdData_real*)data;
-    int first=0;
     if(data_real == NULL) return NULL;
     /* if there is a next item, fix the prev pointer of the next item */
     if (data_real->next)
@@ -850,17 +849,17 @@ MpdData * mpd_data_delete_item(MpdData *data)
     }
 
     /* fix first,  if removed item is the first */  
-        if(temp && temp->first == data_real)
-        {
-            MpdData_real *first,*node = temp;
-            /* get first */
-            for(;node->prev;node = node->prev);
-            first = node;
-            while(node){
-                node->first = first;
-                node = node->next;
-            }
+    if(temp && temp->first == data_real)
+    {
+        MpdData_real *first,*node = temp;
+        /* get first */
+        for(;node->prev;node = node->prev);
+        first = node;
+        while(node){
+            node->first = first;
+            node = node->next;
         }
+    }
     /* make the removed row a valid list, so I can use the default free function to free it */
     data_real->next = NULL;
     data_real->prev = NULL;
@@ -873,13 +872,13 @@ MpdData * mpd_data_delete_item(MpdData *data)
 
 void mpd_data_free(MpdData *data)
 {
-	MpdData_real *data_real,*temp;
-	if(data == NULL)
-	{
-		debug_printf(DEBUG_ERROR, "data != NULL Failed");
-		return;
-	}
-	data_real = (MpdData_real *)mpd_data_get_first(data);
+    MpdData_real *data_real,*temp;
+    if(data == NULL)
+    {
+        debug_printf(DEBUG_ERROR, "data != NULL Failed");
+        return;
+    }
+    data_real = (MpdData_real *)mpd_data_get_first(data);
     while(data_real){
         temp = data_real;
         if (data_real->type == MPD_DATA_TYPE_SONG) {
@@ -901,203 +900,203 @@ void mpd_data_free(MpdData *data)
 /* clean this up.. make one while loop */
 static void mpd_free_queue_ob(MpdObj *mi)
 {
-	MpdQueue *temp = NULL;
-	if(mi == NULL)
-	{
-		debug_printf(DEBUG_ERROR, "mi != NULL failed");
-		return;
-	}
-	if(mi->queue == NULL)
-	{
-		debug_printf(DEBUG_INFO, "mi->queue != NULL failed, nothing to clean.");
-		return;
-	}	
-	mi->queue = mi->queue->first;
-	while(mi->queue != NULL)
-	{
-		temp = mi->queue->next;
+    MpdQueue *temp = NULL;
+    if(mi == NULL)
+    {
+        debug_printf(DEBUG_ERROR, "mi != NULL failed");
+        return;
+    }
+    if(mi->queue == NULL)
+    {
+        debug_printf(DEBUG_INFO, "mi->queue != NULL failed, nothing to clean.");
+        return;
+    }	
+    mi->queue = mi->queue->first;
+    while(mi->queue != NULL)
+    {
+        temp = mi->queue->next;
 
-		if(mi->queue->path != NULL)
-		{
-			free(mi->queue->path);
-		}
+        if(mi->queue->path != NULL)
+        {
+            free(mi->queue->path);
+        }
 
-		free(mi->queue);
-		mi->queue = temp;
-	}
-	mi->queue = NULL;
+        free(mi->queue);
+        mi->queue = temp;
+    }
+    mi->queue = NULL;
 
 }
 
 MpdQueue *mpd_new_queue_struct()
 {
-	MpdQueue* queue = malloc(sizeof(MpdQueue));
+    MpdQueue* queue = malloc(sizeof(MpdQueue));
 
-	queue->type = 0;
-	queue->path = NULL;
-	queue->id = 0;
+    queue->type = 0;
+    queue->path = NULL;
+    queue->id = 0;
 
-	return queue;	
+    return queue;	
 }
 
 
 void mpd_queue_get_next(MpdObj *mi)
 {
-	if(mi->queue != NULL && mi->queue->next != NULL)
-	{
-		mi->queue = mi->queue->next;
-	}
-	else if(mi->queue->next == NULL)
-	{
-		mpd_free_queue_ob(mi);
-		mi->queue = NULL;
-	}
+    if(mi->queue != NULL && mi->queue->next != NULL)
+    {
+        mi->queue = mi->queue->next;
+    }
+    else if(mi->queue->next == NULL)
+    {
+        mpd_free_queue_ob(mi);
+        mi->queue = NULL;
+    }
 }
 
 long unsigned mpd_server_get_database_update_time(MpdObj *mi)
 {
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"not connected\n");
-		return MPD_NOT_CONNECTED;
-	}
-	if(mpd_stats_check(mi) != MPD_OK)
-	{
-		debug_printf(DEBUG_WARNING,"Failed grabbing status\n");
-		return MPD_STATS_FAILED;
-	}
-	return mi->stats->dbUpdateTime;
+    if(!mpd_check_connected(mi))
+    {
+        debug_printf(DEBUG_WARNING,"not connected\n");
+        return MPD_NOT_CONNECTED;
+    }
+    if(mpd_stats_check(mi) != MPD_OK)
+    {
+        debug_printf(DEBUG_WARNING,"Failed grabbing status\n");
+        return MPD_STATS_FAILED;
+    }
+    return mi->stats->dbUpdateTime;
 }
 
 
 MpdData * mpd_server_get_output_devices(MpdObj *mi)
 {
-	mpd_OutputEntity *output = NULL;
-	MpdData *data = NULL;
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"not connected\n");
-		return NULL;
-	}
-	/* TODO: Check version */
-	if(mpd_lock_conn(mi))
-	{
-		debug_printf(DEBUG_ERROR,"lock failed\n");
-		return NULL;
-	}
+    mpd_OutputEntity *output = NULL;
+    MpdData *data = NULL;
+    if(!mpd_check_connected(mi))
+    {
+        debug_printf(DEBUG_WARNING,"not connected\n");
+        return NULL;
+    }
+    /* TODO: Check version */
+    if(mpd_lock_conn(mi))
+    {
+        debug_printf(DEBUG_ERROR,"lock failed\n");
+        return NULL;
+    }
 
-	mpd_sendOutputsCommand(mi->connection);
-	while (( output = mpd_getNextOutput(mi->connection)) != NULL)
-	{	
-		data = mpd_new_data_struct_append(data);
-		data->type = MPD_DATA_TYPE_OUTPUT_DEV; 
-		data->output_dev = output;
-	}
-	mpd_finishCommand(mi->connection);
+    mpd_sendOutputsCommand(mi->connection);
+    while (( output = mpd_getNextOutput(mi->connection)) != NULL)
+    {	
+        data = mpd_new_data_struct_append(data);
+        data->type = MPD_DATA_TYPE_OUTPUT_DEV; 
+        data->output_dev = output;
+    }
+    mpd_finishCommand(mi->connection);
 
-	/* unlock */
-	mpd_unlock_conn(mi);
-	if(data == NULL) 
-	{
-		return NULL;
-	}
-	return mpd_data_get_first(data);
+    /* unlock */
+    mpd_unlock_conn(mi);
+    if(data == NULL) 
+    {
+        return NULL;
+    }
+    return mpd_data_get_first(data);
 }
 
 int mpd_server_set_output_device(MpdObj *mi,int device_id,int state)
 {
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"not connected\n");	
-		return MPD_NOT_CONNECTED;
-	}
-	if(mpd_lock_conn(mi))
-	{
-		debug_printf(DEBUG_ERROR,"lock failed\n");
-		return MPD_LOCK_FAILED;
-	}
-	if(state)
-	{
-		mpd_sendEnableOutputCommand(mi->connection, device_id);
-	}
-	else
-	{
-		mpd_sendDisableOutputCommand(mi->connection, device_id);
-	}	
-	mpd_finishCommand(mi->connection);
+    if(!mpd_check_connected(mi))
+    {
+        debug_printf(DEBUG_WARNING,"not connected\n");	
+        return MPD_NOT_CONNECTED;
+    }
+    if(mpd_lock_conn(mi))
+    {
+        debug_printf(DEBUG_ERROR,"lock failed\n");
+        return MPD_LOCK_FAILED;
+    }
+    if(state)
+    {
+        mpd_sendEnableOutputCommand(mi->connection, device_id);
+    }
+    else
+    {
+        mpd_sendDisableOutputCommand(mi->connection, device_id);
+    }	
+    mpd_finishCommand(mi->connection);
 
-	mpd_unlock_conn(mi);
-	mpd_status_queue_update(mi);
-	return FALSE;
+    mpd_unlock_conn(mi);
+    mpd_status_queue_update(mi);
+    return FALSE;
 }
 
 int mpd_server_check_version(MpdObj *mi, int major, int minor, int micro)
 {
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"not connected\n");
-		return FALSE;
-	}
-	if(major > mi->connection->version[0]) return FALSE;
-	if(mi->connection->version[0] > major) return TRUE;
-	if(minor > mi->connection->version[1]) return FALSE;
-	if(mi->connection->version[1] > minor) return TRUE;
-	if(micro > mi->connection->version[2]) return FALSE;
-	if(mi->connection->version[2] > micro) return TRUE; 	
-	return TRUE;
+    if(!mpd_check_connected(mi))
+    {
+        debug_printf(DEBUG_WARNING,"not connected\n");
+        return FALSE;
+    }
+    if(major > mi->connection->version[0]) return FALSE;
+    if(mi->connection->version[0] > major) return TRUE;
+    if(minor > mi->connection->version[1]) return FALSE;
+    if(mi->connection->version[1] > minor) return TRUE;
+    if(micro > mi->connection->version[2]) return FALSE;
+    if(mi->connection->version[2] > micro) return TRUE; 	
+    return TRUE;
 }	
 
 int mpd_server_check_command_allowed(MpdObj *mi, const char *command)
 {
-	int i;
-	if(!mi || !command) return MPD_SERVER_COMMAND_ERROR;
-	/* when we are connected to a mpd server that doesn't support commands and not commands
-	 * feature. (like mpd 0.11.5) allow everything
-	 */
-	if(!mpd_server_check_version(mi, 0,12,0)) return MPD_SERVER_COMMAND_ALLOWED;
-	/*
-	 * Also when somehow we failted to get commands
-	 */
-	if(mi->commands == NULL) return MPD_SERVER_COMMAND_ALLOWED;
+    int i;
+    if(!mi || !command) return MPD_SERVER_COMMAND_ERROR;
+    /* when we are connected to a mpd server that doesn't support commands and not commands
+     * feature. (like mpd 0.11.5) allow everything
+     */
+    if(!mpd_server_check_version(mi, 0,12,0)) return MPD_SERVER_COMMAND_ALLOWED;
+    /*
+     * Also when somehow we failted to get commands
+     */
+    if(mi->commands == NULL) return MPD_SERVER_COMMAND_ALLOWED;
 
 
 
-	for(i=0;mi->commands[i].command_name;i++)
-	{
-		if(!strcasecmp(mi->commands[i].command_name, command))
-			return mi->commands[i].enabled;
-	}
-	return MPD_SERVER_COMMAND_NOT_SUPPORTED;
+    for(i=0;mi->commands[i].command_name;i++)
+    {
+        if(!strcasecmp(mi->commands[i].command_name, command))
+            return mi->commands[i].enabled;
+    }
+    return MPD_SERVER_COMMAND_NOT_SUPPORTED;
 }
 
 char ** mpd_server_get_url_handlers(MpdObj *mi)
 {
-  char *temp = NULL;
-  int i=0;
-  char **retv = NULL;
-	if(!mpd_check_connected(mi))
-	{
-		debug_printf(DEBUG_WARNING,"not connected\n");
-		return FALSE;
-	}
-  if(mpd_lock_conn(mi))
-  {
-    debug_printf(DEBUG_ERROR,"lock failed\n");
-    return NULL;
-  }                                           
-  mpd_sendUrlHandlersCommand(mi->connection);
-  while((temp = mpd_getNextHandler(mi->connection)) != NULL)
-  {
-      retv = realloc(retv,(i+2)*sizeof(*retv));
-      retv[i]   = temp;
-      retv[i+1] = NULL;
-      i++;
-  } 
-  mpd_finishCommand(mi->connection);
+    char *temp = NULL;
+    int i=0;
+    char **retv = NULL;
+    if(!mpd_check_connected(mi))
+    {
+        debug_printf(DEBUG_WARNING,"not connected\n");
+        return FALSE;
+    }
+    if(mpd_lock_conn(mi))
+    {
+        debug_printf(DEBUG_ERROR,"lock failed\n");
+        return NULL;
+    }                                           
+    mpd_sendUrlHandlersCommand(mi->connection);
+    while((temp = mpd_getNextHandler(mi->connection)) != NULL)
+    {
+        retv = realloc(retv,(i+2)*sizeof(*retv));
+        retv[i]   = temp;
+        retv[i+1] = NULL;
+        i++;
+    } 
+    mpd_finishCommand(mi->connection);
 
 
-  mpd_unlock_conn(mi);
-  return retv;
+    mpd_unlock_conn(mi);
+    return retv;
 }
 
 
@@ -1105,69 +1104,69 @@ char ** mpd_server_get_url_handlers(MpdObj *mi)
 
 regex_t ** mpd_misc_tokenize(char *string)
 {
-	regex_t ** result = NULL; 	/* the result with tokens 		*/
-	int i = 0;		/* position in string 			*/
-	int br = 0;		/* number for open ()[]'s		*/
-	int bpos = 0;		/* begin position of the cur. token 	*/
+    regex_t ** result = NULL; 	/* the result with tokens 		*/
+    int i = 0;		/* position in string 			*/
+    int br = 0;		/* number for open ()[]'s		*/
+    int bpos = 0;		/* begin position of the cur. token 	*/
 
-	int tokens=0;
-	if(string == NULL) return NULL;
-	for(i=0; i < strlen(string)+1;i++)
-	{
-		/* check for opening  [( */
-		if(string[i] == '(' || string[i] == '[' || string[i] == '{') br++;
-		/* check closing */
-		else if(string[i] == ')' || string[i] == ']' || string[i] == '}') br--;
-		/* if multiple spaces at begin of token skip them */
-		else if(string[i] == ' ' && !(i-bpos))bpos++;
-		/* if token end or string end add token to list */
-		else if((string[i] == ' ' && !br) || string[i] == '\0')
-		{
-			char * temp=NULL;
-			result = (regex_t **)realloc(result,(tokens+2)*sizeof(regex_t *));
-			result[tokens] = malloc(sizeof(regex_t));
-			temp = (char *)strndup((const char *)&string[bpos], i-bpos);
-			if(regcomp(result[tokens], temp, REG_EXTENDED|REG_ICASE|REG_NOSUB))
-			{
-				result[tokens+1] = NULL;
-				mpd_misc_tokens_free(result);
-				return NULL;
-			}
-			free(temp);
-			result[tokens+1] = NULL;
-			bpos = i+1;
-			tokens++;
-		}
+    int tokens=0;
+    if(string == NULL) return NULL;
+    for(i=0; i < strlen(string)+1;i++)
+    {
+        /* check for opening  [( */
+        if(string[i] == '(' || string[i] == '[' || string[i] == '{') br++;
+        /* check closing */
+        else if(string[i] == ')' || string[i] == ']' || string[i] == '}') br--;
+        /* if multiple spaces at begin of token skip them */
+        else if(string[i] == ' ' && !(i-bpos))bpos++;
+        /* if token end or string end add token to list */
+        else if((string[i] == ' ' && !br) || string[i] == '\0')
+        {
+            char * temp=NULL;
+            result = (regex_t **)realloc(result,(tokens+2)*sizeof(regex_t *));
+            result[tokens] = malloc(sizeof(regex_t));
+            temp = (char *)strndup((const char *)&string[bpos], i-bpos);
+            if(regcomp(result[tokens], temp, REG_EXTENDED|REG_ICASE|REG_NOSUB))
+            {
+                result[tokens+1] = NULL;
+                mpd_misc_tokens_free(result);
+                return NULL;
+            }
+            free(temp);
+            result[tokens+1] = NULL;
+            bpos = i+1;
+            tokens++;
+        }
 
-	}
-	return result;
+    }
+    return result;
 }
 
 void mpd_misc_tokens_free(regex_t ** tokens)
 {
-	int i=0;
-	if(tokens == NULL) return;
-	for(i=0;tokens[i] != NULL;i++)
-	{
-		regfree(tokens[i]);
-		free(tokens[i]);
-	}
-	free(tokens);
+    int i=0;
+    if(tokens == NULL) return;
+    for(i=0;tokens[i] != NULL;i++)
+    {
+        regfree(tokens[i]);
+        free(tokens[i]);
+    }
+    free(tokens);
 }
 
 int mpd_misc_get_tag_by_name(char *name)
 {
-	int i;
-	if(name == NULL)
-	{
-		return MPD_ARGS_ERROR;
-	}
-	for(i=0; i < MPD_TAG_NUM_OF_ITEM_TYPES; i++)
-	{
-		if(!strcasecmp(mpdTagItemKeys[i], name))
-		{
-			return i;
-		}
-	}
-	return MPD_TAG_NOT_FOUND;
+    int i;
+    if(name == NULL)
+    {
+        return MPD_ARGS_ERROR;
+    }
+    for(i=0; i < MPD_TAG_NUM_OF_ITEM_TYPES; i++)
+    {
+        if(!strcasecmp(mpdTagItemKeys[i], name))
+        {
+            return i;
+        }
+    }
+    return MPD_TAG_NOT_FOUND;
 }
