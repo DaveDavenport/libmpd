@@ -831,9 +831,8 @@ MpdData* mpd_data_concatenate( MpdData  * const first, MpdData  * const second)
 MpdData * mpd_data_delete_item(MpdData *data)
 {
     MpdData_real *temp = NULL, *data_real = (MpdData_real*)data;
+    int first=0;
     if(data_real == NULL) return NULL;
-
-
     if (data_real->next)
     {
         data_real->next->prev = data_real->prev;
@@ -846,6 +845,25 @@ MpdData * mpd_data_delete_item(MpdData *data)
         /* temp is the previous item */
         temp = data_real->prev;
     }
+
+    /* fix first,  if removed item is the first */  
+    if(temp->first == data_real)
+    {
+        MpdData_real *first,*node = temp;
+        /* get first */
+        for(;node->prev;node = node->prev);
+        first = node;
+        while(node){
+            node->first = first;
+            node = node->next;
+        }
+    }
+    /* make this a valid list */
+    data_real->next = NULL;
+    data_real->prev = NULL;
+    data_real->first = data_real;
+    /* free it */
+    mpd_data_free((MpdData *)data_real);
 
     return (MpdData *)temp;
 }
