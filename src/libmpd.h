@@ -593,37 +593,23 @@ int mpd_server_check_command_allowed(MpdObj * mi, const char *command);
 /**
  * @param mi a #MpdObj
  *
- * @returns an array with urlhandlers (NULL terminated).
+ * @returns an array with urlhandlers (NULL terminated). Result must be free-ed.
  */
 char ** mpd_server_get_url_handlers(MpdObj *mi);
 
+/**
+ * @param mi a #MpdObj
+ *
+ * @returns an array with supported tag types. (NULL Terminated). Result must be free-ed.
+ */
+
+char ** mpd_server_get_tag_types(MpdObj *mi);
 /*@}*/
 	
 /** \defgroup Misc Misc
  * Helper functions.
  */
 /*@{*/
-
-
-/**
- * @param string A NULL terminated string
- *
- * Splits a string in tokens while keeping ()[] in tact.
- * This can be used to match a string tokenized
- * and with regex support agains a user defined string.
- *
- * @returns An array of regex patterns
- */
-regex_t **mpd_misc_tokenize(char *string);
-
-
-/**
- * @param tokens an array of regex patterns.
- *
- * Free's a list of regex patterns
- */
-void mpd_misc_tokens_free(regex_t ** tokens);
-
 
 /**
  * @param name a NULL terminated string
@@ -633,7 +619,6 @@ void mpd_misc_tokens_free(regex_t ** tokens);
  * @returns a #MpdDataType
  */
 int mpd_misc_get_tag_by_name(char *name);
-
 
 /*@}*/
 #endif

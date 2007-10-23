@@ -1098,60 +1098,34 @@ char ** mpd_server_get_url_handlers(MpdObj *mi)
     mpd_unlock_conn(mi);
     return retv;
 }
-
-
-/** MISC **/
-
-regex_t ** mpd_misc_tokenize(char *string)
+char ** mpd_server_get_tag_types(MpdObj *mi)
 {
-    regex_t ** result = NULL; 	/* the result with tokens 		*/
-    int i = 0;		/* position in string 			*/
-    int br = 0;		/* number for open ()[]'s		*/
-    int bpos = 0;		/* begin position of the cur. token 	*/
-
-    int tokens=0;
-    if(string == NULL) return NULL;
-    for(i=0; i < strlen(string)+1;i++)
-    {
-        /* check for opening  [( */
-        if(string[i] == '(' || string[i] == '[' || string[i] == '{') br++;
-        /* check closing */
-        else if(string[i] == ')' || string[i] == ']' || string[i] == '}') br--;
-        /* if multiple spaces at begin of token skip them */
-        else if(string[i] == ' ' && !(i-bpos))bpos++;
-        /* if token end or string end add token to list */
-        else if((string[i] == ' ' && !br) || string[i] == '\0')
-        {
-            char * temp=NULL;
-            result = (regex_t **)realloc(result,(tokens+2)*sizeof(regex_t *));
-            result[tokens] = malloc(sizeof(regex_t));
-            temp = (char *)strndup((const char *)&string[bpos], i-bpos);
-            if(regcomp(result[tokens], temp, REG_EXTENDED|REG_ICASE|REG_NOSUB))
-            {
-                result[tokens+1] = NULL;
-                mpd_misc_tokens_free(result);
-                return NULL;
-            }
-            free(temp);
-            result[tokens+1] = NULL;
-            bpos = i+1;
-            tokens++;
-        }
-
-    }
-    return result;
-}
-
-void mpd_misc_tokens_free(regex_t ** tokens)
-{
+    char *temp = NULL;
     int i=0;
-    if(tokens == NULL) return;
-    for(i=0;tokens[i] != NULL;i++)
+    char **retv = NULL;
+    if(!mpd_check_connected(mi))
     {
-        regfree(tokens[i]);
-        free(tokens[i]);
+        debug_printf(DEBUG_WARNING,"not connected\n");
+        return FALSE;
     }
-    free(tokens);
+    if(mpd_lock_conn(mi))
+    {
+        debug_printf(DEBUG_ERROR,"lock failed\n");
+        return NULL;
+    }                                           
+    mpd_sendTagTypesCommand(mi->connection);
+    while((temp = mpd_getNextTagType(mi->connection)) != NULL)
+    {
+        retv = realloc(retv,(i+2)*sizeof(*retv));
+        retv[i]   = temp;
+        retv[i+1] = NULL;
+        i++;
+    } 
+    mpd_finishCommand(mi->connection);
+
+
+    mpd_unlock_conn(mi);
+    return retv;
 }
 
 int mpd_misc_get_tag_by_name(char *name)
