@@ -497,7 +497,10 @@ int mpd_server_get_allowed_commands(MpdObj *mi)
 	}
 	mpd_finishCommand(mi->connection);
 
-	mpd_unlock_conn(mi);
+	if(mpd_unlock_conn(mi))
+    {
+        return MPD_LOCK_FAILED;
+    }
 	return MPD_OK;
 }
 
@@ -583,7 +586,8 @@ int mpd_connect(MpdObj *mi)
 }
 int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
 {
-	if(mi == NULL)
+    int retv;
+    if(mi == NULL)
 	{
 		/* should return some spiffy error here */
 		debug_printf(DEBUG_ERROR, "mi != NULL failed");
@@ -643,10 +647,12 @@ int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
 	}
 
 	/* get the commands we are allowed to use */
-	mpd_server_get_allowed_commands(mi);
-
-
-	if(mi->the_connection_changed_callback != NULL)
+	retv = mpd_server_get_allowed_commands(mi);
+    if(retv!= MPD_OK)
+    {
+        return retv;
+    }
+    if(mi->the_connection_changed_callback != NULL)
 	{
 		mi->the_connection_changed_callback( mi, TRUE, mi->the_connection_changed_signal_userdata );
 	}
