@@ -34,5 +34,13 @@ void debug_printf_real(DebugLevel dp, const char *file,const int line,const char
  * @param ARGS arguments for format
  */
 #define debug_printf(dp, format, ARGS...) debug_printf_real(dp,__FILE__,__LINE__,__FUNCTION__,format,##ARGS)
+
+/**
+ * @param fp a #FILE
+ *
+ * Redirect the output from stdout to fp.
+ * Set to NULL, to revert back to stdout.
+ */
+void debug_set_output(FILE *fp);
 /*@}*/
 #endif

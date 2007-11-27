@@ -139,7 +139,7 @@ int mpd_status_update(MpdObj *mi)
 	if(mi->CurrentState.songid != mi->status->songid)
 	{
 		/* print debug message */
-		debug_printf(DEBUG_INFO, "Song has changed %i %i!", mi->OldState.songid, mi->status->songid);
+		debug_printf(DEBUG_INFO, "Songid has changed %i %i!", mi->OldState.songid, mi->status->songid);
 
 		what_changed |= MPD_CST_SONGID;
 		/* save new songid */
@@ -149,7 +149,7 @@ int mpd_status_update(MpdObj *mi)
 	if(mi->CurrentState.songpos != mi->status->song)
 	{
 		/* print debug message */
-		debug_printf(DEBUG_INFO, "Song has changed %i %i!", mi->OldState.songpos, mi->status->song);
+		debug_printf(DEBUG_INFO, "Songpos has changed %i %i!", mi->OldState.songpos, mi->status->song);
 
 		what_changed |= MPD_CST_SONGPOS;
 		/* save new songid */
