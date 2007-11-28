@@ -1,3 +1,21 @@
+28-11-2007 Qball <Qball@Sarine.nl>
+	**Backloggin**
+	* Add server side search
+	* Add Glib dependency and use slice allocater in linked list
+	* Remove Pooled link list.
+	* Add Stat search.
+	* Playlist editing functionality.
+	* Add support for urlhandlers and tag_types.
+	* Support exposing mpd errors.  (f.e. failed to open audio device).
+	* Don't give disconnect signal when connecting fails. only when actual
+	going from connect to disconnect.
+	* Playback Queue support. 
+	* Remove sorting, as it's done better in gmpc.
+	* Playlist change where size stays the same, give song_change signal
+	(needed for streams that change metadata).
+	* Removal of token based functions.
+	* Redirecting of debug output to a FILE *
+
 24-02-2007 Qball <Qball@Sarine.nl>
 	* configure.ac:	Bump version to 0.13.1 because of api change
 	* src/libmpd-playlist.c: Add support for server side search.
