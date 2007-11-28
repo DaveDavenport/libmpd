@@ -1,5 +1,10 @@
 28-11-2007 Qball <Qball@Sarine.nl>
-	**Backloggin**
+	* src/debug_printf.c:	Only print date stamp on linux, win32 has no
+	localtime_r.
+
+28-11-2007 Qball <Qball@Sarine.nl>
+	**Backloggin**  Yes I should not forget changelog. not everybody reads
+	git/svn log.
 	* Add server side search
 	* Add Glib dependency and use slice allocater in linked list
 	* Remove Pooled link list.

@@ -42,9 +42,14 @@ void debug_printf_real(DebugLevel dp, const char *file,const int line,const char
         FILE *out = stdout;
         if(rout) out = rout;
         va_start(arglist,format);
-    
+  
+  /* Windows has no thread-safe localtime_r function, so ignore it for now */
+#ifndef WIN32
         localtime_r(&ts, &tm);
         strftime(buffer, 32, "%d/%m/%y %T",&tm); 
+#else
+        buffer[0] = '\0';
+#endif
 
 		if(dp == DEBUG_INFO)
 		{
