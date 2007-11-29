@@ -1,3 +1,6 @@
+29-11-2007 Qball <Qball@Sarine.nl>
+	* libmpd.pc.in:			Add Dependency on glib-2.0
+
 28-11-2007 Qball <Qball@Sarine.nl>
 	* src/debug_printf.c:	Only print date stamp on linux, win32 has no
 	localtime_r.
