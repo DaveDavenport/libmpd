@@ -377,7 +377,9 @@ typedef enum {
 	/** the queue has changed */
 	MPD_CST_STORED_PLAYLIST		  = 0x20000,
     /** server error */
-    MPD_CST_SERVER_ERROR        = 0x30000
+    MPD_CST_SERVER_ERROR        = 0x40000,
+    /** output changed */
+    MPD_CST_OUTPUT              = 0x80000
 } ChangedStatusType;
 
 

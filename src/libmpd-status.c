@@ -242,7 +242,25 @@ int mpd_status_update(MpdObj *mi)
 		mi->CurrentState.updatingDb = mi->status->updatingDb;
 	}
 
+
     mi->CurrentState.playlistLength = mi->status->playlistLength;
+
+
+    /* Detect changed outputs */
+    if(mi->num_outputs >0 )
+    {
+        mpd_OutputEntity *output = NULL;
+        mpd_sendOutputsCommand(mi->connection);
+        while (( output = mpd_getNextOutput(mi->connection)) != NULL)
+        {	
+            if(mi->output_states[output->id] != output->enabled)
+            {
+                mi->output_states[output->id] = output->enabled;
+                what_changed |= MPD_CST_OUTPUT;
+            }
+        }
+        mpd_finishCommand(mi->connection);
+    }
 
 	/* Run the callback */
 	if((mi->the_status_changed_callback != NULL) && what_changed)

@@ -114,6 +114,14 @@ typedef struct _MpdObj {
 	 */
 	int search_type;
 	int search_field;
+
+    /**
+     * For tracking changed outputs.
+     * A hack for retarted mpd
+     */
+    int num_outputs;
+    int *output_states;
+
 }_MpdObj;
 
 

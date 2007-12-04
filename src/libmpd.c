@@ -33,6 +33,7 @@
 
 static void mpd_free_queue_ob(MpdObj *mi);
 static void mpd_server_free_commands(MpdObj *mi);
+static int mpd_server_update_outputs(MpdObj *mi);
 
 char *libmpd_version = LIBMPD_VERSION;
 #ifndef HAVE_STRNDUP
@@ -148,6 +149,9 @@ static MpdObj * mpd_create()
 	/* no need to initialize, but set it to anything anyway*/
 	mi->search_field = MPD_TAG_ITEM_ARTIST;
 
+    /* outputs */
+    mi->num_outputs = 0;
+    mi->output_states = NULL;
 	/* commands */
 	mi->commands = NULL;
 	return mi;
@@ -557,9 +561,11 @@ int mpd_disconnect(MpdObj *mi)
 	mi->search_type = MPD_SEARCH_TYPE_NONE;
 	/* no need to initialize, but set it to anything anyway*/
 	mi->search_field = MPD_TAG_ITEM_ARTIST;
-
-
-
+    /* outputs */
+    mi->num_outputs = 0;
+    if(mi->output_states)
+        g_free(mi->output_states);
+    mi->output_states = NULL;
 	
 	memcpy(&(mi->OldState), &(mi->CurrentState) , sizeof(MpdServerState));
 
@@ -652,6 +658,18 @@ int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
     {
         return retv;
     }
+
+
+    retv = mpd_server_update_outputs(mi);
+    if(retv != MPD_OK)
+        return retv;
+
+
+
+
+
+
+
     if(mi->the_connection_changed_callback != NULL)
 	{
 		mi->the_connection_changed_callback( mi, TRUE, mi->the_connection_changed_signal_userdata );
@@ -1149,4 +1167,28 @@ int mpd_misc_get_tag_by_name(char *name)
         }
     }
     return MPD_TAG_NOT_FOUND;
+}
+
+static int mpd_server_update_outputs(MpdObj *mi)
+{
+    mpd_OutputEntity *output = NULL;
+    if(!mpd_check_connected(mi))
+    {
+        debug_printf(DEBUG_WARNING,"not connected\n");
+        return MPD_NOT_CONNECTED;
+    }
+    if(mpd_lock_conn(mi))
+    {
+        debug_printf(DEBUG_ERROR,"lock failed\n");
+        return MPD_LOCK_FAILED;
+    }        
+    mpd_sendOutputsCommand(mi->connection);
+    while (( output = mpd_getNextOutput(mi->connection)) != NULL)
+    {	
+        mi->num_outputs++;
+        mi->output_states = g_realloc(mi->output_states,mi->num_outputs*sizeof(int));
+        mi->output_states[mi->num_outputs-1] = FALSE;/*output->enabled;*/
+    }
+    mpd_finishCommand(mi->connection);
+    return mpd_unlock_conn(mi);
 }
