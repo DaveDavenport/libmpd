@@ -669,7 +669,11 @@ int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
 	{
 		mi->the_connection_changed_callback( mi, TRUE, mi->the_connection_changed_signal_userdata );
 	}
-
+    retv = mpd_server_update_outputs(mi);
+    /*
+    if(retv != MPD_OK)
+        return retv;
+        */
 	debug_printf(DEBUG_INFO, "Connected to mpd");
 	return MPD_OK;
 }
