@@ -33,7 +33,7 @@
 
 static void mpd_free_queue_ob(MpdObj *mi);
 static void mpd_server_free_commands(MpdObj *mi);
-static int mpd_server_update_outputs(MpdObj *mi);
+
 
 char *libmpd_version = LIBMPD_VERSION;
 #ifndef HAVE_STRNDUP
@@ -658,17 +658,12 @@ int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
     {
         return retv;
     }
-
+/*
 
     retv = mpd_server_update_outputs(mi);
     if(retv != MPD_OK)
         return retv;
-
-
-
-
-
-
+*/
 
     if(mi->the_connection_changed_callback != NULL)
 	{
@@ -1169,7 +1164,7 @@ int mpd_misc_get_tag_by_name(char *name)
     return MPD_TAG_NOT_FOUND;
 }
 
-static int mpd_server_update_outputs(MpdObj *mi)
+int mpd_server_update_outputs(MpdObj *mi)
 {
     mpd_OutputEntity *output = NULL;
     if(!mpd_check_connected(mi))

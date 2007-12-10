@@ -261,6 +261,16 @@ int mpd_status_update(MpdObj *mi)
         }
         mpd_finishCommand(mi->connection);
     }
+    else
+    {
+        /* if no outputs, lets fetch them */
+        mpd_server_update_outputs(mi);
+        if(mi->num_outputs == 0)
+        {
+            assert("No outputs defined? that cannot be\n");
+        }
+        what_changed |= MPD_CST_OUTPUT;
+    }
 
 	/* Run the callback */
 	if((mi->the_status_changed_callback != NULL) && what_changed)

@@ -188,4 +188,5 @@ typedef enum _MpdSearchType {
 	MPD_SEARCH_TYPE_PLAYLIST_SEARCH,
 	MPD_SEARCH_TYPE_STATS
 }MpdSearchType;
+int mpd_server_update_outputs(MpdObj *mi);
 #endif
