@@ -1187,6 +1187,7 @@ int mpd_server_update_outputs(MpdObj *mi)
         mi->num_outputs++;
         mi->output_states = g_realloc(mi->output_states,mi->num_outputs*sizeof(int));
         mi->output_states[mi->num_outputs-1] = FALSE;/*output->enabled;*/
+        mpd_freeOutputElement(output);
     }
     mpd_finishCommand(mi->connection);
     return mpd_unlock_conn(mi);

@@ -259,6 +259,7 @@ int mpd_status_update(MpdObj *mi)
                 mi->output_states[output->id] = output->enabled;
                 what_changed |= MPD_CST_OUTPUT;
             }
+            mpd_freeOutputElement(output);
         }
         mpd_finishCommand(mi->connection);
     }
