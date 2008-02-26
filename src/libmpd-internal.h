@@ -153,10 +153,10 @@ MpdQueue *	mpd_new_queue_struct			();
 void 		mpd_queue_get_next			(MpdObj *mi);
 
 /* Internal Data struct functions */
-inline	MpdData *	mpd_new_data_struct			(void);
-inline	MpdData *	mpd_new_data_struct_append		(MpdData * data);
-inline	MpdData *	mpd_data_concatenate			(MpdData * const first, MpdData * const second);
-inline	MpdData *	mpd_data_get_next_real			(MpdData * const data, int kill_list);
+MpdData *	mpd_new_data_struct			(void);
+MpdData *	mpd_new_data_struct_append		(MpdData * data);
+MpdData *	mpd_data_concatenate			(MpdData * const first, MpdData * const second);
+MpdData *	mpd_data_get_next_real			(MpdData * const data, int kill_list);
 /* more internal stuff*/
 
 /**
