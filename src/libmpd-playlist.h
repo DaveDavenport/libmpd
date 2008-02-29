@@ -306,14 +306,6 @@ void mpd_playlist_search_add_constraint(MpdObj *mi, mpd_TagItems field, const ch
  */
 /*@{*/
 
-/**
- * @param mi a #MpdObj
- *
- * Lists the playlist queue of mpd
- *
- * @returns a #MpdData list
- */
-MpdData *mpd_playlist_get_mpd_queue(MpdObj *mi);
 
 /**
  * @param mi a #MpdObj
@@ -336,25 +328,6 @@ int mpd_playlist_mpd_queue_add(MpdObj *mi, int songid);
  */
 int mpd_playlist_mpd_queue_remove(MpdObj *mi, int songpos);
 
-/**
- *
- * @param mi a #MpdObj
- * @param id Add the song with id to the queue
- *
- * This only queues the add, use #mpd_playlist_queue_commit to actually commit it.
- *
- * @returns a #MpdError
- */
-int mpd_playlist_queue_mpd_queue_add(MpdObj *mi,int id);
-/**
- * @param mi a #MpdObj
- * @param pos the pos of the song to remove
- *
- * This only queues the remove, use #mpd_playlist_queue_commit to actually commit it.
- * 
- * @returns a #MpdError
- */ 
-int mpd_playlist_queue_mpd_queue_remove(MpdObj *mi,int pos);
 /*@}*/
 
 #endif

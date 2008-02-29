@@ -67,7 +67,6 @@ char * strndup(const char *s, size_t n)
 static void mpd_init_MpdServerState(MpdServerState *state)
 {
 	state->playlistid 	= -1;
-	state->queueid 		= -2;
 	state->storedplaylistid = -1;
 	state->state 		= -1;
 	state->songid 		= -1;     	
@@ -538,7 +537,6 @@ int mpd_disconnect(MpdObj *mi)
 		mi->CurrentSong = NULL;
 	}
 	mi->CurrentState.playlistid = -1;
-	mi->CurrentState.queueid = -2;
 	mi->CurrentState.storedplaylistid = -1;
 	mi->CurrentState.state = -1;
 	mi->CurrentState.songid = -1;

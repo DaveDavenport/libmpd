@@ -173,8 +173,6 @@ typedef struct mpd_Status {
 	int playlistLength;
 	/* playlist, use this to determine when the playlist has changed */
 	long long playlist;
-	/* playlistqueue, use this to determine when the queue has changed */
-	long long playlistqueue;
 	/* The id, used to determine is one of the playlists are changed */
 	long long storedplaylist;
 	/* use with MPD_STATUS_STATE_* to determine state of player */
@@ -668,22 +666,6 @@ void mpd_sendPlaylistMoveCommand(mpd_Connection *connection,
 void mpd_sendPlaylistDeleteCommand(mpd_Connection *connection,
                                    char *playlist, int pos);
 
-/* 
- * List the content of the queue
- */
-void mpd_sendQueueInfoCommand(mpd_Connection * connection);
-
-/*
- * Dequeue a song from the queue
- * SongPos is the position in the queue
- */
-void mpd_sendDequeueCommand(mpd_Connection * connection, int songPos);
-
-/*
- * Queue a song from the playlist
- * Id is the songid of the song to queue
- */
-void mpd_sendQueueIdCommand(mpd_Connection * connection, int songId);
 void mpd_sendClearErrorCommand(mpd_Connection * connection);
 #ifdef __cplusplus
 }
