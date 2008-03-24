@@ -107,7 +107,7 @@ int mpd_status_update(MpdObj *mi)
 
         if(mi->CurrentState.playlistLength == mi->status->playlistLength)
         {
-            what_changed |= MPD_CST_SONGID; 
+//            what_changed |= MPD_CST_SONGID; 
         }
 		/* save new id */
 		mi->CurrentState.playlistid = mi->status->playlist;

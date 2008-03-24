@@ -183,6 +183,8 @@ static unsigned int _strfsong(char *s,
 			temp = song->composer ? strdup(song->composer) : NULL;		
 		else if (memcmp("%track%",p,n) == 0)
 			temp = song->track? strdup(song->track): NULL;
+		else if (memcmp("%comment%", p, n) == 0)
+			temp = song->comment? strdup(song->comment): NULL;
 		else if (memcmp("%plpos%", p, n) == 0 || memcmp("%songpos%",p,n) == 0){
 			temp = NULL;
 			if(song->pos >= 0){
