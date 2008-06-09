@@ -203,9 +203,13 @@ static unsigned int _strfsong(char *s,
 			else */{
 				int i=strlen(song->file);
 				int ext =i;
+                int found = 0;
 				char *temp2 = NULL;
 				for(;i>=0 && (song->file[i] != '/' && song->file[i] != '\\');i--){
-					if(song->file[i] == '.' && !ext) ext = i;	
+					if(song->file[i] == '.' && !found) {
+                        ext = i;	
+                        found = 1;
+                    }
 				}
 				temp2 = g_strndup(&(song->file)[i+1],(gsize)(ext-i-1));
 				temp = g_uri_unescape_string(temp2, "");
