@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <glib.h>
 #include "libmpd.h"
 #include "libmpd-internal.h"
 
@@ -107,15 +108,14 @@ static unsigned int _strfsong(char *s,
 		/* EXPRESSION START */
 		if (p[0] == '[')
 		{
-			temp = malloc(max);
-			memset(temp, 0,max);
+			temp = g_malloc0(max);
 			if( _strfsong(temp, max, p+1, song, &p) >0 )
 			{
 				strncat(s, temp, max-length);
 				length = strlen(s);
 				found = TRUE;
 			}
-			free(temp);
+			g_free(temp);
 			continue;
 		}
 
@@ -162,29 +162,29 @@ static unsigned int _strfsong(char *s,
 		if(*end != '%')
 			n--;
 		else if (memcmp("%file%", p, n) == 0)
-			temp = strdup(song->file);
+			temp = g_strdup(song->file);
 		else if (memcmp("%artist%", p, n) == 0)
-			temp = song->artist ? strdup(song->artist) : NULL;
+			temp = song->artist ? g_strdup(song->artist) : NULL;
 		else if (memcmp("%title%", p, n) == 0)
-			temp = song->title ? strdup(song->title) : NULL;
+			temp = song->title ? g_strdup(song->title) : NULL;
 		else if (memcmp("%album%", p, n) == 0)
-			temp = song->album ? strdup(song->album) : NULL;
+			temp = song->album ? g_strdup(song->album) : NULL;
 		else if (memcmp("%track%", p, n) == 0)
-			temp = song->track ? strdup(song->track) : NULL;
+			temp = song->track ? g_strdup(song->track) : NULL;
 		else if (memcmp("%name%", p, n) == 0)
-			temp = song->name ? strdup(song->name) : NULL;
+			temp = song->name ? g_strdup(song->name) : NULL;
 		else if (memcmp("%date%", p, n) == 0)
-			temp = song->date ? strdup(song->date) : NULL;		
+			temp = song->date ? g_strdup(song->date) : NULL;		
 		else if (memcmp("%genre%", p, n) == 0)
-			temp = song->genre ? strdup(song->genre) : NULL;		
+			temp = song->genre ? g_strdup(song->genre) : NULL;		
 		else if (memcmp("%performer%", p, n) == 0)
-			temp = song->performer ? strdup(song->performer) : NULL;		
+			temp = song->performer ? g_strdup(song->performer) : NULL;		
 		else if (memcmp("%composer%", p, n) == 0)
-			temp = song->composer ? strdup(song->composer) : NULL;		
+			temp = song->composer ? g_strdup(song->composer) : NULL;		
 		else if (memcmp("%track%",p,n) == 0)
-			temp = song->track? strdup(song->track): NULL;
+			temp = song->track? g_strdup(song->track): NULL;
 		else if (memcmp("%comment%", p, n) == 0)
-			temp = song->comment? strdup(song->comment): NULL;
+			temp = song->comment? g_strdup(song->comment): NULL;
 		else if (memcmp("%plpos%", p, n) == 0 || memcmp("%songpos%",p,n) == 0){
 			temp = NULL;
 			if(song->pos >= 0){
@@ -192,21 +192,24 @@ static unsigned int _strfsong(char *s,
 				int length;
 				if((length = snprintf(str,32, "%i", song->pos)) >=0)
 				{
-					temp = strndup(str,length);				
+					temp = g_strndup(str,length);				
 				}
 			}
 		}
 		else if (memcmp("%shortfile%", p, n) == 0)
 		{
-			if( strstr(song->file, "://") )
-				temp = strdup(song->file);
-			else {
+			/*if( strstr(song->file, "://") )
+				temp = g_strdup(song->file);
+			else */{
 				int i=strlen(song->file);
-				int ext =0;
+				int ext =i;
+				char *temp2 = NULL;
 				for(;i>=0 && (song->file[i] != '/' && song->file[i] != '\\');i--){
 					if(song->file[i] == '.' && !ext) ext = i;	
 				}
-				temp = strndup(&(song->file)[i+1],ext-i-1);
+				temp2 = g_strndup(&(song->file)[i+1],(gsize)(ext-i-1));
+				temp = g_uri_unescape_string(temp2, "");
+				g_free(temp2);	
 			}
 		}
 		else if (memcmp("%time%", p, n) == 0)
@@ -217,13 +220,13 @@ static unsigned int _strfsong(char *s,
 				int length;
 				if((length = snprintf(str,32, "%02d:%02d", song->time/60, song->time%60))>=0)
 				{
-					temp = strndup(str,length);
+					temp = g_strndup(str,length);
 				}
 			}
 		}
         else if (memcmp("%disc%", p, n) == 0)
         {
-			temp = song->disc? strdup(song->disc) : NULL;		
+			temp = song->disc? g_strdup(song->disc) : NULL;		
         }
         if(temp != NULL) {
             unsigned int templen = strlen(temp);
@@ -232,7 +235,7 @@ static unsigned int _strfsong(char *s,
                 templen = max-length;
             strncat(s, temp, templen);
             length+=templen;
-            free(temp);
+            g_free(temp);
         }
 
         /* advance past the specifier */
