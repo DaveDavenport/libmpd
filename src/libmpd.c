@@ -739,6 +739,9 @@ MpdData *mpd_new_data_struct(void)
 	data->next = NULL;
 	data->prev = NULL;
     data->first = NULL;
+
+    data->userdata = NULL;
+    data->freefunc = NULL;
 	return (MpdData*)data;
 }
 
@@ -912,6 +915,11 @@ void mpd_data_free(MpdData *data)
             if(data_real->playlist)free(data_real->playlist);				
         } else {
             free((void*)(data_real->tag));
+        }
+        if(data_real->freefunc)
+        {
+            if(data_real->userdata)
+                data_real->freefunc(data_real->userdata);
         }
         data_real = data_real->next;
         g_slice_free1(sizeof(*temp), temp);

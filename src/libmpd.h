@@ -154,6 +154,9 @@ typedef struct _MpdData {
 		/** an output device entity */
 		mpd_OutputEntity *output_dev;
 	};
+
+    void *userdata;
+    void (*freefunc)(void *userdata);
 } MpdData;
 
 

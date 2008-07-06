@@ -18,6 +18,9 @@ typedef struct _MpdData_real {
 		mpd_Song *song;
 		mpd_OutputEntity *output_dev; /* from devices */
 	};
+    void *userdata;
+    void (*freefunc)(void *userdata);
+
 	struct _MpdData_real *next;
 	/* Previous MpdData in the list */
 	struct _MpdData_real *prev;
