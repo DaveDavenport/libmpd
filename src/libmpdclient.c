@@ -950,6 +950,7 @@ static void mpd_finishSong(mpd_Song * song) {
 	if(song->composer) free(song->composer);
 	if(song->disc) free(song->disc);
 	if(song->comment) free(song->comment);
+	if(song->performer) free(song->performer);
 }
 
 mpd_Song * mpd_newSong(void) {
