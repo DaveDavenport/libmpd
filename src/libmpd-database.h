@@ -311,7 +311,7 @@ void mpd_database_playlist_clear(MpdObj *mi,const char *path);
  * Renames a stored playlist
  * Needs mpd 0.13.0
  */
-void mpd_database_playlist_rename(MpdObj *mi, const char *old, const char *new);
+void mpd_database_playlist_rename(MpdObj *mi, const char *old_name, const char *new_name);
 
 /**
  * @param mi a #MpdObj

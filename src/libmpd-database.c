@@ -1001,9 +1001,9 @@ MpdData * mpd_database_get_directory_recursive(MpdObj *mi, const char *path)
 	}
 	return mpd_data_get_first(data);
 }
-void mpd_database_playlist_rename(MpdObj *mi, const char *old, const char *new)
+void mpd_database_playlist_rename(MpdObj *mi, const char *old_name, const char *new_name)
 {
-	if(!new || !old)
+	if(!new_name || !old_name)
 	{
 		debug_printf(DEBUG_ERROR, "old != NULL && new != NULL failed");
 		return;
@@ -1021,7 +1021,7 @@ void mpd_database_playlist_rename(MpdObj *mi, const char *old, const char *new)
 		return ;
 	}
 
-	mpd_sendRenameCommand(mi->connection, (char *)old,(char *)new);
+	mpd_sendRenameCommand(mi->connection, (char *)old_name,(char *)new_name);
 	mpd_finishCommand(mi->connection);
 
 	mpd_unlock_conn(mi);
