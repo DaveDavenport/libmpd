@@ -38,7 +38,6 @@ extern "C" {
 #endif
 
 #include "libmpdclient.h"
-#include <regex.h>
 
 #ifndef TRUE
 /** Defined for readability: True is 1. */

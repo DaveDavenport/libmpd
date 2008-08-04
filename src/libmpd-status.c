@@ -23,7 +23,6 @@
 #define __USE_GNU
 
 #include <string.h>
-#include <regex.h>
 #include <stdarg.h>
 #include <config.h>
 #include "debug_printf.h"

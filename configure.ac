@@ -13,7 +13,7 @@ EXTRA_LDFLAGS=
 case $host in
   *-*-mingw32* | *-*-windows)
     EXTRA_CFLAGS="-mno-cygwin -mwindows -mms-bitfields -fno-strict-aliasing -DMPD_NO_GAI"
-    EXTRA_LDFLAGS="-export-all-symbols -mwindows -no-undefined -lregex -lws2_32 -mms-bitfields" ;;
+    EXTRA_LDFLAGS="-export-all-symbols -mwindows -no-undefined -lws2_32 -mms-bitfields" ;;
   *-*-cygwin*)
     EXTRA_CFLAGS="-fno-strict-aliasing"
     EXTRA_LDFLAGS="-export-all-symbols -mms-bitfields";;
@@ -28,8 +28,6 @@ AC_SUBST(glib_CFLAGS)
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdlib.h string.h unistd.h])
-AC_CHECK_HEADER([regex.h], [],
-                [AC_MSG_ERROR([Required header regex.h not found.])])
 
 AC_OUTPUT([
 Makefile
