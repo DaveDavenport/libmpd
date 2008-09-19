@@ -1,6 +1,10 @@
 AC_INIT(src)
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(libmpd, 0.15.101, Qball@Sarine.nl)
+m4_define([libmpd_major_version], [0])
+m4_define([libmpd_minor_version], [15])
+m4_define([libmpd_micro_version], [101])
+m4_define([libmpd_version], [libmpd_major_version.libmpd_minor_version.libmpd_micro_version])
+AM_INIT_AUTOMAKE(libmpd, libmpd_version, Qball@Sarine.nl)
 
 AC_PROG_CC
 AC_LIBTOOL_WIN32_DLL
