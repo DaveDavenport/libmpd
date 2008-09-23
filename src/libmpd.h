@@ -402,8 +402,10 @@ typedef void (*StatusChangedCallback) (MpdObj * mi, ChangedStatusType what, void
  * @param msg human-readable informative error message.
  * @param userdata  user data set when the signal handler was connected.
  * This signal is called when an error has occured in the communication with mpd.
+ * 
+ * return: TRUE if libmpd should disconnect.
  */
-typedef void (*ErrorCallback) (MpdObj * mi, int id, char *msg, void *userdata);
+typedef int (*ErrorCallback) (MpdObj * mi, int id, char *msg, void *userdata);
 
 
 	

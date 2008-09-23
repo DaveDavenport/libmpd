@@ -231,7 +231,15 @@ int mpd_check_error(MpdObj *mi)
 		if (mi->the_error_callback)
 		{
             debug_printf(DEBUG_ERROR, "Error callback 1 (ACK)");
-			mi->the_error_callback(mi, mi->error_mpd_code, mi->error_msg, mi->the_error_signal_userdata );
+			if(mi->the_error_callback(mi, mi->error_mpd_code, mi->error_msg, mi->the_error_signal_userdata ))
+            {
+                debug_printf(DEBUG_ERROR, "Error callback told me to disconnenct");
+                mpd_disconnect(mi);
+                free(mi->error_msg);
+                mi->error_msg = NULL;
+
+                return MPD_SERVER_ERROR;
+            }
 		}
 		free(mi->error_msg);
 		mi->error_msg = NULL;
@@ -661,6 +669,7 @@ int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
     if(retv != MPD_OK)
         return retv;
 */
+    debug_printf(DEBUG_INFO,  "Propagating connection changed");
 
     if(mi->the_connection_changed_callback != NULL)
 	{
