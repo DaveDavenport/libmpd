@@ -1,5 +1,3 @@
-#include <libmpd.h>
-#include <debug_printf.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,7 +5,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
+#include <libmpd/libmpd.h>
+#include <libmpd/debug_printf.h>
 #define RED "\x1b[31;01m"
 #define DARKRED "\x1b[31;06m"
 #define RESET "\x1b[0m"
