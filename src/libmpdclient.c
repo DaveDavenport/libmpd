@@ -683,6 +683,7 @@ mpd_Status * mpd_getStatus(mpd_Connection * connection) {
 	status->repeat = 0;
 	status->random = 0;
 	status->playlist = -1;
+    status->storedplaylist = -1;
 	status->playlistLength = -1;
 	status->state = -1;
 	status->song = 0;
