@@ -703,7 +703,7 @@ void mpd_database_search_start(MpdObj *mi, int exact)
  */
 void mpd_database_search_add_constraint(MpdObj *mi, mpd_TagItems field, const char *value)
 {
-	if(mi == NULL || value == NULL || value[0] == '\0')
+	if(mi == NULL || value == NULL )
 	{
 		debug_printf(DEBUG_ERROR,"Failed to parse arguments");
 		return;
