@@ -30,7 +30,7 @@
  * @param mi A #MpdObj
  * @param artist an artist name
  *
- * Grab's a list of albums of a certain artist from mpd.
+ * Grabs a list of albums of a certain artist from mpd.
  * if artist is %NULL it grabs all albums
  *
  * @returns A #MpdData list.
@@ -41,7 +41,7 @@ MpdData *	mpd_database_get_albums		(MpdObj *mi, char *artist);
 /**
  * @param mi a #MpdObj
  *
- * returns a list of all availible artists.
+ * returns a list of all available artists.
  *
  * @returns a #MpdData list
  */
@@ -51,7 +51,7 @@ MpdData *	mpd_database_get_artists		(MpdObj *mi);
 /**
  * @param mi a #MpdObj
  *
- * Get's the complete datababse, only returns songs
+ * Gets the complete datababse, only returns songs
  *
  * @returns a #MpdData list with songs
  */
@@ -63,7 +63,7 @@ MpdData * mpd_database_get_complete(MpdObj *mi);
  *@param mi A #MpdObj
  *@param path The path mpd should update.
  *
- * Force mpd to update (parts of )the database.
+ * Force mpd to update (parts of) the database.
  *
  * @returns a #MpdError
  */
@@ -104,8 +104,8 @@ MpdData * mpd_database_get_directory_recursive(MpdObj *mi, const char *path);
  * @param mi A #MpdObj
  * @param path an Path to a file
  *
- * Grabs the song info for a single file. Make sure you pass an url to a song
- * and not a directory, that might result in strange behauviour.
+ * Grabs the song info for a single file. Make sure you pass a url to a song
+ * and not a directory, that might result in strange behaviour.
  *
  * @returns a #mpd_Song
  */
@@ -160,7 +160,7 @@ void mpd_database_search_start(MpdObj *mi, int exact);
  * @param mi a #MpdObj
  * @param field a #mpd_TagItems
  *
- * Starts a field search, f.e. if you want a list of all albums, you do;
+ * Starts a field search, eg. if you want a list of all albums, you do;
  * 
  * @code 
  * mpd_database_search_field_start(mi, MPD_TAG_ITEM_ALBUM);
@@ -183,7 +183,7 @@ void mpd_database_search_field_start(MpdObj *mi, mpd_TagItems field);
  *
  * Commits the search and gathers the result in a #MpdData list.
  *
- * @returns a #MpdData list with the search result,or NULL when nothing is found
+ * @returns a #MpdData list with the search result, or NULL when nothing is found
  */
 MpdData * mpd_database_search_commit(MpdObj *mi);
 
@@ -230,7 +230,7 @@ MpdDBStats * mpd_database_search_stats_commit(MpdObj *mi);
 /**
  * @param data a #MpdDBStats
  *
- * free's the #MpdDBStats structure.
+ * frees the #MpdDBStats structure.
  */
 void mpd_database_search_free_stats(MpdDBStats *data);
 
@@ -285,8 +285,8 @@ void mpd_database_playlist_list_add(MpdObj *mi, const char *path, const char *fi
 
 /**
  * @param mi a #MpdObj
- * @param path a string contains the path of the playlist
- * @param pos a int representing the position of a song
+ * @param path a string containing the path of the playlist
+ * @param pos an int representing the position of a song
  *
  * Deletes the song at position pos from a playlist.
  * Needs mpd 0.13.0
@@ -296,7 +296,7 @@ void mpd_database_playlist_list_delete(MpdObj *mi, const char *path, int pos);
 
 /**
  * @param mi a #MpdObj
- * @param path a string contains the path of the playlist
+ * @param path a string containing the path of the playlist
  *
  * Clears the content of a stored playlist, also used to create an empty playlist
  * Needs mpd 0.13.0
@@ -315,11 +315,11 @@ void mpd_database_playlist_rename(MpdObj *mi, const char *old_name, const char *
 
 /**
  * @param mi a #MpdObj
- * @param playlist a string contains the path of the playlist
- * @param old_pos integer representing old position
- * @param new_pos integer representing the position to move old_pos to.
+ * @param playlist a string containing the path of the playlist
+ * @param old_pos an integer representing old position
+ * @param new_pos an integer representing the position to move old_pos to.
  *
- * Moves songs in a stored playlists
+ * Moves songs in a stored playlist
  * Needs mpd 0.13.0
  */
 int mpd_database_playlist_move(MpdObj *mi, const char *playlist, int old_pos, int new_pos);

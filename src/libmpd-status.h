@@ -28,7 +28,7 @@
 /**
  * @param mi a #MpdObj
  *
- * Checks if there is status information is availibe, if not availible it tries to fetch it.
+ * Checks if there is status information availibe. if not availible, it tries to fetch it.
  * This function is called from within libmpd, and shouldn't be called from the program.
  *
  * @returns 0 when successful
@@ -52,7 +52,7 @@ int 		mpd_status_queue_update			(MpdObj *mi);
  * @param mi a #MpdObj
  *
  * Updates the status field from mpd.
- * Call this function ever 0.x seconds from the program's main-loop to recieve signals when mpd's status has changed.
+ * Call this function every 0.x seconds from the program's main-loop to recieve signals when mpd's status has changed.
  *
  * @returns 0 when succesfull
  */
@@ -85,9 +85,9 @@ int 		mpd_status_set_volume			(MpdObj *mi,int volume);
 /**
  * @param mi a #MpdObj
  *
- * Set the audio output volume.
+ * Get the audio output volume.
  *
- * @returns the volume between 0 and 100 or < 0 when failed
+ * @returns the audio output volume between 0 and 100 or < 0 when failed
  */
 int 		mpd_status_get_volume			(MpdObj *mi);
 
@@ -96,7 +96,7 @@ int 		mpd_status_get_volume			(MpdObj *mi);
 /**
  * @param mi a #MpdObj
  *
- * get the bitrate of the current playing song in kbs. This is a constantly updating value. (for vbr songs)
+ * get the bitrate of the currently playing song in kbs. This is a constantly updating value. (for vbr songs)
  *
  * @returns bitrate in kbs
  */
@@ -107,7 +107,7 @@ int 		mpd_status_get_bitrate			(MpdObj *mi);
 /**
  * @param mi a #MpdObj
  *
- * get the samplerate of the current playing song in bps. 
+ * get the samplerate of the currently playing song in bps. 
  *
  * @returns samplerate in bps
  */
@@ -118,7 +118,7 @@ unsigned int 	mpd_status_get_samplerate			(MpdObj *mi);
 /**
  * @param mi a #MpdObj
  *
- * get the number of channels in the current playing song. This is usually only 1(mono) or 2(stereo), but this might change in the future.
+ * get the number of channels in the currently playing song. This is usually only 1(mono) or 2(stereo), but this might change in the future.
  *
  * @returns number of channels
  */
@@ -129,7 +129,7 @@ int 		mpd_status_get_channels			(MpdObj *mi);
 /**
  * @param mi a #MpdObj
  *
- * get the number of bits per sample of the current playing song. 
+ * get the number of bits per sample of the currently playing song. 
  *
  * @returns bits per sample 
  */
@@ -172,7 +172,7 @@ int		mpd_status_get_crossfade		(MpdObj *mi);
  * @param mi a #MpdObj
  * @param crossfade_time the time to crossfade in seconds
  *
- * Sets the crossfade time. 0 is disabled
+ * Sets the crossfade time. 0 to disable crossfade.
  *
  * @returns
  */
@@ -192,7 +192,7 @@ int 		mpd_status_db_is_updating		(MpdObj *mi);
 /**
  * @param mi a #MpdObj
  * 
- * @returns the error message that mpd last reported, on NULL. Needs to be free'ed.
+ * @returns the error message that mpd last reported, on NULL. Needs to be freed.
  */
 
 char * mpd_status_get_mpd_error(MpdObj *mi);

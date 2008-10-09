@@ -73,7 +73,7 @@ typedef enum {
 	/** Mpd doesn't support this feature */
 	MPD_SERVER_NOT_SUPPORTED = -51,
 	
-	/**  The playlist allready extists	 */
+	/**  The playlist already exists	 */
 	MPD_DATABASE_PLAYLIST_EXIST  = -60,
 	/** Playlist is empty */
 	MPD_PLAYLIST_EMPTY = -70,
@@ -82,7 +82,7 @@ typedef enum {
 	/** Player isn't Playing */
 	MPD_PLAYER_NOT_PLAYING = -80,
 
-	/** Tag ITem not found */
+	/** Tag Item not found */
 	MPD_TAG_NOT_FOUND = -90,
 	
 	/** Fatal error, something I am not sure what todo with */
@@ -170,7 +170,7 @@ typedef struct _MpdData {
 /**
  * mpd_new_default
  *
- * Create an new #MpdObj with default settings.
+ * Create a new #MpdObj with default settings.
  * Hostname will be set to "localhost".
  * Port will be 6600.
  * 
@@ -259,7 +259,7 @@ int mpd_connect_real(MpdObj *mi,mpd_Connection *connection);
  * @param mi a #MpdObj
  *
  * Connect to the mpd daemon.
- * Warning: mpd_connect connects anonymous, to authentificate use #mpd_send_password
+ * Warning: mpd_connect connects anonymous, to authenticate use #mpd_send_password
  * 
  * @returns returns a #MpdError, MPD_OK when successful
  */
@@ -389,7 +389,7 @@ typedef enum {
  * @param what a #ChangedStatusType that determines what changed triggered the signal. This is a bitmask.
  * @param userdata user data set when the signal handler was connected.
  * 
- * Signal that get's called when the state of mpd changed. Look #ChangedStatusType to see the possible events.
+ * Signal that get's called when the state of mpd has changed. Look #ChangedStatusType to see the possible events.
  */
 typedef void (*StatusChangedCallback) (MpdObj * mi, ChangedStatusType what, void *userdata);
 
@@ -411,7 +411,7 @@ typedef int (*ErrorCallback) (MpdObj * mi, int id, char *msg, void *userdata);
 	
 /**
  * @param mi a #MpdObj
- * @param connect 1 if you are now connect, 0 if you are disconnect.
+ * @param connect 1 if you are now connected, 0 if you are disconnected.
  * @param userdata  user data set when the signal handler was connected.
  * Signal is triggered when the connection state changes.
  */
@@ -462,7 +462,7 @@ void mpd_signal_connect_connection_changed(MpdObj * mi,
 /**
  * @param data a #MpdData
  *
- * Check's if the passed #MpdData is the last in a list
+ * Checks if the passed #MpdData is the last in a list
  * @returns TRUE when data is the last in the list.
  */
 int mpd_data_is_last(MpdData const *data);
@@ -483,7 +483,7 @@ void mpd_data_free(MpdData * data);
  * Returns the next #MpdData in the list.
  * If it's the last item in the list, it will free the list.
  *
- * You can itterate through a list like this and have it free'ed afterwards.
+ * You can iterate through a list like this and have it freed afterwards.
  * @code
  *	for(data = mpd_database_get_albums(mi);data != NULL; data = mpd_data_get_next(data))
  *	{
@@ -555,7 +555,7 @@ int mpd_server_set_output_device(MpdObj * mi, int device_id, int state);
 /**
  * @param mi a #MpdObj
  *
- * Get's a unix timestamp of the last time the database was updated.
+ * Gets a unix timestamp of the last time the database was updated.
  *
  * @returns unix Timestamp
  */
@@ -597,14 +597,14 @@ int mpd_server_check_command_allowed(MpdObj * mi, const char *command);
 /**
  * @param mi a #MpdObj
  *
- * @returns an array with urlhandlers (NULL terminated). Result must be free-ed.
+ * @returns an array with urlhandlers (NULL terminated). Result must be freed.
  */
 char ** mpd_server_get_url_handlers(MpdObj *mi);
 
 /**
  * @param mi a #MpdObj
  *
- * @returns an array with supported tag types. (NULL Terminated). Result must be free-ed.
+ * @returns an array with supported tag types. (NULL Terminated). Result must be freed.
  */
 
 char ** mpd_server_get_tag_types(MpdObj *mi);

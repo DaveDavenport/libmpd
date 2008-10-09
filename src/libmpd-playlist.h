@@ -75,7 +75,7 @@ mpd_Song * mpd_playlist_get_song_from_pos(MpdObj *mi, int songpos);
  *
  * returns the mpd_Song for the currently playing song
  *
- * @returns a mpd_Song, this is an internally cached version, and should not be free'ed. It's also not guaranteed to stay valid (it will be inside the same function if no other mpd_* function gets called.)
+ * @returns a mpd_Song, this is an internally cached version, and should not be freed. It's also not guaranteed to stay valid (it will be inside the same function if no other mpd_* function gets called.)
  * if you need to keep it around, make a copy.
  */
 mpd_Song *	mpd_playlist_get_current_song		(MpdObj *mi);
@@ -95,7 +95,7 @@ int		mpd_playlist_clear			(MpdObj *mi);
 /**
  * @param mi a #MpdObj
  *
- * Shuffle's the order of the playlist, this is different then playing random
+ * Shuffles the order of the playlist, this is different than playing random
  *
  * @returns 
  */
@@ -128,7 +128,7 @@ int		mpd_playlist_move_id		(MpdObj *mi, int old_id, int new_id);
  * @param mi a #MpdObj
  * @param old_playlist_id The id of the old playlist you want to get the changes with.
  *
- * Get's a list of the song that changed between the current and the old playlist
+ * Gets a list of songs that changed between the current and the old playlist
  *
  * @returns a #MpdData list
  */
@@ -138,8 +138,8 @@ MpdData *	mpd_playlist_get_changes		(MpdObj *mi,int old_playlist_id);
  * @param mi a #MpdObj
  * @param old_playlist_id The id of the old playlist you want to get the changes with.
  *
- * Get's a list of the song id/pos that changed between the current and the old playlist
- * Check if this command is availible.
+ * Gets a list of the song id/pos that changed between the current and the old playlist
+ * Check if this command is available.
  *
  * @returns a #MpdData list
  */
@@ -157,7 +157,7 @@ int		mpd_playlist_get_playlist_length	(MpdObj *mi);
  * @param mi a #MpdObj
  * @param path the path of the song to be added.
  *
- * Add's a song to the playlist, use #mpd_playlist_queue_add to add multiple songs.
+ * Adds a song to the playlist, use #mpd_playlist_queue_add to add multiple songs.
  *
  * @returns a #MpdError
  */
@@ -167,7 +167,7 @@ int		mpd_playlist_add			(MpdObj *mi, char *path);
  * @param mi a #MpdObj
  * @param songid a song id.
  *
- * Delete's a single song by it's id.
+ * Deletes a single song by it's id.
  *
  * @returns a #MpdError
  */
@@ -177,7 +177,7 @@ int mpd_playlist_delete_id(MpdObj *mi, int songid);
  * @param mi a #MpdObj
  * @param songpos a song pos.
  *
- * Delete's a single song by it's position.
+ * Deletes a single song by it's position.
  *
  * @returns a #MpdError
  */
@@ -188,7 +188,7 @@ int mpd_playlist_delete_pos(MpdObj *mi, int songpos);
  * @param path a path to a song
  *
  * Add a single path and return the id
- * Only use this to add a single list, if you need to add multiple songs,
+ * Only use this to add a single song, if you need to add multiple songs,
  * use the #mpd_playlist_queue_add for improved performance
  *
  * @returns a #MpdError or the songid of the added song
@@ -203,8 +203,8 @@ int mpd_playlist_add_get_id(MpdObj *mi, char *path);
  * \ingroup Playlist
  * These functions allow you to queue commands, and send them 
  * in one command list to mpd. This is very efficient.
- * It's adviced to use these for large deletes and add's.
- * These functions doesn't cause an extra overhead compared to the non_queue functions.
+ * It's advised to use these for large deletions and additions.
+ * These functions don't cause an extra overhead compared to the non_queue functions.
  * Because the non_queue functions just wrap the following.
  */
 /*@{*/
@@ -213,7 +213,7 @@ int mpd_playlist_add_get_id(MpdObj *mi, char *path);
  * @param mi a #MpdObj
  * @param path The path to a song to add
  *
- * This queue's an add command. The actuall add isn't done until #mpd_playlist_queue_commit is called
+ * This queues an add command. The actual add isn't done until #mpd_playlist_queue_commit is called
  *
  * @returns a #MpdError
  */
@@ -225,7 +225,7 @@ int	mpd_playlist_queue_add		(MpdObj *mi,char *path);
  * @param mi a #MpdObj
  * @param path The path to a playlist to load
  *
- * This queue's an load command. The actuall load isn't done until #mpd_playlist_queue_commit is called
+ * This queues a load command. The actual load isn't done until #mpd_playlist_queue_commit is called
  *
  * @returns a #MpdError
  */
@@ -236,7 +236,7 @@ int	mpd_playlist_queue_load		(MpdObj *mi,char *path);
  * @param mi a #MpdObj
  * @param id The songid of the song you want to delete
  *
- * This queue's an delete song from playlist command. The actually delete isn't done until #mpd_playlist_queue_commit is called
+ * This queues a delete song from playlist command. The actually delete isn't done until #mpd_playlist_queue_commit is called
  * @returns a #MpdError
  */
 int	mpd_playlist_queue_delete_id	(MpdObj *mi,int id);
@@ -246,7 +246,7 @@ int	mpd_playlist_queue_delete_id	(MpdObj *mi,int id);
  * @param mi a #MpdObj
  * @param songpos a song pos.
  *
- * Queue's the deletion of a single song by it's position.
+ * Queues the deletion of a single song by it's position.
  *
  * @returns a #MpdError
  */
@@ -256,7 +256,7 @@ int  	mpd_playlist_queue_delete_pos	(MpdObj *mi,int songpos);
 /**
  * @param mi a #MpdObj
  * 
- * Commits the queue'd commands in a command list. This is an efficient way of doing alot of add's/removes.
+ * Commits the queue'd commands in a command list. This is an efficient way of doing a lot of adds/removes.
  *
  * @returns a #MpdError
  */
@@ -311,7 +311,7 @@ void mpd_playlist_search_add_constraint(MpdObj *mi, mpd_TagItems field, const ch
  * @param mi a #MpdObj
  * @param songid the id of the song to add
  *
- * Add the song from the playlist with id id.
+ * Add the song from the playlist with id songid.
  *
  * @returns a #MpdError
  */
@@ -322,7 +322,7 @@ int mpd_playlist_mpd_queue_add(MpdObj *mi, int songid);
  * @param mi a #MpdObj
  * @param songpos the pos of the song to remove
  *
- * Removes the song from the queue at position pos
+ * Removes the song from the queue at position songpos
  * 
  * @returns a #MpdError
  */
