@@ -118,6 +118,7 @@ int mpd_status_update(MpdObj *mi)
 		/* set MPD_CST_QUEUE to be changed */
 		what_changed |= MPD_CST_STORED_PLAYLIST;
 
+
 		/* save new id */
 		mi->CurrentState.storedplaylistid = mi->status->storedplaylist;
 	}
@@ -275,8 +276,10 @@ int mpd_status_update(MpdObj *mi)
             printf("Event: %s\n", name);
             if(strcmp(name, "output") == 0){
                 what_changed |= MPD_CST_OUTPUT;
-            }else if (name, "stored_playlist") {
+                printf("playlist changed\n");
+            }else if (strcmp(name, "stored_playlist")==0) {
                 what_changed |= MPD_CST_STORED_PLAYLIST;
+                printf("stored playlist changed\n");
             }
 
        }
