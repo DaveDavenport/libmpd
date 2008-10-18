@@ -515,9 +515,9 @@ static void mpd_executeCommand(mpd_Connection * connection, char * command) {
 	FD_SET(connection->sock,&fds);
 	tv.tv_sec = connection->timeout.tv_sec;
 	tv.tv_usec = connection->timeout.tv_usec;
-
-	while((ret = select(connection->sock+1,NULL,&fds,NULL,&tv)==1) ||
+    while((ret = select(connection->sock+1,NULL,&fds,NULL,&tv)==1) ||
 			(ret==-1 && SELECT_ERRNO_IGNORE)) {
+        fflush(NULL);
 		ret = send(connection->sock,commandPtr,commandLen,MSG_DONTWAIT);
 		if(ret<=0)
 		{
@@ -534,7 +534,6 @@ static void mpd_executeCommand(mpd_Connection * connection, char * command) {
 
 		if(commandLen<=0) break;
 	}
-
 	if(commandLen>0) {
 		perror("");
 		snprintf(connection->errorStr,MPD_ERRORSTR_MAX_LENGTH,
@@ -2027,3 +2026,13 @@ void mpd_sendClearErrorCommand(mpd_Connection * connection) {
 	mpd_executeCommand(connection,"clearerror\n");
 }
 
+
+void mpd_sendGetEventsCommand(mpd_Connection *connection) {
+    mpd_executeCommand(connection, "idle\nnoidle\n");
+//    mpd_executeCommand(connection, "noidle\n");
+}
+
+char * mpd_getNextEvent(mpd_Connection *connection)
+{
+    return mpd_getNextReturnElementNamed(connection, "changed");
+}

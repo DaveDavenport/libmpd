@@ -63,6 +63,7 @@ int mpd_status_update(MpdObj *mi)
 	}
 
 
+
 	if(mi->status != NULL)
 	{
 		mpd_freeStatus(mi->status);
@@ -240,32 +241,51 @@ int mpd_status_update(MpdObj *mi)
 
 
     /* Detect changed outputs */
-    if(mi->num_outputs >0 )
+    if(!mi->has_idle)
     {
-        mpd_OutputEntity *output = NULL;
-        mpd_sendOutputsCommand(mi->connection);
-        while (( output = mpd_getNextOutput(mi->connection)) != NULL)
-        {	
-            if(mi->output_states[output->id] != output->enabled)
-            {
-                mi->output_states[output->id] = output->enabled;
-                what_changed |= MPD_CST_OUTPUT;
-            }
-            mpd_freeOutputElement(output);
-        }
-        mpd_finishCommand(mi->connection);
-    }
-    else
-    {
-        /* if no outputs, lets fetch them */
-        mpd_server_update_outputs(mi);
-        if(mi->num_outputs == 0)
+        if(mi->num_outputs >0 )
         {
-            assert("No outputs defined? that cannot be\n");
+            mpd_OutputEntity *output = NULL;
+            mpd_sendOutputsCommand(mi->connection);
+            while (( output = mpd_getNextOutput(mi->connection)) != NULL)
+            {	
+                if(mi->output_states[output->id] != output->enabled)
+                {
+                    mi->output_states[output->id] = output->enabled;
+                    what_changed |= MPD_CST_OUTPUT;
+                }
+                mpd_freeOutputElement(output);
+            }
+            mpd_finishCommand(mi->connection);
         }
-        what_changed |= MPD_CST_OUTPUT;
+        else
+        {
+            /* if no outputs, lets fetch them */
+            mpd_server_update_outputs(mi);
+            if(mi->num_outputs == 0)
+            {
+                assert("No outputs defined? that cannot be\n");
+            }
+            what_changed |= MPD_CST_OUTPUT;
+        }
+    }else {
+        char *name;
+        mpd_sendGetEventsCommand(mi->connection);    
+        while((name = mpd_getNextEvent(mi->connection))){
+            printf("Event: %s\n", name);
+            if(strcmp(name, "output") == 0){
+                what_changed |= MPD_CST_OUTPUT;
+            }else if (name, "stored_playlist") {
+                what_changed |= MPD_CST_STORED_PLAYLIST;
+            }
+
+       }
+//       mpd_executeCommand(mi->connection, "noidle\n");
+       mpd_finishCommand(mi->connection);
+
     }
 
+  
 	/* Run the callback */
 	if((mi->the_status_changed_callback != NULL) && what_changed)
 	{

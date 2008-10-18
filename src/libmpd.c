@@ -150,6 +150,7 @@ static MpdObj * mpd_create()
     /* outputs */
     mi->num_outputs = 0;
     mi->output_states = NULL;
+    mi->has_idle = 0;
 	/* commands */
 	mi->commands = NULL;
 	return mi;
@@ -493,6 +494,9 @@ int mpd_server_get_allowed_commands(MpdObj *mi)
 		mi->commands[num_commands-1].enabled = TRUE;
 		mi->commands[num_commands].command_name = NULL;
 		mi->commands[num_commands].enabled = FALSE;
+        if(strcmp(mi->commands[num_commands-1].command_name, "idle") == 0) {
+            mi->has_idle = TRUE;
+        }
 	}
 	mpd_finishCommand(mi->connection);
 	mpd_sendNotCommandsCommand(mi->connection);
@@ -571,6 +575,7 @@ int mpd_disconnect(MpdObj *mi)
     if(mi->output_states)
         g_free(mi->output_states);
     mi->output_states = NULL;
+    mi->has_idle = 0;
 	
 	memcpy(&(mi->OldState), &(mi->CurrentState) , sizeof(MpdServerState));
 

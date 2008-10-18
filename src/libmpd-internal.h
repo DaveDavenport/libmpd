@@ -124,6 +124,7 @@ typedef struct _MpdObj {
     int num_outputs;
     int *output_states;
 
+    int has_idle;
 }_MpdObj;
 
 

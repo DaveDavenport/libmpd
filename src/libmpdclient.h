@@ -667,6 +667,9 @@ void mpd_sendPlaylistDeleteCommand(mpd_Connection *connection,
                                    char *playlist, int pos);
 
 void mpd_sendClearErrorCommand(mpd_Connection * connection);
+
+void mpd_sendGetEventsCommand(mpd_Connection *connection);
+char * mpd_getNextEvent(mpd_Connection *connection);
 #ifdef __cplusplus
 }
 #endif
