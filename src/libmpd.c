@@ -1211,3 +1211,8 @@ int mpd_server_update_outputs(MpdObj *mi)
     mpd_finishCommand(mi->connection);
     return mpd_unlock_conn(mi);
 }
+
+int mpd_server_has_idle(MpdObj *mi)
+{
+    return mi->has_idle;
+}

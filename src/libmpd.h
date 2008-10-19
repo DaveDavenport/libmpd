@@ -625,6 +625,17 @@ char ** mpd_server_get_tag_types(MpdObj *mi);
 int mpd_misc_get_tag_by_name(char *name);
 
 /*@}*/
+
+/**
+ * @param mi a #MpdObj
+ *
+ * Reports if the connected mpd supports the idle command.
+ *
+ * @returns a boolean, TRUE if it has idle support
+ */
+int mpd_server_has_idle(MpdObj *mi);
+
+
 #endif
 
 #ifdef __cplusplus
