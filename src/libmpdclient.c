@@ -1078,10 +1078,12 @@ mpd_Directory * mpd_directoryDup(mpd_Directory * directory) {
 
 static void mpd_initPlaylistFile(mpd_PlaylistFile * playlist) {
 	playlist->path = NULL;
+    playlist->mtime = NULL;
 }
 
 static void mpd_finishPlaylistFile(mpd_PlaylistFile * playlist) {
 	if(playlist->path) free(playlist->path);
+    if(playlist->mtime) free(playlist->mtime);
 }
 
 mpd_PlaylistFile * mpd_newPlaylistFile(void) {
@@ -1101,6 +1103,7 @@ mpd_PlaylistFile * mpd_playlistFileDup(mpd_PlaylistFile * playlist) {
 	mpd_PlaylistFile * ret = mpd_newPlaylistFile();
 
 	if(playlist->path) ret->path = strdup(playlist->path);
+    if(playlist->mtime) ret->mtime = strdup(playlist->mtime);
 
 	return ret;
 }
@@ -1259,6 +1262,10 @@ mpd_InfoEntity * mpd_getNextInfoEntity(mpd_Connection * connection) {
 		else if(entity->type == MPD_INFO_ENTITY_TYPE_DIRECTORY) {
 		}
 		else if(entity->type == MPD_INFO_ENTITY_TYPE_PLAYLISTFILE) {
+            if(!entity->info.playlistFile->mtime &&
+                    strcmp(re->name, "Last-Modified") == 0) {
+                    entity->info.playlistFile->mtime = strdup(re->value);
+            }
 		}
 
 		mpd_getNextReturnElement(connection);
@@ -2035,4 +2042,8 @@ void mpd_sendGetEventsCommand(mpd_Connection *connection) {
 char * mpd_getNextEvent(mpd_Connection *connection)
 {
     return mpd_getNextReturnElementNamed(connection, "changed");
+}
+
+void mpd_sendListPlaylistsCommand(mpd_Connection * connection) {
+    mpd_sendInfoCommand(connection, "listplaylists\n");
 }

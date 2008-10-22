@@ -465,8 +465,8 @@ MpdData * mpd_database_get_directory(MpdObj *mi,char *path)
 		else if (ent->type == MPD_INFO_ENTITY_TYPE_PLAYLISTFILE)
 		{
 			data->type = MPD_DATA_TYPE_PLAYLIST;
-			data->playlist = ent->info.playlistFile->path;
-			ent->info.playlistFile->path = NULL;
+			data->playlist = ent->info.playlistFile;
+			ent->info.playlistFile= NULL;
 		}
 
 		mpd_freeInfoEntity(ent);
@@ -525,8 +525,8 @@ MpdData *mpd_database_get_playlist_content(MpdObj *mi,char *playlist)
 		else if (ent->type == MPD_INFO_ENTITY_TYPE_PLAYLISTFILE)
 		{
 			data->type = MPD_DATA_TYPE_PLAYLIST;
-			data->playlist = ent->info.playlistFile->path;
-			ent->info.playlistFile->path = NULL;
+			data->playlist = ent->info.playlistFile;
+			ent->info.playlistFile= NULL;
 		}
 
 		mpd_freeInfoEntity(ent);
@@ -1047,3 +1047,48 @@ int mpd_database_playlist_move(MpdObj *mi, const char *playlist, int old_pos, in
 	return MPD_OK;
 }
 
+
+MpdData * mpd_database_playlist_list(MpdObj *mi)
+{
+	MpdData *data = NULL;
+	mpd_InfoEntity *ent = NULL;
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"not connected\n");
+		return NULL;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		debug_printf(DEBUG_ERROR,"lock failed\n");
+		return NULL;
+	}
+    if(mpd_server_check_command_allowed(mi, "listplaylists") == MPD_SERVER_COMMAND_ALLOWED)
+    {
+        mpd_sendListPlaylistsCommand(mi->connection); 
+    }
+    else
+    {
+        mpd_sendLsInfoCommand (mi->connection ,"/");
+    }
+    while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
+    {
+
+        if (ent->type == MPD_INFO_ENTITY_TYPE_PLAYLISTFILE)
+        {
+            data = mpd_new_data_struct_append(data);
+            data->type = MPD_DATA_TYPE_PLAYLIST;
+            data->playlist= ent->info.playlistFile;
+            ent->info.playlistFile = NULL;
+        }
+        mpd_freeInfoEntity(ent);
+    }
+    mpd_finishCommand(mi->connection);
+
+	/* unlock */
+	mpd_unlock_conn(mi);
+	if(data == NULL)
+	{
+		return NULL;
+	}
+	return mpd_data_get_first(data);
+}

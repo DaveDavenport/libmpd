@@ -323,5 +323,6 @@ void mpd_database_playlist_rename(MpdObj *mi, const char *old_name, const char *
  * Needs mpd 0.13.0
  */
 int mpd_database_playlist_move(MpdObj *mi, const char *playlist, int old_pos, int new_pos);
+MpdData * mpd_database_playlist_list(MpdObj *mi);
 /*@}*/
 #endif

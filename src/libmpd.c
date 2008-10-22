@@ -925,7 +925,7 @@ void mpd_data_free(MpdData *data)
         } else if(data_real->type == MPD_DATA_TYPE_DIRECTORY) {
             if(data_real->directory)free(data_real->directory);
         } else if(data_real->type == MPD_DATA_TYPE_PLAYLIST) {
-            if(data_real->playlist)free(data_real->playlist);				
+            if(data_real->playlist) mpd_freePlaylistFile(data_real->playlist);				
         } else {
             free((void*)(data_real->tag));
         }

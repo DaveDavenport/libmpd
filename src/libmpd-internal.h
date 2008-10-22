@@ -14,7 +14,7 @@ typedef struct _MpdData_real {
 			char *tag;
 		};
 		char *directory;
-		char *playlist; /*is a path*/
+		mpd_PlaylistFile *playlist;
 		mpd_Song *song;
 		mpd_OutputEntity *output_dev; /* from devices */
 	};

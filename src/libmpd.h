@@ -147,7 +147,7 @@ typedef struct _MpdData {
 		/** a directory */
 		char *directory;
 		/** a path to a playlist */
-		char *playlist;
+		mpd_PlaylistFile *playlist;
 		/** a  mpd_Song */
 		mpd_Song *song;
 		/** an output device entity */

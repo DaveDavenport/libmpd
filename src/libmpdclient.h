@@ -345,6 +345,7 @@ mpd_Directory * mpd_directoryDup(mpd_Directory * directory);
  */
 typedef struct _mpd_PlaylistFile {
 	char * path;
+    char * mtime;
 } mpd_PlaylistFile;
 
 /* mpd_newPlaylistFile
@@ -670,6 +671,8 @@ void mpd_sendClearErrorCommand(mpd_Connection * connection);
 
 void mpd_sendGetEventsCommand(mpd_Connection *connection);
 char * mpd_getNextEvent(mpd_Connection *connection);
+void mpd_sendListPlaylistsCommand(mpd_Connection * connection);
+
 #ifdef __cplusplus
 }
 #endif
