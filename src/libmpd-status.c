@@ -273,19 +273,14 @@ int mpd_status_update(MpdObj *mi)
         char *name;
         mpd_sendGetEventsCommand(mi->connection);    
         while((name = mpd_getNextEvent(mi->connection))){
-            printf("Event: %s\n", name);
             if(strcmp(name, "output") == 0){
                 what_changed |= MPD_CST_OUTPUT;
-                printf("playlist changed\n");
             }else if (strcmp(name, "stored_playlist")==0) {
                 what_changed |= MPD_CST_STORED_PLAYLIST;
-                printf("stored playlist changed\n");
             }
 
        }
-//       mpd_executeCommand(mi->connection, "noidle\n");
        mpd_finishCommand(mi->connection);
-
     }
 
   
