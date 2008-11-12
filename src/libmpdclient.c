@@ -1202,9 +1202,17 @@ mpd_InfoEntity * mpd_getNextInfoEntity(mpd_Connection * connection) {
 
 		if(entity->type == MPD_INFO_ENTITY_TYPE_SONG &&
 				strlen(re->value)) {
-			if(!entity->info.song->artist &&
-					strcmp(re->name,"Artist")==0) {
-				entity->info.song->artist = strdup(re->value);
+			if(strcmp(re->name,"Artist")==0) {
+				if(entity->info.song->artist) {
+					int length = strlen(entity->info.song->artist);
+					entity->info.song->artist = realloc(entity->info.song->artist, 
+					                                    length + strlen(re->value) + 3);
+					strcpy(&((entity->info.song->artist)[length]), ", ");
+					strcpy(&((entity->info.song->artist)[length + 2]), re->value);
+				}
+				else {
+					entity->info.song->artist = strdup(re->value);
+				}
 			}
 			else if(!entity->info.song->album &&
 					strcmp(re->name,"Album")==0) {
@@ -1240,15 +1248,40 @@ mpd_InfoEntity * mpd_getNextInfoEntity(mpd_Connection * connection) {
 			}
 			else if(!entity->info.song->genre &&
 					strcmp(re->name, "Genre") == 0) {
-				entity->info.song->genre = strdup(re->value);
+				if(entity->info.song->genre) {
+					int length = strlen(entity->info.song->genre);
+					entity->info.song->genre = realloc(entity->info.song->genre, 
+					                                   length + strlen(re->value) + 4);
+					strcpy(&((entity->info.song->genre)[length]), ", ");
+					strcpy(&((entity->info.song->genre)[length + 3]), re->value);
+				}
+				else {
+					entity->info.song->genre = strdup(re->value);
+				}
 			}
-			else if(!entity->info.song->composer &&
-					strcmp(re->name, "Composer") == 0) {
-				entity->info.song->composer = strdup(re->value);
+			else if(strcmp(re->name, "Composer") == 0) {
+				if(entity->info.song->composer) {
+					int length = strlen(entity->info.song->composer);
+					entity->info.song->composer = realloc(entity->info.song->composer, 
+					                                      length + strlen(re->value) + 3);
+					strcpy(&((entity->info.song->composer)[length]), ", ");
+					strcpy(&((entity->info.song->composer)[length + 2]), re->value);
+				}
+				else {
+					entity->info.song->composer = strdup(re->value);
+				}
 			}
-			else if(!entity->info.song->performer &&
-					strcmp(re->name, "Performer") == 0) {
-				entity->info.song->performer = strdup(re->value);
+			else if(strcmp(re->name, "Performer") == 0) {
+				if(entity->info.song->performer) {
+					int length = strlen(entity->info.song->performer);
+					entity->info.song->performer = realloc(entity->info.song->performer, 
+					                                       length + strlen(re->value) + 3);
+					strcpy(&((entity->info.song->performer)[length]), ", ");
+					strcpy(&((entity->info.song->performer)[length + 2]), re->value);
+				}
+				else {
+					entity->info.song->performer = strdup(re->value);
+				}
 			}
 			else if(!entity->info.song->disc &&
 					strcmp(re->name, "Disc") == 0) {
