@@ -1,10 +1,10 @@
-AC_INIT(src)
+AC_INIT([libmpd], [package_version], [qball@sarine.nl])
 AM_CONFIG_HEADER(config.h)
 m4_define([package_major_version], [0])
 m4_define([package_minor_version], [16])
-m4_define([package_micro_version], [5])
+m4_define([package_micro_version], [95])
 m4_define([package_version], [package_major_version.package_minor_version.package_micro_version])
-AM_INIT_AUTOMAKE(libmpd, package_version, Qball@Sarine.nl)
+AM_INIT_AUTOMAKE
 
 AC_PROG_CC
 AC_LIBTOOL_WIN32_DLL
