@@ -35,4 +35,4 @@ EXTRA_DIST = \
 
 libmpd_la_LIBADD = 
 libmpd_la_LDFLAGS = @EXTRA_LDFLAGS@ 
-libmpdincludedir= $(includedir)/libmpd/
+libmpdincludedir= $(includedir)/libmpd-1.0/libmpd/
