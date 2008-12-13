@@ -5,6 +5,7 @@ clean:
 	rm -rf html latex
 
 EXTRA_DIST=\
-	libmpd.doxy.in
+	libmpd.doxy.in\
+	footer.html
 
 .PHONY: all ldoc
