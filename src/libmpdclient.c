@@ -358,17 +358,17 @@ static int mpd_connect_un(mpd_Connection * connection,
 {
 	int error, flags;
 	size_t path_length;
-	struct sockaddr_un sun;
+	struct sockaddr_un saun;
 
 	path_length = strlen(host);
-	if (path_length >= sizeof(sun.sun_path)) {
+	if (path_length >= sizeof(saun.sun_path)) {
 		strcpy(connection->errorStr, "unix socket path is too long");
 		connection->error = MPD_ERROR_UNKHOST;
 		return -1;
 	}
 
-	sun.sun_family = AF_UNIX;
-	memcpy(sun.sun_path, host, path_length + 1);
+	saun.sun_family = AF_UNIX;
+	memcpy(saun.sun_path, host, path_length + 1);
 
 	connection->sock = socket(AF_UNIX, SOCK_STREAM, 0);
 	if (connection->sock < 0) {
@@ -382,7 +382,7 @@ static int mpd_connect_un(mpd_Connection * connection,
 	flags = fcntl(connection->sock, F_GETFL, 0);
 	fcntl(connection->sock, F_SETFL, flags | O_NONBLOCK);
 
-	error = connect(connection->sock, (struct sockaddr*)&sun, sizeof(sun));
+	error = connect(connection->sock, (struct sockaddr*)&saun, sizeof(saun));
 	if (error < 0) {
 		/* try the next address family */
 		close(connection->sock);
