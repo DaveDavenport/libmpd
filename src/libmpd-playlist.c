@@ -485,15 +485,15 @@ int mpd_playlist_queue_load(MpdObj *mi,char *path)
 
 int mpd_playlist_queue_commit(MpdObj *mi)
 {
-	if(mi->queue == NULL)
-	{
-		debug_printf(DEBUG_WARNING,"mi->queue is empty");
-		return MPD_PLAYLIST_QUEUE_EMPTY;
-	}
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"not connected\n");
 		return MPD_NOT_CONNECTED;
+	}
+	if(mi->queue == NULL)
+	{
+		debug_printf(DEBUG_WARNING,"mi->queue is empty");
+		return MPD_PLAYLIST_QUEUE_EMPTY;
 	}
 	if(mpd_lock_conn(mi))
 	{
