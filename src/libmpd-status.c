@@ -278,7 +278,7 @@ int mpd_status_update(MpdObj *mi)
             }else if (strcmp(name, "stored_playlist")==0) {
                 what_changed |= MPD_CST_STORED_PLAYLIST;
             }
-
+            free(name);
        }
        mpd_finishCommand(mi->connection);
     }
