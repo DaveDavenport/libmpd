@@ -192,7 +192,7 @@ MpdData * mpd_database_search_commit(MpdObj *mi);
 /*@}*/
 /** \defgroup databaseSearchStats Database Search Statistics
  * \ingroup database
- * A extention to the database search, that instead of returning the full results.
+ * A extension to the database search, that instead of returning the full results.
  * Only reports back a few statistics about the result. 
  * For now Number of Songs are reported and total playtime.
  */
@@ -258,14 +258,14 @@ int mpd_database_delete_playlist(MpdObj *mi,char *path);
  *
  * Saves the current playlist to a file.
  *
- * @returns a #MpdError. #MPD_OK if succesfull,
- * #MPD_DATABASE_PLAYLIST_EXIST when the playlist allready exists.
+ * @returns a #MpdError. #MPD_OK if successful,
+ * #MPD_DATABASE_PLAYLIST_EXIST when the playlist already exists.
  */ 
 int		mpd_database_save_playlist			(MpdObj *mi, char *name);
 
 /**
  * @param mi a #MpdObj
- * @param playlist the playlist you need the content off.
+ * @param playlist the playlist you need the content of.
  *
  * Needs mpd 0.12.0 or higher.
  *

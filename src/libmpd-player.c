@@ -48,7 +48,7 @@ int mpd_player_get_current_song_id(MpdObj * mi)
 		return MPD_NOT_CONNECTED;
 	}
 	if (mpd_status_check(mi) != MPD_OK) {
-		debug_printf(DEBUG_ERROR, "to get status\n");
+		debug_printf(DEBUG_ERROR, "Failed to get status\n");
 		return MPD_STATUS_FAILED;
 	}
 	/* check if in valid state */
