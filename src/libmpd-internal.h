@@ -163,7 +163,7 @@ MpdData *	mpd_data_get_next_real			(MpdData * const data, int kill_list);
 /**
  * @param mi a #MpdObj 
  *
- * Checks if mpd_stats is availible, and updates when needed.
+ * Checks if mpd_stats is available, and updates when needed.
  * 
  * @returns a #MpdError
  */
