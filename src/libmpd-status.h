@@ -174,7 +174,7 @@ int		mpd_status_get_crossfade		(MpdObj *mi);
  *
  * Sets the crossfade time. 0 to disable crossfade.
  *
- * @returns
+ * @returns 0 when successful
  */
 int		mpd_status_set_crossfade		(MpdObj *mi, int crossfade_time);
 
