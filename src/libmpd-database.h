@@ -51,7 +51,7 @@ MpdData *	mpd_database_get_artists		(MpdObj *mi);
 /**
  * @param mi a #MpdObj
  *
- * Gets the complete datababse, only returns songs
+ * Gets the complete database, only returns songs
  *
  * @returns a #MpdData list with songs
  */

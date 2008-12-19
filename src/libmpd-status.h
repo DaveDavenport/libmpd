@@ -28,7 +28,7 @@
 /**
  * @param mi a #MpdObj
  *
- * Checks if there is status information availibe. if not availible, it tries to fetch it.
+ * Checks if there is status information available. if not available, it tries to fetch it.
  * This function is called from within libmpd, and shouldn't be called from the program.
  *
  * @returns 0 when successful
@@ -52,7 +52,7 @@ int 		mpd_status_queue_update			(MpdObj *mi);
  * @param mi a #MpdObj
  *
  * Updates the status field from mpd.
- * Call this function every 0.x seconds from the program's main-loop to recieve signals when mpd's status has changed.
+ * Call this function every 0.x seconds from the program's main-loop to receive signals when mpd's status has changed.
  *
  * @returns 0 when succesfull
  */
@@ -192,7 +192,7 @@ int 		mpd_status_db_is_updating		(MpdObj *mi);
 /**
  * @param mi a #MpdObj
  * 
- * @returns the error message that mpd last reported, on NULL. Needs to be freed.
+ * @returns the error message that mpd last reported, or NULL. Needs to be freed.
  */
 
 char * mpd_status_get_mpd_error(MpdObj *mi);
