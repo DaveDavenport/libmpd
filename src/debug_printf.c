@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
+#include <glib.h>
 #include "config.h"
 #include "debug_printf.h"
 
@@ -19,6 +20,8 @@ int debug_level = 0;
  * So use this "hack"
  */
 FILE *rout = NULL;
+#define ERROR_BUFFER_SIZE 2048
+char error_buffer[ERROR_BUFFER_SIZE];
 
 void debug_set_output(FILE *fp)
 {
@@ -40,6 +43,7 @@ void debug_printf_real(DebugLevel dp, const char *file,const int line,const char
         struct tm tm;
         char buffer[32];
         FILE *out = stdout;
+        char *temp;
         if(rout) out = rout;
         va_start(arglist,format);
   
@@ -63,7 +67,12 @@ void debug_printf_real(DebugLevel dp, const char *file,const int line,const char
 		{
 			fprintf(out,"%s: "DARKRED"ERROR:"RESET"   %s %s():#%i:\t",buffer,file,function,line);
 		}
-		vfprintf(out,format, arglist);
+		vsnprintf(error_buffer,ERROR_BUFFER_SIZE,format, arglist);
+        temp = g_locale_from_utf8(error_buffer, -1,NULL, NULL, NULL);
+        if(temp) {
+            fputs(temp,out);
+            g_free(temp);
+        }
 		if(format[strlen(format)-1] != '\n')
 		{
 			fprintf(out,"\n");
