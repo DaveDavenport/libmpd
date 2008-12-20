@@ -218,7 +218,8 @@ int mpd_check_error(MpdObj *mi)
 	mi->error = mi->connection->error;
 	mi->error_mpd_code = mi->connection->errorCode;
 	/*TODO: do I need to strdup this? */
-	mi->error_msg = strdup(mi->connection->errorStr);
+	mi->error_msg = g_locale_to_utf8(mi->connection->errorStr, -1, NULL, NULL,NULL);
+    if(mi->error_msg == NULL) mi->error_msg = g_strdup("Failed to convert error message to utf-8");
 
 	/* Check for permission */
 	/* First check for an error reported by MPD
