@@ -240,7 +240,7 @@ int mpd_check_error(MpdObj *mi)
             debug_printf(DEBUG_ERROR, "Error callback 1 (ACK)");
 			if(mi->the_error_callback(mi, mi->error_mpd_code, mi->error_msg, mi->the_error_signal_userdata ))
             {
-                debug_printf(DEBUG_ERROR, "Error callback told me to disconnenct");
+                debug_printf(DEBUG_ERROR, "Error callback told me to disconnect");
                 mpd_disconnect(mi);
                 free(mi->error_msg);
                 mi->error_msg = NULL;
@@ -255,7 +255,7 @@ int mpd_check_error(MpdObj *mi)
 	if(mi->error)
 	{
 
-		debug_printf(DEBUG_ERROR, "Following error occured: %i: code: %i msg: %s", mi->error,mi->connection->errorCode, mi->error_msg);
+		debug_printf(DEBUG_ERROR, "Following error occurred: %i: code: %i msg: %s", mi->error,mi->connection->errorCode, mi->error_msg);
 
 		if (mi->the_error_callback)
 		{
