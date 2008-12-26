@@ -1,28 +1,27 @@
-/* 
- * $Id: strfsong.c 1502 2004-06-15 15:32:18Z kaw $
- *
+/* libmpd (high level libmpdclient library)
+ * Copyright (C) 2004-2009 Qball Cow <qball@sarine.nl>
+ * Project homepage: http://gmpcwiki.sarine.nl/
+ 
  * Based on mpc's songToFormatedString modified for glib and ncmpc
- *
- *
  * (c) 2003-2004 by normalperson and Warren Dukes (shank@mercury.chem.pitt.edu)
  *              and Daniel Brown (danb@cs.utexas.edu)
  *              and Kalle Wallin (kaw@linux.se)
  *              and Qball Cow (Qball@qballcow.nl)
- *
+ 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- *
+
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
