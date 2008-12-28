@@ -225,7 +225,7 @@ const char * mpd_get_hostname(MpdObj *mi);
  *
  * @returns a #MpdError. (#MPD_OK if everything went ok)
  */
-int mpd_set_password(MpdObj * mi, char *password);
+int mpd_set_password(MpdObj * mi,const char *password);
 	
 	
 /**

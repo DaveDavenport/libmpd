@@ -355,7 +355,7 @@ int mpd_set_hostname(MpdObj *mi, char *hostname)
 	return MPD_OK;
 }
 
-int mpd_set_password(MpdObj *mi, char *password)
+int mpd_set_password(MpdObj *mi, const char *password)
 {
 	if(mi == NULL)
 	{
