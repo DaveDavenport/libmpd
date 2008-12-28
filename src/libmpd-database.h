@@ -35,7 +35,7 @@
  *
  * @returns A #MpdData list.
  */
-MpdData *	mpd_database_get_albums		(MpdObj *mi, char *artist);
+MpdData *	mpd_database_get_albums		(MpdObj *mi,const char *artist);
 
 
 /**
@@ -67,7 +67,7 @@ MpdData * mpd_database_get_complete(MpdObj *mi);
  *
  * @returns a #MpdError
  */
-int 	mpd_database_update_dir		(MpdObj *mi, char *path);
+int 	mpd_database_update_dir		(MpdObj *mi,const char *path);
 
 
 /**
@@ -78,7 +78,7 @@ int 	mpd_database_update_dir		(MpdObj *mi, char *path);
  * WARNING: This function is deprecated, use mpd_database_search_start 
  * @returns a #MpdData list
  */
-MpdData * mpd_database_find(MpdObj *mi, int table, char *string, int exact);
+MpdData * mpd_database_find(MpdObj *mi, int table,const char *string, int exact);
 
 /**
  * @param mi a #MpdObj
@@ -88,7 +88,7 @@ MpdData * mpd_database_find(MpdObj *mi, int table, char *string, int exact);
  *
  * @returns a #MpdData list with songs, directories and playlists
  */
-MpdData * mpd_database_get_directory(MpdObj *mi,char *path);
+MpdData * mpd_database_get_directory(MpdObj *mi,const char *path);
 
 /**
  * @param mi a #MpdObj
@@ -250,7 +250,7 @@ void mpd_database_search_free_stats(MpdDBStats *data);
  * @returns
  */
 
-int mpd_database_delete_playlist(MpdObj *mi,char *path);
+int mpd_database_delete_playlist(MpdObj *mi,const char *path);
 
 /**
  * @param mi a #MpdObj
@@ -261,7 +261,7 @@ int mpd_database_delete_playlist(MpdObj *mi,char *path);
  * @returns a #MpdError. #MPD_OK if successful,
  * #MPD_DATABASE_PLAYLIST_EXIST when the playlist already exists.
  */ 
-int		mpd_database_save_playlist			(MpdObj *mi, char *name);
+int		mpd_database_save_playlist			(MpdObj *mi,const char *name);
 
 /**
  * @param mi a #MpdObj
@@ -271,7 +271,7 @@ int		mpd_database_save_playlist			(MpdObj *mi, char *name);
  *
  * @returns a #MpdData list
  */
-MpdData *mpd_database_get_playlist_content(MpdObj *mi,char *playlist);
+MpdData *mpd_database_get_playlist_content(MpdObj *mi,const char *playlist);
 
 /**
  * @param mi a #MpdObj

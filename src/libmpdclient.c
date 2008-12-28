@@ -496,11 +496,11 @@ void mpd_closeConnection(mpd_Connection * connection) {
 	WSACleanup();
 }
 
-static void mpd_executeCommand(mpd_Connection * connection, char * command) {
+static void mpd_executeCommand(mpd_Connection * connection,const char * command) {
 	int ret;
 	struct timeval tv;
 	fd_set fds;
-	char * commandPtr = command;
+	const char * commandPtr = command;
 	int commandLen = strlen(command);
 
 	if(!connection->doneProcessing && !connection->commandList) {
@@ -1139,7 +1139,7 @@ void mpd_freeInfoEntity(mpd_InfoEntity * entity) {
 	free(entity);
 }
 
-static void mpd_sendInfoCommand(mpd_Connection * connection, char * command) {
+static void mpd_sendInfoCommand(mpd_Connection * connection,const char * command) {
 	mpd_executeCommand(connection,command);
 }
 
@@ -1635,7 +1635,7 @@ void mpd_sendSeekIdCommand(mpd_Connection * connection, int id, int time) {
 	free(string);
 }
 
-void mpd_sendUpdateCommand(mpd_Connection * connection, char * path) {
+void mpd_sendUpdateCommand(mpd_Connection * connection,const char * path) {
 	char * sPath = mpd_sanitizeArg(path);
 	int len = strlen("update")+2+strlen(sPath)+3;
 	char *string = malloc(len);
@@ -1983,7 +1983,7 @@ void mpd_commitSearch(mpd_Connection *connection)
  * List the content, with full metadata, of a stored playlist.
  *
  */
-void mpd_sendListPlaylistInfoCommand(mpd_Connection *connection, char *path)
+void mpd_sendListPlaylistInfoCommand(mpd_Connection *connection,const char *path)
 {
 	char *arg = mpd_sanitizeArg(path);
 	int len = strlen("listplaylistinfo")+2+strlen(arg)+3;
@@ -2001,7 +2001,7 @@ void mpd_sendListPlaylistInfoCommand(mpd_Connection *connection, char *path)
  * List the content of a stored playlist.
  *
  */
-void mpd_sendListPlaylistCommand(mpd_Connection *connection, char *path)
+void mpd_sendListPlaylistCommand(mpd_Connection *connection,const char *path)
 {
 	char *arg = mpd_sanitizeArg(path);
 	int len = strlen("listplaylist")+2+strlen(arg)+3;
@@ -2012,7 +2012,7 @@ void mpd_sendListPlaylistCommand(mpd_Connection *connection, char *path)
 	free(query);
 }
 
-void mpd_sendPlaylistClearCommand(mpd_Connection *connection, char *path)
+void mpd_sendPlaylistClearCommand(mpd_Connection *connection,const char *path)
 {
 	char *sPath = mpd_sanitizeArg(path);
 	int len = strlen("playlistclear")+2+strlen(sPath)+3;
@@ -2024,7 +2024,7 @@ void mpd_sendPlaylistClearCommand(mpd_Connection *connection, char *path)
 }
 
 void mpd_sendPlaylistAddCommand(mpd_Connection *connection,
-                                char *playlist, char *path)
+                                const char *playlist,const char *path)
 {
 	char *sPlaylist = mpd_sanitizeArg(playlist);
 	char *sPath = mpd_sanitizeArg(path);
@@ -2038,7 +2038,7 @@ void mpd_sendPlaylistAddCommand(mpd_Connection *connection,
 }
 
 void mpd_sendPlaylistMoveCommand(mpd_Connection *connection,
-                                 char *playlist, int from, int to)
+                                 const char *playlist, int from, int to)
 {
 	char *sPlaylist = mpd_sanitizeArg(playlist);
 	int len = strlen("playlistmove")+
@@ -2052,7 +2052,7 @@ void mpd_sendPlaylistMoveCommand(mpd_Connection *connection,
 }
 
 void mpd_sendPlaylistDeleteCommand(mpd_Connection *connection,
-                                   char *playlist, int pos)
+                                   const char *playlist, int pos)
 {
 	char *sPlaylist = mpd_sanitizeArg(playlist);
 	int len = strlen("playlistdelete")+2+strlen(sPlaylist)+3+INTLEN+3;

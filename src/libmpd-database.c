@@ -28,7 +28,7 @@
 #include "libmpd.h"
 #include "libmpd-internal.h"
 
-int mpd_database_update_dir(MpdObj *mi, char *path)
+int mpd_database_update_dir(MpdObj *mi,const char *path)
 {
 	if(path == NULL || !strlen(path))
 	{
@@ -96,7 +96,7 @@ MpdData * mpd_database_get_artists(MpdObj *mi)
 	return mpd_data_get_first(data);
 }
 
-MpdData * mpd_database_get_albums(MpdObj *mi,char *artist)
+MpdData * mpd_database_get_albums(MpdObj *mi,const char *artist)
 {
 	char *string = NULL;
 	MpdData *data = NULL;
@@ -168,7 +168,7 @@ MpdData * mpd_database_get_complete(MpdObj *mi)
 	return mpd_data_get_first(data);
 }
 
-int mpd_database_delete_playlist(MpdObj *mi,char *path)
+int mpd_database_delete_playlist(MpdObj *mi,const char *path)
 {
 	if(path == NULL)
 	{
@@ -194,7 +194,7 @@ int mpd_database_delete_playlist(MpdObj *mi,char *path)
 	return MPD_OK;
 }
 
-int mpd_database_save_playlist(MpdObj *mi, char *name)
+int mpd_database_save_playlist(MpdObj *mi,const char *name)
 {
 	if(name == NULL || !strlen(name))
 	{
@@ -229,7 +229,7 @@ int mpd_database_save_playlist(MpdObj *mi, char *name)
 /* "hack" to keep the compiler happy */
 typedef int (* QsortCompare)(const void *a, const void *b);
 
-static int compa(char **a, char **b)
+static int compa(char **a,const char **b)
 {
 	char *c =*a;
 	char *d =*b;
@@ -285,7 +285,7 @@ MpdData *mpd_misc_sort_tag_list(MpdData *data)
 }
 
 /* should be called mpd_database_find */
-MpdData * mpd_database_find(MpdObj *mi, int table, char *string, int exact)
+MpdData * mpd_database_find(MpdObj *mi, int table,const char *string, int exact)
 {
 	MpdData *data = NULL;
 /*	MpdData *artist = NULL;
@@ -427,7 +427,7 @@ MpdData * mpd_database_find(MpdObj *mi, int table, char *string, int exact)
 	return mpd_data_get_first(data);
 }
 
-MpdData * mpd_database_get_directory(MpdObj *mi,char *path)
+MpdData * mpd_database_get_directory(MpdObj *mi,const char *path)
 {
 	MpdData *data = NULL;
 	mpd_InfoEntity *ent = NULL;
@@ -482,7 +482,7 @@ MpdData * mpd_database_get_directory(MpdObj *mi,char *path)
 	return mpd_data_get_first(data);
 }
 
-MpdData *mpd_database_get_playlist_content(MpdObj *mi,char *playlist)
+MpdData *mpd_database_get_playlist_content(MpdObj *mi,const char *playlist)
 {
 	MpdData *data = NULL;
 	mpd_InfoEntity *ent = NULL;

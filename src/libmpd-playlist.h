@@ -161,7 +161,7 @@ int		mpd_playlist_get_playlist_length	(MpdObj *mi);
  *
  * @returns a #MpdError
  */
-int		mpd_playlist_add			(MpdObj *mi, char *path);
+int		mpd_playlist_add			(MpdObj *mi,const char *path);
 
 /**
  * @param mi a #MpdObj
@@ -194,7 +194,7 @@ int mpd_playlist_delete_pos(MpdObj *mi, int songpos);
  * @returns a #MpdError or the songid of the added song
  */
 
-int mpd_playlist_add_get_id(MpdObj *mi, char *path);
+int mpd_playlist_add_get_id(MpdObj *mi,const char *path);
 
 /*@}*/
 
@@ -217,7 +217,7 @@ int mpd_playlist_add_get_id(MpdObj *mi, char *path);
  *
  * @returns a #MpdError
  */
-int	mpd_playlist_queue_add		(MpdObj *mi,char *path);
+int	mpd_playlist_queue_add		(MpdObj *mi,const char *path);
 
 
 
@@ -229,7 +229,7 @@ int	mpd_playlist_queue_add		(MpdObj *mi,char *path);
  *
  * @returns a #MpdError
  */
-int	mpd_playlist_queue_load		(MpdObj *mi,char *path);
+int	mpd_playlist_queue_load		(MpdObj *mi,const char *path);
 
 
 /**

@@ -63,7 +63,7 @@ long long mpd_playlist_get_playlist_id(MpdObj *mi)
 	}
 	return mi->status->playlist;
 }
-int mpd_playlist_add(MpdObj *mi, char *path)
+int mpd_playlist_add(MpdObj *mi,const char *path)
 {
 	int retv = mpd_playlist_queue_add(mi, path);
 	if(retv != MPD_OK) return retv;
@@ -416,7 +416,7 @@ MpdData * mpd_playlist_get_changes_posid(MpdObj *mi,int old_playlist_id)
 	return mpd_data_get_first(data);
 }
 
-int mpd_playlist_queue_add(MpdObj *mi,char *path)
+int mpd_playlist_queue_add(MpdObj *mi,const char *path)
 {
 	if(!mpd_check_connected(mi))
 	{
@@ -449,7 +449,7 @@ int mpd_playlist_queue_add(MpdObj *mi,char *path)
 	return MPD_OK;
 }
 
-int mpd_playlist_queue_load(MpdObj *mi,char *path)
+int mpd_playlist_queue_load(MpdObj *mi,const char *path)
 {
 	if(!mpd_check_connected(mi))
 	{
@@ -600,7 +600,7 @@ int mpd_playlist_queue_delete_pos(MpdObj *mi,int songpos)
 	return MPD_OK;
 }
 
-int mpd_playlist_add_get_id(MpdObj *mi, char *path)
+int mpd_playlist_add_get_id(MpdObj *mi,const char *path)
 {
 	int songid = -1;
 	if(mi == NULL || path == NULL)
