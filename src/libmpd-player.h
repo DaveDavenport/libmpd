@@ -155,7 +155,7 @@ int mpd_player_get_repeat(MpdObj * mi);
  *
  * Enable/disabled repeat
  *
- * @returns 0 when succesfull
+ * @returns 0 when successful
  */
 int mpd_player_set_repeat(MpdObj * mi, int repeat);
 /**
@@ -173,7 +173,7 @@ int mpd_player_get_random(MpdObj * mi);
  *
  * Enable/disabled random
  *
- * @returns 0 when succesfull
+ * @returns 0 when successful
  */
 int mpd_player_set_random(MpdObj * mi, int random);
 
