@@ -62,7 +62,7 @@ int 		mpd_status_update			(MpdObj *mi);
 
 /**
  * @param mi a #MpdObj
- * @param fvol an float between 0.0 and 1.0
+ * @param fvol a float between 0.0 and 1.0
  *
  * Set the output volume
  * @returns the new volume or a value below 0 when failed.
@@ -250,9 +250,9 @@ int		mpd_stats_get_total_albums		(MpdObj *mi);
 /**
  * @param mi a #MpdObj
  *
- * Gets the time mpd is running
+ * Gets the time since mpd has been running
  * 
- * @returns time that mpd is running in seconds
+ * @returns time since mpd has been running in seconds
  */
 int		mpd_stats_get_uptime			(MpdObj *mi);
 /**
