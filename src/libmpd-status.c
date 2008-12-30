@@ -513,9 +513,13 @@ char * mpd_status_get_mpd_error(MpdObj *mi)
     return NULL;
 }
 
-/* TODO: error checking might be nice? */
 int mpd_status_db_is_updating(MpdObj *mi)
 {
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_ERROR, "failed to check mi == NULL\n");
+		return FALSE;
+	}
 	return mi->CurrentState.updatingDb;
 }
 
