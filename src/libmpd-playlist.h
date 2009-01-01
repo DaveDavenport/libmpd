@@ -72,6 +72,19 @@ mpd_Song * mpd_playlist_get_song_from_pos(MpdObj *mi, int songpos);
 
 /**
  * @param mi a #MpdObj
+ * @param start a Songpos
+ * @param stop  a Songpos
+ *
+ * returns the MpdData list with song from the playlist from pos start until stop.
+ * so start = 0, stop = 5 will return song 0,1,2,3,4,5.
+ *
+ * @returns a MdpData 
+ */
+MpdData * mpd_playlist_get_song_from_pos_range(MpdObj *mi, int start, int stop);
+
+
+/**
+ * @param mi a #MpdObj
  *
  * returns the mpd_Song for the currently playing song
  *

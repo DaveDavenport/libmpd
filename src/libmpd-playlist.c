@@ -184,6 +184,57 @@ mpd_Song * mpd_playlist_get_song_from_pos(MpdObj *mi, int songpos)
 	return song;
 }
 
+MpdData * mpd_playlist_get_song_from_pos_range(MpdObj *mi, int start, int stop)
+{
+    MpdData *data = NULL;
+	mpd_Song *song = NULL;
+    int i;
+	mpd_InfoEntity *ent = NULL;
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_ERROR, "Not Connected\n");
+		return NULL;
+	}
+	if(mpd_status_check(mi) != MPD_OK)
+	{
+		debug_printf(DEBUG_ERROR,"Failed grabbing status\n");
+		return NULL;
+	}
+
+	if(mpd_lock_conn(mi))
+	{
+		return NULL;
+	}
+    /* Don't check outside playlist length */
+    if(!(stop < mi->status->playlistLength)) {
+        stop = mi->status->playlistLength -1;
+    }
+    mpd_sendCommandListBegin(mi->connection);
+    for(i=start; i <= stop; i++){
+        mpd_sendPlaylistInfoCommand(mi->connection, i);
+    }
+	mpd_sendCommandListEnd(mi->connection);
+	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
+	{
+		if(ent->type == MPD_INFO_ENTITY_TYPE_SONG)
+		{
+			data = mpd_new_data_struct_append(data);
+			data->type = MPD_DATA_TYPE_SONG;
+			data->song = ent->info.song;
+			ent->info.song = NULL;
+		}
+		mpd_freeInfoEntity(ent);
+	}
+	mpd_finishCommand(mi->connection);
+
+	if(mpd_unlock_conn(mi))
+	{
+		/*TODO free entity. for now this can never happen */
+		return NULL;
+	}
+    return data;
+}
+
 mpd_Song * mpd_playlist_get_current_song(MpdObj *mi)
 {
 	if(!mpd_check_connected(mi))

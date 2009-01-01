@@ -517,7 +517,7 @@ int mpd_status_db_is_updating(MpdObj *mi)
 {
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_ERROR, "failed to check mi == NULL\n");
+		debug_printf(DEBUG_WARNING, "mpd_check_connected failed.\n");
 		return FALSE;
 	}
 	return mi->CurrentState.updatingDb;
