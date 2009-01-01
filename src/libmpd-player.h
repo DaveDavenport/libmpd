@@ -171,7 +171,7 @@ int mpd_player_get_random(MpdObj * mi);
  * @param mi a #MpdObj
  * @param random New state of random (1 is enabled, 0 is disabled)
  *
- * Enable/disabled random
+ * Enable/disable random
  *
  * @returns 0 when successful
  */
