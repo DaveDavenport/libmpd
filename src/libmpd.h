@@ -248,7 +248,7 @@ int mpd_set_port(MpdObj * mi, int port);
  * @param timeout: A timeout (in seconds)
  *
  * Set the timeout of the connection.
- * If allready connected the timeout of the running connection
+ * If already connected the timeout of the running connection
  *
  * @returns a #MpdError. (MPD_OK if everything went ok)
  */
@@ -311,7 +311,7 @@ void mpd_free(MpdObj * mi);
  *
  * Forces libmpd to re-authenticate itself.
  * 
- * When succesfull it will trigger the "permission" changed signal.
+ * When successful it will trigger the "permission" changed signal.
  *
  * @returns: a #MpdError
  */
@@ -390,7 +390,7 @@ typedef enum {
  * @param what a #ChangedStatusType that determines what changed triggered the signal. This is a bitmask.
  * @param userdata user data set when the signal handler was connected.
  * 
- * Signal that get's called when the state of mpd has changed. Look #ChangedStatusType to see the possible events.
+ * Signal that gets called when the state of mpd has changed. Look #ChangedStatusType to see the possible events.
  */
 typedef void (*StatusChangedCallback) (MpdObj * mi, ChangedStatusType what, void *userdata);
 
@@ -402,7 +402,7 @@ typedef void (*StatusChangedCallback) (MpdObj * mi, ChangedStatusType what, void
  * @param id The error Code.
  * @param msg human-readable informative error message.
  * @param userdata  user data set when the signal handler was connected.
- * This signal is called when an error has occured in the communication with mpd.
+ * This signal is called when an error has occurred in the communication with mpd.
  * 
  * return: TRUE if libmpd should disconnect.
  */
@@ -570,7 +570,7 @@ long unsigned mpd_server_get_database_update_time(MpdObj * mi);
  * @param minor the minor version number
  * @param micro the micro version number
  *
- * Checks if the connected mpd server version is equal or higer.
+ * Checks if the connected mpd server version is equal or higher.
  *
  * @returns #TRUE when version of mpd equals or is higher, else #FALSE
  */
