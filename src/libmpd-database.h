@@ -96,7 +96,7 @@ MpdData * mpd_database_get_directory(MpdObj *mi,const char *path);
  *
  * Recursively list all the songs directory path
  *
- * returns a #MpdData
+ * @returns a #MpdData
  */
 MpdData * mpd_database_get_directory_recursive(MpdObj *mi, const char *path);
 
