@@ -232,7 +232,7 @@ typedef int (* QsortCompare)(const void *a, const void *b);
 static int compa(char **a,const char **b)
 {
 	char *c =*a;
-	char *d =*b;
+	char *d =(char*)*b;
 #ifndef NO_SMART_SORT
 	if(!strncasecmp(c, "The ",4) && strlen(c) > 4)
 	{
