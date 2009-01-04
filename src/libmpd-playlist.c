@@ -187,7 +187,6 @@ mpd_Song * mpd_playlist_get_song_from_pos(MpdObj *mi, int songpos)
 MpdData * mpd_playlist_get_song_from_pos_range(MpdObj *mi, int start, int stop)
 {
     MpdData *data = NULL;
-	mpd_Song *song = NULL;
     int i;
 	mpd_InfoEntity *ent = NULL;
 	if(!mpd_check_connected(mi))
