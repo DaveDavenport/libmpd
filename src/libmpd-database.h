@@ -223,7 +223,7 @@ void mpd_database_search_stats_start(MpdObj *mi);
  *
  * Gets statistics results of a search.
  * 
- * return a #MpdDBStats
+ * @returns a #MpdDBStats
  */
 MpdDBStats * mpd_database_search_stats_commit(MpdObj *mi);
 
@@ -247,7 +247,7 @@ void mpd_database_search_free_stats(MpdDBStats *data);
  * @param path path of the playlist
  *
  * Deletes a playlist.
- * @returns
+ * @returns a #MpdError
  */
 
 int mpd_database_delete_playlist(MpdObj *mi,const char *path);
