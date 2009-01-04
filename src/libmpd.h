@@ -212,8 +212,9 @@ int mpd_set_hostname(MpdObj * mi, char *hostname);
 /** 
  * @param mi a #MpdObj
  *
- * gets the set hostname 
- * returns: a const char
+ * gets the set hostname
+ *
+ * @returns a const char representing the hostname
  */
 const char * mpd_get_hostname(MpdObj *mi);
 	
