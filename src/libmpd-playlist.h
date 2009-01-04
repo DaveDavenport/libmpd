@@ -100,7 +100,7 @@ mpd_Song *	mpd_playlist_get_current_song		(MpdObj *mi);
  *
  * Clears the playlist
  *
- * @returns 
+ * @returns 0 on success or #MpdError on error.
  */
 int		mpd_playlist_clear			(MpdObj *mi);
 
@@ -110,7 +110,7 @@ int		mpd_playlist_clear			(MpdObj *mi);
  *
  * Shuffles the order of the playlist, this is different than playing random
  *
- * @returns 
+ * @returns 0 on success or #MpdError on error.
  */
 int		mpd_playlist_shuffle			(MpdObj *mi);
 
