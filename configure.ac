@@ -6,6 +6,9 @@ m4_define([package_micro_version], [0])
 m4_define([package_version], [package_major_version.package_minor_version.package_micro_version])
 AM_INIT_AUTOMAKE
 
+LIBMPD_LIBTOOL_VERSION=1:0:0
+AC_SUBST(LIBMPD_LIBTOOL_VERSION)
+
 AC_PROG_CC
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL

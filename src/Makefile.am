@@ -34,5 +34,5 @@ EXTRA_DIST = \
 	libmpd-version.h.in
 
 libmpd_la_LIBADD = 
-libmpd_la_LDFLAGS = @EXTRA_LDFLAGS@ 
+libmpd_la_LDFLAGS = @EXTRA_LDFLAGS@ -version-info @LIBMPD_LIBTOOL_VERSION@ 
 libmpdincludedir= $(includedir)/libmpd-1.0/libmpd/
