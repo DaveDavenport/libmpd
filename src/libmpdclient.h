@@ -90,6 +90,7 @@ typedef enum mpd_TagItems
 	MPD_TAG_ITEM_DISC,
 	MPD_TAG_ITEM_FILENAME,
 	MPD_TAG_ITEM_ANY,
+    TAG_ITEM_ALBUM_ARTIST,
 	MPD_TAG_NUM_OF_ITEM_TYPES
 } mpd_TagItems;
 
@@ -282,6 +283,8 @@ typedef struct _mpd_Song {
 	/* Comment */
 	char *comment;
 
+    /* AlbumArtist */
+    char *albumartist;
 	/* length of song in seconds, check that it is not MPD_SONG_NO_TIME  */
 	int time;
 	/* if plchanges/playlistinfo/playlistid used, is the position of the
