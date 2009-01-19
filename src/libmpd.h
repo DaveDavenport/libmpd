@@ -164,6 +164,7 @@ typedef struct _MpdData {
 #include "libmpd-database.h"
 #include "libmpd-playlist.h"
 #include "libmpd-strfsong.h"
+#include "libmpd-sticker.h"
 
 
 

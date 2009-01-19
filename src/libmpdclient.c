@@ -2089,3 +2089,36 @@ char * mpd_getNextEvent(mpd_Connection *connection)
 void mpd_sendListPlaylistsCommand(mpd_Connection * connection) {
     mpd_sendInfoCommand(connection, "listplaylists\n");
 }
+
+char * mpd_getNextSticker (mpd_Connection * connection)
+{
+	return mpd_getNextReturnElementNamed(connection, "sticker");
+}
+void  mpd_sendGetSongSticker(mpd_Connection *connection, const char *song_path, const char *sticker)
+{
+    char *sSong = mpd_sanitizeArg(song_path); 
+    char *sSticker = mpd_sanitizeArg(sticker); 
+    int len = strlen("sticker get song ")+strlen(sSong)+3+strlen(sSticker)+4;
+    char *string = malloc(len);
+    snprintf(string, len, "sticker get song \"%s\" \"%s\"\n", sSong, sSticker);
+    mpd_executeCommand(connection, string);
+    free(string);
+    free(sSong);
+    free(sSticker);
+}
+
+void mpd_sendSetSongSticker(mpd_Connection *connection, const char *song_path, const char *sticker, const char *value)
+{
+
+    char *sSong = mpd_sanitizeArg(song_path); 
+    char *sSticker = mpd_sanitizeArg(sticker); 
+    char *sValue = mpd_sanitizeArg(value);
+    int len = strlen("sticker set song ")+strlen(sSong)+3+strlen(sSticker)+3+strlen(sValue)+4;
+    char *string = malloc(len);
+    snprintf(string, len, "sticker set song \"%s\" \"%s\" \"%s\"\n", sSong, sSticker,sValue);
+    mpd_sendInfoCommand(connection, string);
+    free(string);
+    free(sSong);
+    free(sSticker);
+    free(sValue);
+}

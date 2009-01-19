@@ -675,6 +675,11 @@ void mpd_sendClearErrorCommand(mpd_Connection * connection);
 void mpd_sendGetEventsCommand(mpd_Connection *connection);
 char * mpd_getNextEvent(mpd_Connection *connection);
 void mpd_sendListPlaylistsCommand(mpd_Connection * connection);
+/* Stickers*/
+char * mpd_getNextSticker (mpd_Connection * connection);
+
+void mpd_sendSetSongSticker(mpd_Connection *connection, const char *song, const char *sticker, const char *value);
+void  mpd_sendGetSongSticker(mpd_Connection *connection, const char *song, const char *sticker);
 
 #ifdef __cplusplus
 }

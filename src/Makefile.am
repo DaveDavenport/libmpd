@@ -15,6 +15,7 @@ libmpd_la_SOURCES =			\
 		libmpdclient.c		\
 		libmpd-strfsong.c	\
 		libmpd-database.c	\
+		libmpd-sticker.c	\
 		debug_printf.c		\
 		libmpd-version.h.in
 
@@ -25,6 +26,7 @@ libmpdinclude_HEADERS = 		\
 		libmpd-playlist.h	\
 		libmpd-database.h	\
 		libmpd-internal.h	\
+		libmpd-sticker.h	\
 		libmpdclient.h		\
 		libmpd-strfsong.h	\
 		libmpd-version.h	\
