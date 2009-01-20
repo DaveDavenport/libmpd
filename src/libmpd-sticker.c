@@ -11,7 +11,7 @@
 
 
 
-char * mpd_sticker_song_get(MpdObj *mi, const char *path, const char *value)
+char * mpd_sticker_song_get(MpdObj *mi, const char *path, const char *tag)
 {
     char *retv_value = NULL;
     char *retv = NULL;
@@ -30,11 +30,11 @@ char * mpd_sticker_song_get(MpdObj *mi, const char *path, const char *value)
 		return NULL;
 	}
 
-    mpd_sendGetSongSticker(mi->connection,path, value); 
+    mpd_sendGetSongSticker(mi->connection,path, tag); 
     retv_value = mpd_getNextSticker(mi->connection);
     mpd_finishCommand(mi->connection);
-    if(retv_value && strlen(retv_value) > strlen(value)){
-            retv = g_strdup(&retv_value[strlen(value)]+1);
+    if(retv_value && strlen(retv_value) > strlen(tag)){
+            retv = g_strdup(&retv_value[strlen(tag)]+1);
     }
     free(retv_value);
     if(mi->connection->error == MPD_ERROR_ACK && mi->connection->errorCode == MPD_ACK_ERROR_NO_EXIST)
@@ -50,4 +50,31 @@ char * mpd_sticker_song_get(MpdObj *mi, const char *path, const char *value)
 		return NULL;
 	}
     return retv;
+}
+
+int mpd_sticker_song_set(MpdObj *mi, const char *path, const char *tag, const char *value)
+{
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_INFO,"Where not connected\n");
+		return MPD_NOT_CONNECTED;
+	}
+    if(mpd_server_check_command_allowed(mi, "sticker") != MPD_SERVER_COMMAND_ALLOWED) {
+        debug_printf(DEBUG_WARNING, "Command not allowed\n");
+        return MPD_SERVER_NOT_SUPPORTED;
+    }
+	if(mpd_lock_conn(mi))
+	{
+		debug_printf(DEBUG_ERROR,"lock failed\n");
+		return MPD_LOCK_FAILED;
+	}
+
+    mpd_sendSetSongSticker(mi->connection,path, tag,value); 
+    mpd_finishCommand(mi->connection);
+    if(mpd_unlock_conn(mi))
+    {
+		debug_printf(DEBUG_ERROR, "Failed to unlock");
+		return MPD_LOCK_FAILED;
+	}
+    return MPD_OK;
 }
