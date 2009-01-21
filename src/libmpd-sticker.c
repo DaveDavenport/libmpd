@@ -14,7 +14,7 @@ int mpd_sticker_supported ( MpdObj *mi)
 {
     if(mi == NULL) return FALSE;
 
-    if(mpd_server_check_command_allowed(mi, "sticker") != MPD_SERVER_COMMAND_ALLOWED) {
+    if(mpd_server_check_command_allowed(mi, "sticker") == MPD_SERVER_COMMAND_ALLOWED) {
         return TRUE;
     }
 
