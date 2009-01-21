@@ -10,6 +10,14 @@
 #include "libmpd-internal.h"
 
 
+int mpd_sticker_supported ( MpdObj *mi)
+{
+    if(mpd_server_check_command_allowed(mi, "sticker") != MPD_SERVER_COMMAND_ALLOWED) {
+        return TRUE;
+    }
+
+    return FALSE;    
+}
 
 char * mpd_sticker_song_get(MpdObj *mi, const char *path, const char *tag)
 {
