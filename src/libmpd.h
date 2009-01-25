@@ -381,7 +381,9 @@ typedef enum {
     /** server error */
     MPD_CST_SERVER_ERROR        = 0x40000,
     /** output changed */
-    MPD_CST_OUTPUT              = 0x80000
+    MPD_CST_OUTPUT              = 0x80000,
+    /** Sticker changed */
+    MPD_CST_STICKER             = 0x100000
 } ChangedStatusType;
 
 
