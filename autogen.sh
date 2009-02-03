@@ -1,3 +1,5 @@
+#!/bin/sh
+
 echo "running aclocal"
 aclocal || exit 1
 echo "running autoheader"
