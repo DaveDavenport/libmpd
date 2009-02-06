@@ -6,6 +6,7 @@ m4_define([package_micro_version], [95])
 m4_define([package_version], [package_major_version.package_minor_version.package_micro_version])
 AM_INIT_AUTOMAKE
 
+
 LIBMPD_LIBTOOL_VERSION=1:0:0
 AC_SUBST(LIBMPD_LIBTOOL_VERSION)
 
