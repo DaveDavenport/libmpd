@@ -275,6 +275,8 @@ int mpd_status_update(MpdObj *mi)
         while((name = mpd_getNextEvent(mi->connection))){
             if(strcmp(name, "output") == 0){
                 what_changed |= MPD_CST_OUTPUT;
+            }else if (strcmp(name, "database") == 0) {
+                what_changed |= MPD_CST_DATABASE;
             }else if (strcmp(name, "stored_playlist")==0) {
                 what_changed |= MPD_CST_STORED_PLAYLIST;
             }else if (strcmp(name, "tag") == 0) {
