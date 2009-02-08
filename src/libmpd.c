@@ -687,12 +687,7 @@ int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
     if(retv != MPD_OK)
         return retv;
 */
-    debug_printf(DEBUG_INFO,  "Propagating connection changed");
 
-    if(mi->the_connection_changed_callback != NULL)
-	{
-		mi->the_connection_changed_callback( mi, TRUE, mi->the_connection_changed_signal_userdata );
-	}
     retv = mpd_server_update_outputs(mi);
     /** update the supported tags */
     {
@@ -716,6 +711,12 @@ int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
             printf("%20s: %s\n", mpdTagItemKeys[i], (mi->supported_tags[i])?"true":"false");
         }
     }
+    debug_printf(DEBUG_INFO,  "Propagating connection changed");
+
+    if(mi->the_connection_changed_callback != NULL)
+	{
+		mi->the_connection_changed_callback( mi, TRUE, mi->the_connection_changed_signal_userdata );
+	}
     /*
     if(retv != MPD_OK)
         return retv;
