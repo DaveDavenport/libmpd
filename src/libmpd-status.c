@@ -276,6 +276,10 @@ int mpd_status_update(MpdObj *mi)
             if(strcmp(name, "output") == 0){
                 what_changed |= MPD_CST_OUTPUT;
             }else if (strcmp(name, "database") == 0) {
+                if((what_changed&MPD_CST_DATABASE) == 0)
+                {
+                    mpd_stats_update_real(mi, &what_changed);
+                }
                 what_changed |= MPD_CST_DATABASE;
             }else if (strcmp(name, "stored_playlist")==0) {
                 what_changed |= MPD_CST_STORED_PLAYLIST;
