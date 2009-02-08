@@ -150,6 +150,9 @@ static MpdObj * mpd_create()
     /* outputs */
     mi->num_outputs = 0;
     mi->output_states = NULL;
+    /* set 0 */ 
+    memset((mi->supported_tags), 0,sizeof(mi->supported_tags));
+
     mi->has_idle = 0;
 	/* commands */
 	mi->commands = NULL;
@@ -581,6 +584,10 @@ int mpd_disconnect(MpdObj *mi)
     if(mi->output_states)
         g_free(mi->output_states);
     mi->output_states = NULL;
+
+    /* set 0 */ 
+    memset((mi->supported_tags), 0,sizeof(mi->supported_tags));
+
     mi->has_idle = 0;
 	
 	memcpy(&(mi->OldState), &(mi->CurrentState) , sizeof(MpdServerState));
@@ -687,6 +694,28 @@ int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
 		mi->the_connection_changed_callback( mi, TRUE, mi->the_connection_changed_signal_userdata );
 	}
     retv = mpd_server_update_outputs(mi);
+    /** update the supported tags */
+    {
+        int i;
+        char **retv = mpd_server_get_tag_types(mi);
+        if(retv){
+            for(i=0;i<MPD_TAG_ITEM_ANY;i++)
+            {
+                int j=0;
+                for(j=0;retv[j] && strcasecmp(retv[j],mpdTagItemKeys[i]); j++);
+                if(retv[j]) mi->supported_tags[i] = TRUE;
+                else mi->supported_tags[i] = FALSE;
+            }
+            g_strfreev(retv);
+        }
+        /* also always true */ 
+        mi->supported_tags[MPD_TAG_ITEM_FILENAME] = TRUE;
+        mi->supported_tags[MPD_TAG_ITEM_ANY] = TRUE;
+        printf("Supported tags by server\n");
+        for(i=0;i< MPD_TAG_NUM_OF_ITEM_TYPES;i++){
+            printf("%20s: %s\n", mpdTagItemKeys[i], (mi->supported_tags[i])?"true":"false");
+        }
+    }
     /*
     if(retv != MPD_OK)
         return retv;
@@ -1221,4 +1250,13 @@ int mpd_server_update_outputs(MpdObj *mi)
 int mpd_server_has_idle(MpdObj *mi)
 {
     return mi->has_idle;
+}
+
+int mpd_server_tag_supported(MpdObj *mi, int tag)
+{
+    if(!mi) return FALSE;
+    if(tag < 0 || tag >= MPD_TAG_NUM_OF_ITEM_TYPES) {
+        return FALSE;
+    }
+    return mi->supported_tags[tag];
 }

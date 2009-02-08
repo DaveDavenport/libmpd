@@ -639,6 +639,15 @@ int mpd_misc_get_tag_by_name(char *name);
  */
 int mpd_server_has_idle(MpdObj *mi);
 
+/**
+ * @param mi a #MpdObj
+ * @param tag a #mpd_TagItems
+ *
+ * Returns if mpd supports this tag.
+ *
+ * return 1 if support 0 if not
+ */
+int mpd_server_tag_supported(MpdObj *mi, int tag);
 
 #endif
 
