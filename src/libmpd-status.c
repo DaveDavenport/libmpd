@@ -36,7 +36,7 @@ int mpd_status_queue_update(MpdObj *mi)
 
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_INFO,"Where not connected\n");
+		debug_printf(DEBUG_INFO,"not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
 	if(mi->status != NULL)
@@ -53,7 +53,7 @@ int mpd_status_update(MpdObj *mi)
 	ChangedStatusType what_changed=0;
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_INFO,"Where not connected\n");
+		debug_printf(DEBUG_INFO,"not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
 	if(mpd_lock_conn(mi))

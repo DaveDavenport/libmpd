@@ -27,7 +27,7 @@ char * mpd_sticker_song_get(MpdObj *mi, const char *path, const char *tag)
     char *retv = NULL;
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_INFO,"Where not connected\n");
+		debug_printf(DEBUG_INFO,"not connected\n");
 		return NULL;
 	}
     if(mpd_server_check_command_allowed(mi, "sticker") != MPD_SERVER_COMMAND_ALLOWED) {
@@ -66,7 +66,7 @@ int mpd_sticker_song_set(MpdObj *mi, const char *path, const char *tag, const ch
 {
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_INFO,"Where not connected\n");
+		debug_printf(DEBUG_INFO,"not connected\n");
 		return MPD_NOT_CONNECTED;
 	}
     if(mpd_server_check_command_allowed(mi, "sticker") != MPD_SERVER_COMMAND_ALLOWED) {
