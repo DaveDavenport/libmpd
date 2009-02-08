@@ -271,6 +271,7 @@ int mpd_status_update(MpdObj *mi)
         }
     }else {
         char *name;
+        int update_stats = 0;
         mpd_sendGetEventsCommand(mi->connection);    
         while((name = mpd_getNextEvent(mi->connection))){
             if(strcmp(name, "output") == 0){
@@ -278,7 +279,7 @@ int mpd_status_update(MpdObj *mi)
             }else if (strcmp(name, "database") == 0) {
                 if((what_changed&MPD_CST_DATABASE) == 0)
                 {
-                    mpd_stats_update_real(mi, &what_changed);
+                    update_stats = 1;
                 }
                 what_changed |= MPD_CST_DATABASE;
             }else if (strcmp(name, "stored_playlist")==0) {
@@ -291,6 +292,9 @@ int mpd_status_update(MpdObj *mi)
             free(name);
        }
        mpd_finishCommand(mi->connection);
+       if(update_stats) {
+           mpd_stats_update_real(mi, &what_changed);
+       }
     }
 
   
