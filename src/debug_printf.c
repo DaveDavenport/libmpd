@@ -27,12 +27,6 @@
 #include "config.h"
 #include "debug_printf.h"
 
-#define RED "\x1b[31;01m"
-#define DARKRED "\x1b[31;06m"
-#define RESET "\x1b[0m"
-#define GREEN "\x1b[32;06m"
-#define YELLOW "\x1b[33;06m"
-
 int debug_level = 0;
 /* Compiler does not like it when I initialize this to stdout, complaints about
  * not being constant. stoud is a macro..
@@ -76,15 +70,15 @@ void debug_printf_real(DebugLevel dp, const char *file,const int line,const char
 
 		if(dp == DEBUG_INFO)
 		{
-			fprintf(out,"%s: "GREEN"INFO:"RESET"    %s %s():#%d:\t",buffer,file,function,line);
+			fprintf(out,"%s: INFO:    %s %s():#%d:\t",buffer,file,function,line);
 		}
 		else if(dp == DEBUG_WARNING)
 		{
-			fprintf(out,"%s: "YELLOW"WARNING:"RESET" %s %s():#%i:\t",buffer,file,function,line);
+			fprintf(out,"%s: WARNING: %s %s():#%i:\t",buffer,file,function,line);
 		}
 		else
 		{
-			fprintf(out,"%s: "DARKRED"ERROR:"RESET"   %s %s():#%i:\t",buffer,file,function,line);
+			fprintf(out,"%s: ERROR:   %s %s():#%i:\t",buffer,file,function,line);
 		}
 		vsnprintf(error_buffer,ERROR_BUFFER_SIZE,format, arglist);
         temp = g_locale_from_utf8(error_buffer, -1,NULL, NULL, NULL);
