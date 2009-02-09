@@ -706,10 +706,6 @@ int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
         /* also always true */ 
         mi->supported_tags[MPD_TAG_ITEM_FILENAME] = TRUE;
         mi->supported_tags[MPD_TAG_ITEM_ANY] = TRUE;
-        printf("Supported tags by server\n");
-        for(i=0;i< MPD_TAG_NUM_OF_ITEM_TYPES;i++){
-            printf("%20s: %s\n", mpdTagItemKeys[i], (mi->supported_tags[i])?"true":"false");
-        }
     }
     debug_printf(DEBUG_INFO,  "Propagating connection changed");
 
