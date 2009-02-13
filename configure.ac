@@ -2,10 +2,19 @@ AC_INIT([libmpd], [0.17.97-git], [qball@sarine.nl])
 AM_CONFIG_HEADER(config.h)
 m4_define([package_major_version], [0])
 m4_define([package_minor_version], [17])
-m4_define([package_micro_version], [97-git])
+m4_define([package_micro_version], [97])
 m4_define([package_version], [package_major_version.package_minor_version.package_micro_version])
 AM_INIT_AUTOMAKE
+AC_CONFIG_MACRO_DIR([m4])
 
+
+# This makes sure the right substitution is done
+[LIBMPD_MAJOR_VERSION]=package_major_version
+[LIBMPD_MINOR_VERSION]=package_minor_version
+[LIBMPD_MICRO_VERSION]=package_micro_version
+AC_SUBST([LIBMPD_MAJOR_VERSION])
+AC_SUBST([LIBMPD_MINOR_VERSION])
+AC_SUBST([LIBMPD_MICRO_VERSION])
 #  C:R:A
 #  C is updated on abi break 
 #  R is on changed source code.
