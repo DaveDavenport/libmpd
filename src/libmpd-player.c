@@ -40,7 +40,48 @@ int mpd_player_get_state(MpdObj * mi)
 	}
 	return mi->status->state;
 }
-
+int mpd_player_get_next_song_id(MpdObj *mi)
+{
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "not connected\n");
+		return MPD_NOT_CONNECTED;
+	}
+	if (mpd_status_check(mi) != MPD_OK) {
+		debug_printf(DEBUG_ERROR, "Failed to get status\n");
+		return MPD_STATUS_FAILED;
+	}
+	/* check if in valid state */
+	if (mpd_player_get_state(mi) != MPD_PLAYER_PLAY &&
+			mpd_player_get_state(mi) != MPD_PLAYER_PAUSE) {
+		return MPD_PLAYER_NOT_PLAYING;
+	}
+	/* just to be sure check */
+	if (!mi->status->playlistLength) {
+		return MPD_PLAYLIST_EMPTY;
+	}
+	return mi->status->nextsongid;
+}
+int mpd_player_get_next_song_pos(MpdObj *mi)
+{
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "not connected\n");
+		return MPD_NOT_CONNECTED;
+	}
+	if (mpd_status_check(mi) != MPD_OK) {
+		debug_printf(DEBUG_ERROR, "Failed to get status\n");
+		return MPD_STATUS_FAILED;
+	}
+	/* check if in valid state */
+	if (mpd_player_get_state(mi) != MPD_PLAYER_PLAY &&
+			mpd_player_get_state(mi) != MPD_PLAYER_PAUSE) {
+		return MPD_PLAYER_NOT_PLAYING;
+	}
+	/* just to be sure check */
+	if (!mi->status->playlistLength) {
+		return MPD_PLAYLIST_EMPTY;
+	}
+	return mi->status->nextsong;
+}
 int mpd_player_get_current_song_id(MpdObj * mi)
 {
 	if (!mpd_check_connected(mi)) {

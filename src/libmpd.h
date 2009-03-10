@@ -383,7 +383,9 @@ typedef enum {
     /** output changed */
     MPD_CST_OUTPUT              = 0x80000,
     /** Sticker changed */
-    MPD_CST_STICKER             = 0x100000
+    MPD_CST_STICKER             = 0x100000,
+    /** Next song changed */
+    MPD_CST_NEXTSONG            = 0x200000
 } ChangedStatusType;
 
 

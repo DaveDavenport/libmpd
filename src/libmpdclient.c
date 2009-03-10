@@ -745,6 +745,8 @@ mpd_Status * mpd_getStatus(mpd_Connection * connection) {
 	status->state = -1;
 	status->song = 0;
 	status->songid = 0;
+    status->nextsong = -1;
+    status->nextsongid = -1;
 	status->elapsedTime = 0;
 	status->totalTime = 0;
 	status->bitRate = 0;
@@ -798,6 +800,12 @@ mpd_Status * mpd_getStatus(mpd_Connection * connection) {
 		}
 		else if(strcmp(re->name,"songid")==0) {
 			status->songid = atoi(re->value);
+		}
+		else if(strcmp(re->name,"nextsong")==0) {
+			status->nextsong = atoi(re->value);
+		}
+		else if(strcmp(re->name,"nextsongid")==0) {
+			status->nextsongid = atoi(re->value);
 		}
 		else if(strcmp(re->name,"time")==0) {
 			char * tok = strchr(re->value,':');

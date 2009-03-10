@@ -55,6 +55,8 @@ typedef struct _MpdServerState {
 	long long	    storedplaylistid;
 	int 		    songid;
 	int 		    songpos;
+    int             nextsongpos;
+    int             nextsongid;
 	int 		    state;
 	unsigned long	dbUpdateTime;	
 	int 		    updatingDb;

@@ -151,6 +151,13 @@ int mpd_status_update(MpdObj *mi)
 		mi->CurrentState.songpos = mi->status->song;
 
 	}
+    if(mi->CurrentState.nextsongid != mi->status->nextsongid || mi->CurrentState.nextsongpos != mi->status->nextsong)
+    {
+		what_changed |= MPD_CST_NEXTSONG;
+		/* save new songid */
+		mi->CurrentState.nextsongpos = mi->status->nextsong;
+        mi->CurrentState.nextsongid = mi->status->nextsongid;
+    }
 	
 	if(mi->CurrentState.repeat != mi->status->repeat)
 	{

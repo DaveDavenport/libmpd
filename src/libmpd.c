@@ -70,6 +70,8 @@ static void mpd_init_MpdServerState(MpdServerState *state)
 	state->state 		= -1;
 	state->songid 		= -1;     	
 	state->songpos 		= -1;
+    state->nextsongpos  = -1;
+    state->nextsongid   = -1;
 	state->dbUpdateTime 	= 0;
 	state->updatingDb 	= 0;
 	state->repeat 		= -1;
@@ -561,6 +563,8 @@ int mpd_disconnect(MpdObj *mi)
 	mi->CurrentState.state = -1;
 	mi->CurrentState.songid = -1;
 	mi->CurrentState.songpos = -1;
+    mi->CurrentState.nextsongid = -1;
+    mi->CurrentState.nextsongpos = -1;
 	mi->CurrentState.dbUpdateTime = 0;
 	mi->CurrentState.updatingDb = 0;
 	mi->CurrentState.repeat = -1;

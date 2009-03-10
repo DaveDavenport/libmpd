@@ -186,6 +186,12 @@ int mpd_player_set_random(MpdObj * mi, int random);
  */
 int mpd_player_seek(MpdObj * mi, int sec);
 
+
+
+int mpd_player_get_next_song_pos(MpdObj *mi);
+int mpd_player_get_next_song_id(MpdObj *mi);
+
 #endif
+
 
 /*@}*/

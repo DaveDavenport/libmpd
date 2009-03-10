@@ -187,6 +187,12 @@ typedef struct mpd_Status {
 	int song;
 	/* Song ID of the currently selected song */
 	int songid;
+
+    /* The next song pos */
+    int nextsong;
+    /* The next song id */
+    int nextsongid;
+
 	/* time in seconds that have elapsed in the currently playing/paused
 	 * song
 	 */
