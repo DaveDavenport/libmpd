@@ -685,6 +685,11 @@ int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
     {
         return retv;
     }
+    if(mi->password && strlen(mi->password) > 0)
+    {
+        mpd_send_password(mi);
+
+    }
 /*
 
     retv = mpd_server_update_outputs(mi);
