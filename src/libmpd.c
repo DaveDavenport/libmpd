@@ -1098,7 +1098,11 @@ MpdData * mpd_server_get_output_devices(MpdObj *mi)
     mpd_finishCommand(mi->connection);
 
     /* unlock */
-    mpd_unlock_conn(mi);
+    if(mpd_unlock_conn(mi) != MPD_OK)
+    {
+        if(data)mpd_data_free(data);
+        return NULL;
+    }
     if(data == NULL) 
     {
         return NULL;
