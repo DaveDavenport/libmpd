@@ -256,7 +256,14 @@ int mpd_status_update(MpdObj *mi)
             mpd_OutputEntity *output = NULL;
             mpd_sendOutputsCommand(mi->connection);
             while (( output = mpd_getNextOutput(mi->connection)) != NULL)
-            {	
+            {   
+                if(mi->num_outputs < output->id)
+                {
+                    mi->num_outputs++;
+                    mi->output_states = g_realloc(mi->output_states,mi->num_outputs*sizeof(int));
+                    mi->output_states[mi->num_outputs] = output->enabled;
+                    what_changed |= MPD_CST_OUTPUT;
+                }
                 if(mi->output_states[output->id] != output->enabled)
                 {
                     mi->output_states[output->id] = output->enabled;

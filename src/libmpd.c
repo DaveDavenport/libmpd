@@ -401,10 +401,30 @@ int mpd_send_password(MpdObj *mi)
 		 * connect
 		 */
 		if((mi->the_status_changed_callback != NULL))
-		{
-			mi->the_status_changed_callback( mi,
-					MPD_CST_PERMISSION, mi->the_status_changed_signal_userdata );
-		}
+        {
+            /** update the supported tags */
+            {
+                int i;
+                char **retv = mpd_server_get_tag_types(mi);
+                if(retv){
+                    for(i=0;i<MPD_TAG_ITEM_ANY;i++)
+                    {
+                        int j=0;
+                        for(j=0;retv[j] && strcasecmp(retv[j],mpdTagItemKeys[i]); j++);
+                        if(retv[j]) mi->supported_tags[i] = TRUE;
+                        else mi->supported_tags[i] = FALSE;
+                    }
+                    g_strfreev(retv);
+                }
+                printf("updated tags\n");
+                /* also always true */
+                mi->supported_tags[MPD_TAG_ITEM_FILENAME] = TRUE;
+                mi->supported_tags[MPD_TAG_ITEM_ANY] = TRUE;
+            }
+            /* If permission updates, we should also call an output update, The data might be available now. */
+            mi->the_status_changed_callback( mi,
+                    MPD_CST_PERMISSION|MPD_CST_OUTPUT, mi->the_status_changed_signal_userdata );
+        }
 	}
 	return MPD_OK;
 }
@@ -688,17 +708,8 @@ int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
     if(mi->password && strlen(mi->password) > 0)
     {
         mpd_send_password(mi);
-
     }
-/*
-
-    retv = mpd_server_update_outputs(mi);
-    if(retv != MPD_OK)
-        return retv;
-*/
-
-    retv = mpd_server_update_outputs(mi);
-    /** update the supported tags */
+    else
     {
         int i;
         char **retv = mpd_server_get_tag_types(mi);
@@ -716,6 +727,15 @@ int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
         mi->supported_tags[MPD_TAG_ITEM_FILENAME] = TRUE;
         mi->supported_tags[MPD_TAG_ITEM_ANY] = TRUE;
     }
+/*
+
+    retv = mpd_server_update_outputs(mi);
+    if(retv != MPD_OK)
+        return retv;
+*/
+
+    retv = mpd_server_update_outputs(mi);
+    /** update the supported tags */
     debug_printf(DEBUG_INFO,  "Propagating connection changed");
 
     if(mi->the_connection_changed_callback != NULL)
