@@ -277,6 +277,66 @@ int mpd_player_seek(MpdObj * mi, int sec)
 	return MPD_OK;
 }
 
+int mpd_player_get_consume(MpdObj * mi)
+{
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "not connected\n");
+		return MPD_NOT_CONNECTED;
+	}
+	if (mpd_status_check(mi) != MPD_OK) {
+		debug_printf(DEBUG_WARNING, "Failed grabbing status\n");
+		return MPD_NOT_CONNECTED;
+	}
+	return mi->status->consume;
+}
+int mpd_player_set_single(MpdObj * mi, int single)
+{
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "not connected\n");
+		return MPD_NOT_CONNECTED;
+	}
+	if (mpd_lock_conn(mi)) {
+		debug_printf(DEBUG_WARNING, "lock failed\n");
+		return MPD_LOCK_FAILED;
+	}
+	mpd_sendSingleCommand(mi->connection, single);
+	mpd_finishCommand(mi->connection);
+
+	mpd_unlock_conn(mi);
+	mpd_status_queue_update(mi);
+	return MPD_OK;
+}
+int mpd_player_get_single(MpdObj * mi)
+{
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "not connected\n");
+		return MPD_NOT_CONNECTED;
+	}
+	if (mpd_status_check(mi) != MPD_OK) {
+		debug_printf(DEBUG_WARNING, "Failed grabbing status\n");
+		return MPD_NOT_CONNECTED;
+	}
+	return mi->status->single;
+}
+int mpd_player_set_consume(MpdObj * mi, int consume)
+{
+	if (!mpd_check_connected(mi)) {
+		debug_printf(DEBUG_WARNING, "not connected\n");
+		return MPD_NOT_CONNECTED;
+	}
+	if (mpd_lock_conn(mi)) {
+		debug_printf(DEBUG_WARNING, "lock failed\n");
+		return MPD_LOCK_FAILED;
+	}
+	mpd_sendConsumeCommand(mi->connection, consume);
+	mpd_finishCommand(mi->connection);
+
+	mpd_unlock_conn(mi);
+	mpd_status_queue_update(mi);
+	return MPD_OK;
+}
+
+
 int mpd_player_get_repeat(MpdObj * mi)
 {
 	if (!mpd_check_connected(mi)) {

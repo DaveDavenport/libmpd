@@ -147,6 +147,23 @@ int mpd_player_get_current_song_pos(MpdObj * mi);
  */
 int mpd_player_get_repeat(MpdObj * mi);
 
+/**
+ * \param mi a #MpdObj
+ *
+ * Get the state of consume mode: 1 if enable, 0 when disabled.
+ *
+ * @returns the state of consume
+ */
+int mpd_player_get_consume(MpdObj * mi);
+
+/**
+ * \param mi a #MpdObj
+ *
+ * Get the state of single mode: 1 if enable, 0 when disabled.
+ *
+ * @returns the state of single
+ */
+int mpd_player_get_single(MpdObj * mi);
 
 /**
  * \param mi a #MpdObj

@@ -385,7 +385,11 @@ typedef enum {
     /** Sticker changed */
     MPD_CST_STICKER             = 0x100000,
     /** Next song changed */
-    MPD_CST_NEXTSONG            = 0x200000
+    MPD_CST_NEXTSONG            = 0x200000,
+    /** Single mode changed */
+    MPD_CST_SINGLE_MODE         = 0x400000,
+    /** Consume mode changed */
+    MPD_CST_CONSUME_MODE        = 0x800000
 } ChangedStatusType;
 
 

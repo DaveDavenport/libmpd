@@ -159,6 +159,16 @@ int mpd_status_update(MpdObj *mi)
         mi->CurrentState.nextsongid = mi->status->nextsongid;
     }
 	
+	if(mi->CurrentState.single != mi->status->single)
+	{
+		what_changed |= MPD_CST_SINGLE_MODE;
+		mi->CurrentState.single = mi->status->single;
+	}
+	if(mi->CurrentState.consume != mi->status->consume)
+	{
+		what_changed |= MPD_CST_CONSUME_MODE;
+		mi->CurrentState.consume = mi->status->consume;
+	}
 	if(mi->CurrentState.repeat != mi->status->repeat)
 	{
 		what_changed |= MPD_CST_REPEAT;

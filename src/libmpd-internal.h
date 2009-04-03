@@ -72,6 +72,8 @@ typedef struct _MpdServerState {
 	int		        channels;
     unsigned long   playlistLength;
     char            error[512];
+    int             single;
+    int             consume;
 } MpdServerState;
 
 
