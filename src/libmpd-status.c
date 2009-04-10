@@ -270,7 +270,7 @@ int mpd_status_update(MpdObj *mi)
                 if(mi->num_outputs < output->id)
                 {
                     mi->num_outputs++;
-                    mi->output_states = g_realloc(mi->output_states,mi->num_outputs*sizeof(int));
+                    mi->output_states = realloc(mi->output_states,mi->num_outputs*sizeof(int));
                     mi->output_states[mi->num_outputs] = output->enabled;
                     what_changed |= MPD_CST_OUTPUT;
                 }
