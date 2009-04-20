@@ -84,6 +84,8 @@ static void mpd_init_MpdServerState(MpdServerState *state)
 	state->samplerate 	= 0;
 	state->channels 	= 0;
 	state->bits 		= 0;
+    state->consume      = 0;
+    state->single       = 0;
     state->playlistLength = 0;
     state->error[0]            = '\0';
 
