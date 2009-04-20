@@ -154,6 +154,8 @@ static MpdObj * mpd_create()
     /* outputs */
     mi->num_outputs = 0;
     mi->output_states = NULL;
+
+    mi->url_handlers = NULL;
     /* set 0 */ 
     memset((mi->supported_tags), 0,sizeof(mi->supported_tags));
 
