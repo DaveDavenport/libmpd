@@ -199,6 +199,11 @@ void mpd_free(MpdObj *mi)
 	{
 		mpd_freeSong(mi->CurrentSong);
 	}
+    if(mi->url_handlers)
+    {
+        g_strfreev(mi->url_handlers);
+        mi->url_handlers = NULL;
+    }
 	mpd_free_queue_ob(mi);
 	mpd_server_free_commands(mi);		
 	free(mi);
@@ -578,6 +583,11 @@ int mpd_disconnect(MpdObj *mi)
 		mpd_freeSong(mi->CurrentSong);
 		mi->CurrentSong = NULL;
 	}
+    if(mi->url_handlers)
+    {
+        g_strfreev(mi->url_handlers);
+        mi->url_handlers = NULL;
+    }
 	mi->CurrentState.playlistid = -1;
 	mi->CurrentState.storedplaylistid = -1;
 	mi->CurrentState.state = -1;
@@ -1186,24 +1196,31 @@ char ** mpd_server_get_url_handlers(MpdObj *mi)
         debug_printf(DEBUG_WARNING,"not connected\n");
         return FALSE;
     }
+    if(mi->url_handlers){
+        return g_strdupv(mi->url_handlers);
+    }
     if(mpd_lock_conn(mi))
     {
         debug_printf(DEBUG_ERROR,"lock failed\n");
         return NULL;
     }                                           
+    /**
+     * Fetch url handlers and store them
+     */
     mpd_sendUrlHandlersCommand(mi->connection);
     while((temp = mpd_getNextHandler(mi->connection)) != NULL)
     {
-        retv = realloc(retv,(i+2)*sizeof(*retv));
-        retv[i]   = temp;
-        retv[i+1] = NULL;
+        mi->url_handlers = realloc(mi->url_handlers,(i+2)*sizeof(*mi->url_handlers));
+        mi->url_handlers[i]   = temp;
+        mi->url_handlers[i+1] = NULL;
         i++;
     } 
     mpd_finishCommand(mi->connection);
 
 
     mpd_unlock_conn(mi);
-    return retv;
+    /* Return copy */
+    return g_strdupv(mi->url_handlers);
 }
 char ** mpd_server_get_tag_types(MpdObj *mi)
 {
