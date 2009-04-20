@@ -425,7 +425,6 @@ int mpd_send_password(MpdObj *mi)
                     }
                     g_strfreev(retv);
                 }
-                printf("updated tags\n");
                 /* also always true */
                 mi->supported_tags[MPD_TAG_ITEM_FILENAME] = TRUE;
                 mi->supported_tags[MPD_TAG_ITEM_ANY] = TRUE;
