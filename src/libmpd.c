@@ -718,12 +718,17 @@ int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
     {
         return retv;
     }
+    /* Trying to send password, this is needed to get right outputs and tag_types */
     if(mi->password && strlen(mi->password) > 0)
     {
         mpd_send_password(mi);
     }
     else
     {
+        /* Update tag types, this is done in send_password.
+         * mpd_send_password() does this.
+         * So only do it when no password is send.
+         */
         int i;
         char **retv = mpd_server_get_tag_types(mi);
         if(retv){
@@ -1193,7 +1198,6 @@ char ** mpd_server_get_url_handlers(MpdObj *mi)
 {
     char *temp = NULL;
     int i=0;
-    char **retv = NULL;
     if(!mpd_check_connected(mi))
     {
         debug_printf(DEBUG_WARNING,"not connected\n");
