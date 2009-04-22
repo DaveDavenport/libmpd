@@ -484,6 +484,7 @@ MpdData * mpd_database_get_directory(MpdObj *mi,const char *path)
 
 MpdData *mpd_database_get_playlist_content(MpdObj *mi,const char *playlist)
 {
+    int i=0;
 	MpdData *data = NULL;
 	mpd_InfoEntity *ent = NULL;
 	if(!mpd_check_connected(mi))
@@ -509,26 +510,15 @@ MpdData *mpd_database_get_playlist_content(MpdObj *mi,const char *playlist)
 	mpd_sendListPlaylistInfoCommand(mi->connection, playlist);
 	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
 	{
-		data = mpd_new_data_struct_append( data );
-		if(ent->type == MPD_INFO_ENTITY_TYPE_DIRECTORY)
+		if (ent->type == MPD_INFO_ENTITY_TYPE_SONG)
 		{
-			data->type = MPD_DATA_TYPE_DIRECTORY;
-			data->directory = ent->info.directory->path;
-			ent->info.directory->path = NULL;
-		}
-		else if (ent->type == MPD_INFO_ENTITY_TYPE_SONG)
-		{
-			data->type = MPD_DATA_TYPE_SONG;
+            data = mpd_new_data_struct_append( data );
+            data->type = MPD_DATA_TYPE_SONG;
 			data->song = ent->info.song;
+            data->song->pos = i;
 			ent->info.song = NULL;
-		}
-		else if (ent->type == MPD_INFO_ENTITY_TYPE_PLAYLISTFILE)
-		{
-			data->type = MPD_DATA_TYPE_PLAYLIST;
-			data->playlist = ent->info.playlistFile;
-			ent->info.playlistFile= NULL;
-		}
-
+            i++;
+        }
 		mpd_freeInfoEntity(ent);
 	}
 	mpd_finishCommand(mi->connection);
