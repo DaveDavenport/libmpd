@@ -523,7 +523,11 @@ MpdData *mpd_database_get_playlist_content(MpdObj *mi,const char *playlist)
 	}
 	mpd_finishCommand(mi->connection);
 
-	/* unlock */
+	if(mi->connection->error == MPD_ERROR_ACK && mi->connection->errorCode == MPD_ACK_ERROR_NO_EXIST)
+	{
+		mpd_clearError(mi->connection);
+    }
+    /* unlock */
 	mpd_unlock_conn(mi);
 	if(data == NULL)
 	{
