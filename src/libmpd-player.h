@@ -207,6 +207,22 @@ int mpd_player_seek(MpdObj * mi, int sec);
 
 int mpd_player_get_next_song_pos(MpdObj *mi);
 int mpd_player_get_next_song_id(MpdObj *mi);
+/**
+ * @param mi a #MpdObj
+ * @param single the state of single mode
+ *
+ * Enable/disable single mode. (single = 1 is enabled, single = 0 disabled)
+ * @return  a #MpdError
+ */
+int mpd_player_set_single(MpdObj * mi, int single);
+
+/**
+ * @param mi a #MpdObj
+ * @param consume the state of consume mode
+ *
+ * Enable/disable consume mode. (consume = 1 is enabled, consume = 0 disabled)
+ */
+int mpd_player_set_consume(MpdObj * mi, int consume);
 
 #endif
 
