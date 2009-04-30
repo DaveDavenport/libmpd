@@ -723,7 +723,7 @@ void mpd_database_search_add_constraint(MpdObj *mi, mpd_TagItems field, const ch
 		debug_printf(DEBUG_ERROR, "Failed to lock connection");
 		return ;
 	}
-	mpd_addConstraintSearch(mi->connection, field, value);
+	mpd_addConstraintSearch(mi->connection, field, (value)?value:"");
 	/* unlock, let the error handler handle any possible error.
 	 */
 	mpd_unlock_conn(mi);
