@@ -238,7 +238,7 @@ mpd_Song * mpd_playlist_get_current_song(MpdObj *mi)
 {
 	if(!mpd_check_connected(mi))
 	{
-		debug_printf(DEBUG_ERROR, "Not Connected\n");
+		debug_printf(DEBUG_WARNING, "Not Connected\n");
 		return NULL;
 	}
 
