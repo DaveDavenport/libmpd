@@ -734,7 +734,6 @@ mpd_Status * mpd_getStatus(mpd_Connection * connection) {
 	status->nextsong = -1;
 	status->nextsongid = -1;
 	status->crossfade = -1;
-	g_debug("new status: %d", status);
 
 	if(connection->error) {
 		g_slice_free(mpd_Status, status);
@@ -839,12 +838,10 @@ mpd_Status * mpd_getStatus(mpd_Connection * connection) {
 		return NULL;
 	}
 
-	g_debug("return status: %d", status);
 	return status;
 }
 
 void mpd_freeStatus(mpd_Status * status) {
-	g_debug("free status: %d", status);
 	if(status->error) free(status->error);
 	g_slice_free(mpd_Status, status);
 }
