@@ -94,13 +94,8 @@ static void mpd_init_MpdServerState(MpdServerState *state)
 
 static MpdObj * mpd_create()
 {
-	MpdObj * mi = malloc(sizeof(*mi));
-	if( mi == NULL )
-	{
-		/* should never happen on linux */
-		return NULL;
-	}
-
+	MpdObj * mi = g_slice_new0(MpdObj);
+	g_return_val_if_fail(mi != NULL, NULL); /* should never happen on linux */
 
 	/* set default values */
 	/* we start not connected */
@@ -109,59 +104,20 @@ static MpdObj * mpd_create()
 	mi->port = 6600;
 	/* localhost */
 	mi->hostname = strdup("localhost");
-	/* no password */
-	mi->password = NULL;
 	/* 1 second timeout */
 	mi->connection_timeout = 1.0;
-	/* we have no connection pointer */
-	mi->connection = NULL;
-	/* no status */
-	mi->status = NULL;
-	/* no stats */
-	mi->stats = NULL;
-	mi->error = 0;
-	mi->error_mpd_code = 0;
-	mi->error_msg = NULL;
-	mi->CurrentSong = NULL;
 	/* info */
 	mpd_init_MpdServerState(&(mi->CurrentState));
 	mpd_init_MpdServerState(&(mi->OldState));
 
-	/**
-	 * Set signals to NULL 
-	 */
-	/* connection changed signal */
-	mi->the_connection_changed_callback = NULL;
-	mi->the_connection_changed_signal_userdata = NULL;
-
-	/* status changed */
-	mi->the_status_changed_callback = NULL;
-	mi->the_status_changed_signal_userdata = NULL;
-
-	/* error callback */
-	mi->the_error_callback = NULL;
-	mi->the_error_signal_userdata  = NULL;
 	/* connection is locked because where not connected */
 	mi->connection_lock = TRUE;
 
-	/* set queue to NULL */
-	mi->queue = NULL;
 	/* search stuff */
 	mi->search_type = MPD_SEARCH_TYPE_NONE;
 	/* no need to initialize, but set it to anything anyway*/
 	mi->search_field = MPD_TAG_ITEM_ARTIST;
 
-    /* outputs */
-    mi->num_outputs = 0;
-    mi->output_states = NULL;
-
-    mi->url_handlers = NULL;
-    /* set 0 */ 
-    memset((mi->supported_tags), 0,sizeof(mi->supported_tags));
-
-    mi->has_idle = 0;
-	/* commands */
-	mi->commands = NULL;
 	return mi;
 }
 
@@ -210,7 +166,7 @@ void mpd_free(MpdObj *mi)
     }
 	mpd_free_queue_ob(mi);
 	mpd_server_free_commands(mi);		
-	free(mi);
+	g_slice_free(MpdObj, mi);
 }
 
 int mpd_check_error(MpdObj *mi)
@@ -818,23 +774,7 @@ void	mpd_signal_connect_connection_changed(MpdObj *mi, ConnectionChangedCallback
 /* MpdData Part */
 MpdData *mpd_new_data_struct(void)
 {
-	MpdData_real* data;
-    data = g_slice_new(MpdData_real);
-	data->type = 0;
-
-	data->tag_type = 0;
-	data->tag = NULL;
-	data->song = NULL;
-	data->directory = NULL;
-	data->playlist = NULL;
-	data->output_dev = NULL;
-	data->next = NULL;
-	data->prev = NULL;
-    data->first = NULL;
-
-    data->userdata = NULL;
-    data->freefunc = NULL;
-	return (MpdData*)data;
+	return (MpdData*) g_slice_new0(MpdData_real);
 }
 
 MpdData *mpd_new_data_struct_append(MpdData  * data)
@@ -1014,7 +954,7 @@ void mpd_data_free(MpdData *data)
                 data_real->freefunc(data_real->userdata);
         }
         data_real = data_real->next;
-        g_slice_free1(sizeof(*temp), temp);
+        g_slice_free(MpdData_real, temp);
     }
 }
 
@@ -1042,7 +982,7 @@ static void mpd_free_queue_ob(MpdObj *mi)
             free(mi->queue->path);
         }
 
-        free(mi->queue);
+        g_slice_free(MpdQueue, mi->queue);
         mi->queue = temp;
     }
     mi->queue = NULL;
@@ -1051,13 +991,7 @@ static void mpd_free_queue_ob(MpdObj *mi)
 
 MpdQueue *mpd_new_queue_struct()
 {
-    MpdQueue* queue = malloc(sizeof(MpdQueue));
-
-    queue->type = 0;
-    queue->path = NULL;
-    queue->id = 0;
-
-    return queue;	
+    return g_slice_new0(MpdQueue);
 }
 
 

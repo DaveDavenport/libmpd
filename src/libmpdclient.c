@@ -42,6 +42,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <glib.h>
 
 #ifdef WIN32
 #  include <ws2tcpip.h>
@@ -298,7 +299,7 @@ static char * mpd_sanitizeArg(const char * arg) {
 
 static mpd_ReturnElement * mpd_newReturnElement(const char * name, const char * value)
 {
-	mpd_ReturnElement * ret = malloc(sizeof(mpd_ReturnElement));
+	mpd_ReturnElement* ret = g_slice_new(mpd_ReturnElement);
 
 	ret->name = strdup(name);
 	ret->value = strdup(value);
@@ -309,7 +310,7 @@ static mpd_ReturnElement * mpd_newReturnElement(const char * name, const char * 
 static void mpd_freeReturnElement(mpd_ReturnElement * re) {
 	free(re->name);
 	free(re->value);
-	free(re);
+	g_slice_free(mpd_ReturnElement, re);
 }
 
 void mpd_setConnectionTimeout(mpd_Connection * connection, float timeout) {
@@ -404,21 +405,12 @@ mpd_Connection * mpd_newConnection(const char * host, int port, float timeout) {
 	int err;
 	char * rt;
 	char * output =  NULL;
-	mpd_Connection * connection = malloc(sizeof(mpd_Connection));
+	mpd_Connection * connection = g_slice_new0(mpd_Connection);
 	struct timeval tv;
 	fd_set fds;
 	strcpy(connection->buffer,"");
 	connection->sock = -1;
-	connection->buflen = 0;
-	connection->bufstart = 0;
 	strcpy(connection->errorStr,"");
-	connection->error = 0;
-	connection->doneProcessing = 0;
-	connection->commandList = 0;
-	connection->listOks = 0;
-	connection->doneListOk = 0;
-	connection->returnElement = NULL;
-	connection->request = NULL;
 
 	if (winsock_dll_error(connection))
 		return connection;
@@ -493,7 +485,7 @@ void mpd_closeConnection(mpd_Connection * connection) {
 	closesocket(connection->sock);
 	if(connection->returnElement) free(connection->returnElement);
 	if(connection->request) free(connection->request);
-	free(connection);
+	g_slice_free(mpd_Connection, connection);
 	WSACleanup();
 }
 
@@ -721,8 +713,6 @@ void mpd_sendStatusCommand(mpd_Connection * connection) {
 }
 
 mpd_Status * mpd_getStatus(mpd_Connection * connection) {
-	mpd_Status * status;
-
 	/*mpd_executeCommand(connection,"status\n");
 
 	if(connection->error) return NULL;*/
@@ -735,32 +725,19 @@ mpd_Status * mpd_getStatus(mpd_Connection * connection) {
 
 	if(!connection->returnElement) mpd_getNextReturnElement(connection);
 
-	status = malloc(sizeof(mpd_Status));
+	mpd_Status* status = g_slice_new0(mpd_Status);
 	status->volume = -1;
-	status->repeat = 0;
-	status->random = 0;
-    status->single = 0;
-    status->consume = 0;
 	status->playlist = -1;
-    status->storedplaylist = -1;
+	status->storedplaylist = -1;
 	status->playlistLength = -1;
 	status->state = -1;
-	status->song = 0;
-	status->songid = 0;
-    status->nextsong = -1;
-    status->nextsongid = -1;
-	status->elapsedTime = 0;
-	status->totalTime = 0;
-	status->bitRate = 0;
-	status->sampleRate = 0;
-	status->bits = 0;
-	status->channels = 0;
+	status->nextsong = -1;
+	status->nextsongid = -1;
 	status->crossfade = -1;
-	status->error = NULL;
-	status->updatingDb = 0;
+	g_debug("new status: %d", status);
 
 	if(connection->error) {
-		free(status);
+		g_slice_free(mpd_Status, status);
 		return NULL;
 	}
 	while(connection->returnElement) {
@@ -846,28 +823,30 @@ mpd_Status * mpd_getStatus(mpd_Connection * connection) {
 
 		mpd_getNextReturnElement(connection);
 		if(connection->error) {
-			free(status);
+			g_slice_free(mpd_Status, status);
 			return NULL;
 		}
 	}
 
 	if(connection->error) {
-		free(status);
+		g_slice_free(mpd_Status, status);
 		return NULL;
 	}
 	else if(status->state<0) {
 		strcpy(connection->errorStr,"state not found");
 		connection->error = 1;
-		free(status);
+		g_slice_free(mpd_Status, status);
 		return NULL;
 	}
 
+	g_debug("return status: %d", status);
 	return status;
 }
 
 void mpd_freeStatus(mpd_Status * status) {
+	g_debug("free status: %d", status);
 	if(status->error) free(status->error);
-	free(status);
+	g_slice_free(mpd_Status, status);
 }
 
 void mpd_sendStatsCommand(mpd_Connection * connection) {
@@ -875,8 +854,6 @@ void mpd_sendStatsCommand(mpd_Connection * connection) {
 }
 
 mpd_Stats * mpd_getStats(mpd_Connection * connection) {
-	mpd_Stats * stats;
-
 	/*mpd_executeCommand(connection,"stats\n");
 
 	if(connection->error) return NULL;*/
@@ -889,17 +866,10 @@ mpd_Stats * mpd_getStats(mpd_Connection * connection) {
 
 	if(!connection->returnElement) mpd_getNextReturnElement(connection);
 
-	stats = malloc(sizeof(mpd_Stats));
-	stats->numberOfArtists = 0;
-	stats->numberOfAlbums = 0;
-	stats->numberOfSongs = 0;
-	stats->uptime = 0;
-	stats->dbUpdateTime = 0;
-	stats->playTime = 0;
-	stats->dbPlayTime = 0;
+	mpd_Stats* stats = g_slice_new0(mpd_Stats);
 
 	if(connection->error) {
-		free(stats);
+		mpd_freeStats(stats);
 		return NULL;
 	}
 	while(connection->returnElement) {
@@ -928,13 +898,13 @@ mpd_Stats * mpd_getStats(mpd_Connection * connection) {
 
 		mpd_getNextReturnElement(connection);
 		if(connection->error) {
-			free(stats);
+			mpd_freeStats(stats);
 			return NULL;
 		}
 	}
 
 	if(connection->error) {
-		free(stats);
+		mpd_freeStats(stats);
 		return NULL;
 	}
 
@@ -942,14 +912,11 @@ mpd_Stats * mpd_getStats(mpd_Connection * connection) {
 }
 
 void mpd_freeStats(mpd_Stats * stats) {
-	free(stats);
+	g_slice_free(mpd_Stats, stats);
 }
 
 mpd_SearchStats * mpd_getSearchStats(mpd_Connection * connection)
 {
-	mpd_SearchStats * stats;
-	mpd_ReturnElement * re;
-
 	if (connection->doneProcessing ||
 	    (connection->listOks && connection->doneListOk)) {
 		return NULL;
@@ -960,9 +927,8 @@ mpd_SearchStats * mpd_getSearchStats(mpd_Connection * connection)
 	if (connection->error)
 		return NULL;
 
-	stats = malloc(sizeof(mpd_SearchStats));
-	stats->numberOfSongs = 0;
-	stats->playTime = 0;
+	mpd_ReturnElement* re;
+	mpd_SearchStats* stats = g_slice_new0(mpd_SearchStats);
 
 	while (connection->returnElement) {
 		re = connection->returnElement;
@@ -975,13 +941,13 @@ mpd_SearchStats * mpd_getSearchStats(mpd_Connection * connection)
 
 		mpd_getNextReturnElement(connection);
 		if (connection->error) {
-			free(stats);
+			mpd_freeSearchStats(stats);
 			return NULL;
 		}
 	}
 
 	if (connection->error) {
-		free(stats);
+		mpd_freeSearchStats(stats);
 		return NULL;
 	}
 
@@ -990,28 +956,7 @@ mpd_SearchStats * mpd_getSearchStats(mpd_Connection * connection)
 
 void mpd_freeSearchStats(mpd_SearchStats * stats)
 {
-	free(stats);
-}
-
-static void mpd_initSong(mpd_Song * song) {
-	song->file = NULL;
-	song->artist = NULL;
-	song->album = NULL;
-	song->track = NULL;
-	song->title = NULL;
-	song->name = NULL;
-	song->date = NULL;
-	/* added by Qball */
-	song->genre = NULL;
-	song->composer = NULL;
-	song->performer = NULL;
-	song->disc = NULL;
-	song->comment = NULL;
-    song->albumartist = NULL;
-
-	song->time = MPD_SONG_NO_TIME;
-	song->pos = MPD_SONG_NO_NUM;
-	song->id = MPD_SONG_NO_ID;
+	g_slice_free(mpd_SearchStats, stats);
 }
 
 static void mpd_finishSong(mpd_Song * song) {
@@ -1031,16 +976,16 @@ static void mpd_finishSong(mpd_Song * song) {
 }
 
 mpd_Song * mpd_newSong(void) {
-	mpd_Song * ret = malloc(sizeof(mpd_Song));
-
-	mpd_initSong(ret);
-
+	mpd_Song * ret = g_slice_new0(mpd_Song);
+	ret->time = MPD_SONG_NO_TIME;
+	ret->pos = MPD_SONG_NO_NUM;
+	ret->id = MPD_SONG_NO_ID;
 	return ret;
 }
 
 void mpd_freeSong(mpd_Song * song) {
 	mpd_finishSong(song);
-	free(song);
+	g_slice_free(mpd_Song, song);
 }
 
 mpd_Song * mpd_songDup(const mpd_Song * song) {
@@ -1066,26 +1011,18 @@ mpd_Song * mpd_songDup(const mpd_Song * song) {
 	return ret;
 }
 
-static void mpd_initDirectory(mpd_Directory * directory) {
-	directory->path = NULL;
-}
 
 static void mpd_finishDirectory(mpd_Directory * directory) {
 	if(directory->path) free(directory->path);
 }
 
 mpd_Directory * mpd_newDirectory(void) {
-	mpd_Directory * directory = malloc(sizeof(mpd_Directory));;
-
-	mpd_initDirectory(directory);
-
-	return directory;
+	return g_slice_new0(mpd_Directory);
 }
 
 void mpd_freeDirectory(mpd_Directory * directory) {
 	mpd_finishDirectory(directory);
-
-	free(directory);
+	g_slice_free(mpd_Directory, directory);
 }
 
 mpd_Directory * mpd_directoryDup(mpd_Directory * directory) {
@@ -1096,27 +1033,18 @@ mpd_Directory * mpd_directoryDup(mpd_Directory * directory) {
 	return ret;
 }
 
-static void mpd_initPlaylistFile(mpd_PlaylistFile * playlist) {
-	playlist->path = NULL;
-    playlist->mtime = NULL;
-}
-
 static void mpd_finishPlaylistFile(mpd_PlaylistFile * playlist) {
 	if(playlist->path) free(playlist->path);
     if(playlist->mtime) free(playlist->mtime);
 }
 
 mpd_PlaylistFile * mpd_newPlaylistFile(void) {
-	mpd_PlaylistFile * playlist = malloc(sizeof(mpd_PlaylistFile));
-
-	mpd_initPlaylistFile(playlist);
-
-	return playlist;
+	return g_slice_new0(mpd_PlaylistFile);
 }
 
 void mpd_freePlaylistFile(mpd_PlaylistFile * playlist) {
 	mpd_finishPlaylistFile(playlist);
-	free(playlist);
+	g_slice_free(mpd_PlaylistFile, playlist);
 }
 
 mpd_PlaylistFile * mpd_playlistFileDup(mpd_PlaylistFile * playlist) {
@@ -1126,10 +1054,6 @@ mpd_PlaylistFile * mpd_playlistFileDup(mpd_PlaylistFile * playlist) {
     if(playlist->mtime) ret->mtime = strdup(playlist->mtime);
 
 	return ret;
-}
-
-static void mpd_initInfoEntity(mpd_InfoEntity * entity) {
-	entity->info.directory = NULL;
 }
 
 static void mpd_finishInfoEntity(mpd_InfoEntity * entity) {
@@ -1147,16 +1071,12 @@ static void mpd_finishInfoEntity(mpd_InfoEntity * entity) {
 }
 
 mpd_InfoEntity * mpd_newInfoEntity(void) {
-	mpd_InfoEntity * entity = malloc(sizeof(mpd_InfoEntity));
-
-	mpd_initInfoEntity(entity);
-
-	return entity;
+	return g_slice_new0(mpd_InfoEntity);
 }
 
 void mpd_freeInfoEntity(mpd_InfoEntity * entity) {
 	mpd_finishInfoEntity(entity);
-	free(entity);
+	g_slice_free(mpd_InfoEntity, entity);
 }
 
 static void mpd_sendInfoCommand(mpd_Connection * connection,const char * command) {
@@ -1789,8 +1709,6 @@ void mpd_sendOutputsCommand(mpd_Connection * connection) {
 }
 
 mpd_OutputEntity * mpd_getNextOutput(mpd_Connection * connection) {
-	mpd_OutputEntity * output = NULL;
-
 	if(connection->doneProcessing || (connection->listOks &&
 				connection->doneListOk))
 	{
@@ -1799,10 +1717,8 @@ mpd_OutputEntity * mpd_getNextOutput(mpd_Connection * connection) {
 
 	if(connection->error) return NULL;
 
-	output = malloc(sizeof(mpd_OutputEntity));
+	mpd_OutputEntity* output = g_slice_new0(mpd_OutputEntity);
 	output->id = -10;
-	output->name = NULL;
-	output->enabled = 0;
 
 	if(!connection->returnElement) mpd_getNextReturnElement(connection);
 
@@ -1821,10 +1737,9 @@ mpd_OutputEntity * mpd_getNextOutput(mpd_Connection * connection) {
 
 		mpd_getNextReturnElement(connection);
 		if(connection->error) {
-			free(output);
+			mpd_freeOutputElement(output);
 			return NULL;
 		}
-
 	}
 
 	return output;
@@ -1847,8 +1762,9 @@ void mpd_sendDisableOutputCommand(mpd_Connection * connection, int outputId) {
 }
 
 void mpd_freeOutputElement(mpd_OutputEntity * output) {
-	free(output->name);
-	free(output);
+	if(output->name)
+		free(output->name);
+	g_slice_free(mpd_OutputEntity, output);
 }
 
 /**
