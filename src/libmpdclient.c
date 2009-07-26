@@ -114,11 +114,44 @@ static int do_connect_fail(mpd_Connection *connection,
 static int do_connect_fail(mpd_Connection *connection,
                            const struct sockaddr *serv_addr, int addrlen)
 {
-	int flags;
-	if (connect(connection->sock, serv_addr, addrlen) < 0)
-		return 1;
+	int flags, res,valopt;
+	struct timeval tv;
+	fd_set myset;
 	flags = fcntl(connection->sock, F_GETFL, 0);
 	fcntl(connection->sock, F_SETFL, flags | O_NONBLOCK);
+	/*if (connect(connection->sock, serv_addr, addrlen) < 0)
+		return 1;*/
+    /* Do a non blocking connect */
+    res = connect(connection->sock, serv_addr, addrlen);
+    if (res < 0) { 
+        if (errno == EINPROGRESS) { 
+            tv.tv_sec = connection->timeout.tv_sec;
+            tv.tv_usec = connection->timeout.tv_usec;
+            FD_ZERO(&myset); 
+            FD_SET(connection->sock, &myset); 
+            if (select(connection->sock+1, NULL, &myset, NULL, &tv) > 0) { 
+                socklen_t lon; 
+                lon = sizeof(int); 
+                /* Check for errors */
+                getsockopt(connection->sock, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon); 
+                if (valopt) { 
+                    fprintf(stderr, "Error in connection() %d - %s\n", valopt, strerror(valopt)); 
+                    return 1;
+                } 
+            } 
+            else { 
+                /* Connecting timed out. */
+                fprintf(stderr, "Timeout or error() %d - %s\n", valopt, strerror(valopt)); 
+                return 1;
+            } 
+        } 
+        else { 
+            /* Failed to connect */
+            fprintf(stderr, "Error connecting %d - %s\n", errno, strerror(errno)); 
+            return 1;
+        } 
+    } 
+
 	return 0;
 }
 #endif /* !WIN32 */
