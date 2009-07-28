@@ -1678,11 +1678,7 @@ void mpd_sendSetvolCommand(mpd_Connection * connection, int volumeChange) {
 }
 
 void mpd_sendVolumeCommand(mpd_Connection * connection, int volumeChange) {
-	int len = strlen("volume")+2+INTLEN+3;
-	char *string = malloc(len);
-	snprintf(string, len, "volume \"%i\"\n", volumeChange);
-	mpd_executeCommand(connection,string);
-	free(string);
+    mpd_sendSetvolCommand(connection, volumeChange);
 }
 
 void mpd_sendCrossfadeCommand(mpd_Connection * connection, int seconds) {
