@@ -297,6 +297,8 @@ typedef struct _mpd_Song {
     char *albumartist;
 	/* length of song in seconds, check that it is not MPD_SONG_NO_TIME  */
 	int time;
+    /* The modification time */
+    time_t mtime;
 	/* if plchanges/playlistinfo/playlistid used, is the position of the
 	 * song in the playlist */
 	int pos;
