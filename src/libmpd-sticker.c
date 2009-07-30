@@ -50,7 +50,7 @@ char * mpd_sticker_song_get(MpdObj *mi, const char *path, const char *tag)
     if(mi->connection->error == MPD_ERROR_ACK && mi->connection->errorCode == MPD_ACK_ERROR_NO_EXIST)
     {
 		mpd_clearError(mi->connection);
-        free(retv);
+		g_free(retv);
         retv = NULL;
     }
     if(mpd_unlock_conn(mi))
