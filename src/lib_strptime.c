@@ -35,6 +35,25 @@
 # include "../locale/localeinfo.h"
 #endif
 
+/**
+ * Windows does not have a locatime_r,
+  * it doesn't need it as localtime() is thread safe.
+  * This wrapper should 'fake' localtime_r
+  */
+struct tm *
+localtime_r (const time_t *timer, struct tm *result)
+{
+   struct tm *local_result;
+   /* This should work as it is thread safe on winblows */
+   local_result = localtime (timer);
+
+   if (local_result == NULL || result == NULL)
+     return NULL;
+
+   memcpy (result, local_result, sizeof (result));
+   return result;
+}
+
 #ifndef _LIBC
 enum ptime_locale_status { not, loc, raw };
 #endif
@@ -1132,25 +1151,6 @@ strptime (buf, format, tm LOCALE_PARAM)
 #endif
   return __strptime_internal (buf, format, tm, &decided, -1 LOCALE_ARG);
 }
-/**
- * Windows does not have a locatime_r,
-  * it doesn't need it as localtime() is thread safe.
-  * This wrapper should 'fake' localtime_r
-  */
-struct tm *
-localtime_r (const time_t *timer, struct tm *result)
-{
-   struct tm *local_result;
-   /* This should work as it is thread safe on winblows */
-   local_result = localtime (timer);
-
-   if (local_result == NULL || result == NULL)
-     return NULL;
-
-   memcpy (result, local_result, sizeof (result));
-   return result;
-}
-
 #ifdef _LIBC
 weak_alias (__strptime_l, strptime_l)
 #endif
