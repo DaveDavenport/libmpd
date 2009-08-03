@@ -17,6 +17,7 @@ libmpd_la_SOURCES =			\
 		libmpd-database.c	\
 		libmpd-sticker.c	\
 		debug_printf.c		\
+        lib_strptime.c      \
 		libmpd-version.h.in
 
 libmpdinclude_HEADERS = 		\
