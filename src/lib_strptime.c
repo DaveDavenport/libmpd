@@ -569,8 +569,8 @@ __strptime_internal (rp, fmt, tm, decided, era_cnt LOCALE_PARAM)
 		secs += *rp++ - '0';
 	      }
 	    while (*rp >= '0' && *rp <= '9');
-
-	    if (localtime_r (&secs, tm) == NULL)
+        /* on win32 localtime is! thread safe */
+	    if ((tm = localtime (&secs)) == NULL)
 	      /* Error in function.  */
 	      return NULL;
 	  }
@@ -1119,9 +1119,9 @@ __strptime_internal (rp, fmt, tm, decided, era_cnt LOCALE_PARAM)
 
 char *
 strptime (buf, format, tm LOCALE_PARAM)
-     const char *restrict buf;
-     const char *restrict format;
-     struct tm *restrict tm;
+     const char *buf;
+     const char *format;
+     struct tm *tm;
      LOCALE_PARAM_DECL
 {
   enum ptime_locale_status decided;
