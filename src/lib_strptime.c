@@ -569,8 +569,7 @@ __strptime_internal (rp, fmt, tm, decided, era_cnt LOCALE_PARAM)
 		secs += *rp++ - '0';
 	      }
 	    while (*rp >= '0' && *rp <= '9');
-        /* on win32 localtime is! thread safe */
-	    if ((tm = localtime (&secs)) == NULL)
+	    if (localtime_r (&secs, tm) == NULL)
 	      /* Error in function.  */
 	      return NULL;
 	  }
@@ -1132,6 +1131,24 @@ strptime (buf, format, tm LOCALE_PARAM)
   decided = raw;
 #endif
   return __strptime_internal (buf, format, tm, &decided, -1 LOCALE_ARG);
+}
+/**
+ * Windows does not have a locatime_r,
+  * it doesn't need it as localtime() is thread safe.
+  * This wrapper should 'fake' localtime_r
+  */
+struct tm *
+localtime_r (const time_t *timer, struct tm *result)
+{
+   struct tm *local_result;
+   /* This should work as it is thread safe on winblows */
+   local_result = localtime (timer);
+
+   if (local_result == NULL || result == NULL)
+     return NULL;
+
+   memcpy (result, local_result, sizeof (result));
+   return result;
 }
 
 #ifdef _LIBC
