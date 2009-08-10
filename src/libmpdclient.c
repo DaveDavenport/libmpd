@@ -1020,7 +1020,6 @@ static void mpd_finishSong(mpd_Song * song) {
 
 mpd_Song * mpd_newSong(void) {
 	mpd_Song * ret = g_slice_new0(mpd_Song);
-    ret->mtime = 0;
 	ret->time = MPD_SONG_NO_TIME;
 	ret->pos = MPD_SONG_NO_NUM;
 	ret->id = MPD_SONG_NO_ID;
@@ -1049,7 +1048,6 @@ mpd_Song * mpd_songDup(const mpd_Song * song) {
 	if(song->comment) ret->comment = strdup(song->comment);
     if(song->albumartist) ret->albumartist = strdup(song->albumartist);
 	ret->time = song->time;
-    ret->mtime = song->mtime;
 	ret->pos = song->pos;
 	ret->id = song->id;
 
@@ -1219,12 +1217,6 @@ mpd_InfoEntity * mpd_getNextInfoEntity(mpd_Connection * connection) {
 					strcmp(re->name,"Time")==0) {
 				entity->info.song->time = atoi(re->value);
 			}
-            else if (entity->info.song->mtime == 0 &&
-                    strcmp(re->name, "Last-Modified") == 0) {
-                    struct tm tm;
-                    strptime(re->value, "%FT%T%z", &tm);
-                    entity->info.song->mtime = mktime(&tm);
-            }
 			else if(entity->info.song->pos==MPD_SONG_NO_NUM &&
 					strcmp(re->name,"Pos")==0) {
 				entity->info.song->pos = atoi(re->value);
