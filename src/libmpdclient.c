@@ -112,6 +112,17 @@ static int do_connect_fail(mpd_Connection *connection,
 	ioctlsocket(connection->sock, FIONBIO, (u_long FAR*) &iMode);
 	return 0;
 }
+#elif defined(__solaris__) || defined(__sun__)
+static int do_connect_fail(mpd_Connection *connection,
+		const struct sockaddr *serv_addr, int addrlen)
+{
+	int flags;
+	if (connect(connection->sock, serv_addr, addrlen) < 0)
+		return 1;
+	flags = fcntl(connection->sock, F_GETFL, 0);
+	fcntl(connection->sock, F_SETFL, flags | O_NONBLOCK);
+	return 0;
+}
 #else /* !WIN32 (sane operating systems) */
 static int do_connect_fail(mpd_Connection *connection,
                            const struct sockaddr *serv_addr, int addrlen)
