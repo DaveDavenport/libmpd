@@ -20,7 +20,7 @@
 #ifndef __MPD_INTERNAL_LIB_
 #define __MPD_INTERNAL_LIB_
 
-#include "libmpdclient.h"
+#include <mpd/client.h>
 #include <config.h>
 struct _MpdData_real;
 
@@ -30,13 +30,13 @@ typedef struct _MpdData_real {
     
 	union {
 		struct {
-			int tag_type;
+			enum mpd_tag_type tag_type;
 			char *tag;
 		};
 		char *directory;
-		mpd_PlaylistFile *playlist;
-		mpd_Song *song;
-		mpd_OutputEntity *output_dev; /* from devices */
+		struct mpd_playlist *playlist;
+		struct mpd_song *song;
+		struct mpd_output *output_dev; /* from devices */
 	};
     void *userdata;
     void (*freefunc)(void *userdata);
@@ -97,10 +97,10 @@ typedef struct _MpdObj {
 	float 		connection_timeout;
 
 	/* mpd's structures */
-	mpd_Connection 	*connection;
-	mpd_Status 	*status;
-	mpd_Stats 	*stats;
-	mpd_Song 	*CurrentSong;
+	struct mpd_connection *connection;
+	struct mpd_status *status;
+	struct mpd_stats *stats;
+	struct mpd_song *CurrentSong;
 
 	/* used to store/detect serverside status changes */
 	MpdServerState CurrentState;
@@ -118,8 +118,8 @@ typedef struct _MpdObj {
 	void *the_connection_changed_signal_userdata;
 
 	/* error message */
-	int error;
-	int error_mpd_code;
+	enum mpd_error error;
+	enum mpd_server_error error_mpd_code;
 	char *error_msg;
 
 	/* internal values */
@@ -138,7 +138,7 @@ typedef struct _MpdObj {
 	 * tag type for a search
 	 */
 	int search_type;
-	int search_field;
+	enum mpd_tag_type search_field;
 
     /**
      * For tracking changed outputs.
@@ -153,7 +153,7 @@ typedef struct _MpdObj {
     /**
      * For testing supported tags
      */
-    int supported_tags[MPD_TAG_NUM_OF_ITEM_TYPES];
+    int supported_tags[MPD_TAG_COUNT];
 
     int has_idle;
 }_MpdObj;

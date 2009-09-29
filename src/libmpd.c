@@ -114,7 +114,7 @@ static MpdObj * mpd_create()
 	/* search stuff */
 	mi->search_type = MPD_SEARCH_TYPE_NONE;
 	/* no need to initialize, but set it to anything anyway*/
-	mi->search_field = MPD_TAG_ITEM_ARTIST;
+	mi->search_field = MPD_TAG_ARTIST;
 
 	return mi;
 }
@@ -143,19 +143,19 @@ void mpd_free(MpdObj *mi)
 	if(mi->connection)
 	{
 		/* obsolete */
-		mpd_closeConnection(mi->connection);
+		mpd_connection_free(mi->connection);
 	}
 	if(mi->status)
 	{
-		mpd_freeStatus(mi->status);
+		mpd_status_free(mi->status);
 	}
 	if(mi->stats)
 	{
-		mpd_freeStats(mi->stats);
+		mpd_stats_free(mi->stats);
 	}
 	if(mi->CurrentSong)
 	{
-		mpd_freeSong(mi->CurrentSong);
+		mpd_song_free(mi->CurrentSong);
 	}
 	if(mi->url_handlers)
 	{
@@ -183,13 +183,14 @@ int mpd_check_error(MpdObj *mi)
 	}
 
 	/* TODO: map these errors in the future */
-	mi->error = mi->connection->error;
-	mi->error_mpd_code = mi->connection->errorCode;
+	mi->error = mpd_connection_get_error(mi->connection);
+	mi->error_mpd_code = mpd_connection_get_server_error(mi->connection);
 	/*TODO: do I need to strdup this? */
-	if(!g_utf8_validate(mi->connection->errorStr, -1, NULL)){
-		mi->error_msg = g_locale_to_utf8(mi->connection->errorStr, -1, NULL, NULL,NULL);
+	const char *error_message = mpd_connection_get_error_message(mi->connection);
+	if(!g_utf8_validate(error_message, -1, NULL)){
+		mi->error_msg = g_locale_to_utf8(error_message, -1, NULL, NULL,NULL);
 	}else{
-		mi->error_msg = g_strdup(mi->connection->errorStr);
+		mi->error_msg = g_strdup(error_message);
 	}
 
     if(mi->error_msg == NULL) mi->error_msg = g_strdup("Failed to convert error message to utf-8");
@@ -198,11 +199,11 @@ int mpd_check_error(MpdObj *mi)
 	/* First check for an error reported by MPD
 	 * Then check what type of error mpd reported
 	 */
-	if(mi->error == MPD_ERROR_ACK)
+	if(mi->error == MPD_ERROR_SERVER)
 	{
 
 		debug_printf(DEBUG_ERROR,"clearing errors in mpd_Connection: %i-%s", mi->error_mpd_code, mi->error_msg);
-		mpd_clearError(mi->connection);
+		mpd_connection_clear_error(mi->connection);
 		if (mi->the_error_callback)
 		{
 			debug_printf(DEBUG_ERROR, "Error callback 1 (ACK)");
@@ -341,7 +342,7 @@ int mpd_set_password(MpdObj *mi, const char *password)
 }
 
 
-int mpd_send_password(MpdObj *mi)
+int libmpd_send_password(MpdObj *mi)
 {
 	if(!mi) return MPD_ARGS_ERROR;
 	if(mi->password && mpd_check_connected(mi) && strlen(mi->password))
@@ -351,8 +352,7 @@ int mpd_send_password(MpdObj *mi)
 			debug_printf(DEBUG_WARNING, "failed to lock connection");
 			return MPD_LOCK_FAILED;
 		}
-		mpd_sendPasswordCommand(mi->connection, mi->password);
-		mpd_finishCommand(mi->connection);
+		mpd_run_password(mi->connection, mi->password);
 		if(mpd_unlock_conn(mi))
 		{
 			debug_printf(DEBUG_ERROR, "Failed to unlock connection\n");
@@ -367,22 +367,19 @@ int mpd_send_password(MpdObj *mi)
 		{
 			/** update the supported tags */
 			{
-				int i;
 				char **retv = mpd_server_get_tag_types(mi);
 				if(retv)
 				{
-					for(i=0;i<MPD_TAG_ITEM_ANY;i++)
+					for(unsigned i=0;i<MPD_TAG_COUNT;i++)
+						mi->supported_tags[i] = FALSE;
+					for(unsigned j=0;retv[j]; j++)
 					{
-						int j=0;
-						for(j=0;retv[j] && strcasecmp(retv[j],mpdTagItemKeys[i]); j++);
-						if(retv[j]) mi->supported_tags[i] = TRUE;
-						else mi->supported_tags[i] = FALSE;
+						enum mpd_tag_type t = mpd_tag_name_iparse(retv[j]);
+						if (t != MPD_TAG_UNKNOWN && (unsigned)t < MPD_TAG_COUNT)
+							mi->supported_tags[t] = TRUE;
 					}
 					g_strfreev(retv);
 				}
-				/* also always true */
-				mi->supported_tags[MPD_TAG_ITEM_FILENAME] = TRUE;
-				mi->supported_tags[MPD_TAG_ITEM_ANY] = TRUE;
 			}
 			/* If permission updates, we should also call an output update, The data might be available now. */
 			mi->the_status_changed_callback( mi,
@@ -419,8 +416,8 @@ int mpd_set_connection_timeout(MpdObj *mi, float timeout)
 			debug_printf(DEBUG_ERROR,"lock failed\n");
 			return MPD_LOCK_FAILED;
 		}
-		mpd_setConnectionTimeout(mi->connection, timeout);
-		mpd_finishCommand(mi->connection);
+		mpd_connection_set_timeout(mi->connection, timeout);
+		mpd_response_finish(mi->connection);
 
 		mpd_unlock_conn(mi);
 
@@ -449,13 +446,14 @@ char *mpd_server_get_version(MpdObj *mi)
 	if(!mi || !mpd_check_connected(mi))
 		return NULL;
 	retval = malloc(10*sizeof(char));
-	snprintf(retval,10,"%i.%i.%i", mi->connection->version[0], mi->connection->version[1], mi->connection->version[2]);
+	const unsigned *server_version = mpd_connection_get_server_version(mi->connection);
+	snprintf(retval,10,"%i.%i.%i", server_version[0], server_version[1], server_version[2]);
 	return retval;
 }
 
 int mpd_server_get_allowed_commands(MpdObj *mi)
 {
-	char *temp = NULL;
+	struct mpd_pair *pair;
 	int num_commands = 0;
 	if(!mi){
 		debug_printf(DEBUG_ERROR, "mi != NULL failed\n");
@@ -477,31 +475,35 @@ int mpd_server_get_allowed_commands(MpdObj *mi)
 		debug_printf(DEBUG_ERROR, "lock failed");
 		return MPD_LOCK_FAILED;
 	}
-	mpd_sendCommandsCommand(mi->connection);
-	while((temp = mpd_getNextCommand(mi->connection)))
+
+	mpd_send_allowed_commands(mi->connection);
+	while ((pair = mpd_recv_command_pair(mi->connection)) != NULL)
 	{
 		num_commands++;
 		mi->commands = realloc(mi->commands, (num_commands+1)*sizeof(MpdCommand));
-		mi->commands[num_commands-1].command_name = temp;
+		mi->commands[num_commands-1].command_name = strdup(pair->value);
 		mi->commands[num_commands-1].enabled = TRUE;
 		mi->commands[num_commands].command_name = NULL;
 		mi->commands[num_commands].enabled = FALSE;
 		if(strcmp(mi->commands[num_commands-1].command_name, "idle") == 0) {
 			mi->has_idle = TRUE;
 		}
+		mpd_return_pair(mi->connection, pair);
 	}
-	mpd_finishCommand(mi->connection);
-	mpd_sendNotCommandsCommand(mi->connection);
-	while((temp = mpd_getNextCommand(mi->connection)))
+	mpd_response_finish(mi->connection);
+
+	mpd_send_disallowed_commands(mi->connection);
+	while ((pair = mpd_recv_command_pair(mi->connection)) != NULL)
 	{
 		num_commands++;
 		mi->commands = realloc(mi->commands, (num_commands+1)*sizeof(MpdCommand));
-		mi->commands[num_commands-1].command_name = temp;
+		mi->commands[num_commands-1].command_name = strdup(pair->value);
 		mi->commands[num_commands-1].enabled = FALSE;
 		mi->commands[num_commands].command_name = NULL;
 		mi->commands[num_commands].enabled = FALSE;
+		mpd_return_pair(mi->connection, pair);
 	}
-	mpd_finishCommand(mi->connection);
+	mpd_response_finish(mi->connection);
 
 	if(mpd_unlock_conn(mi))
 	{
@@ -521,22 +523,22 @@ int mpd_disconnect(MpdObj *mi)
 
 	if(mi->connection)
 	{
-		mpd_closeConnection(mi->connection);
+		mpd_connection_free(mi->connection);
 		mi->connection = NULL;
 	}
 	if(mi->status)
 	{
-		mpd_freeStatus(mi->status);
+		mpd_status_free(mi->status);
 		mi->status = NULL;
 	}
 	if(mi->stats)
 	{
-		mpd_freeStats(mi->stats);
+		mpd_stats_free(mi->stats);
 		mi->stats = NULL;
 	}
 	if(mi->CurrentSong)
 	{
-		mpd_freeSong(mi->CurrentSong);
+		mpd_song_free(mi->CurrentSong);
 		mi->CurrentSong = NULL;
 	}
 	if(mi->url_handlers)
@@ -559,15 +561,15 @@ int mpd_disconnect(MpdObj *mi)
 	mi->CurrentState.totaltime = 0;
 	mi->CurrentState.elapsedtime = 0;
 	mi->CurrentState.bitrate = 0;
-	mi->CurrentState.samplerate = 0; 
-	mi->CurrentState.channels = 0; 
+	mi->CurrentState.samplerate = 0;
+	mi->CurrentState.channels = 0;
 	mi->CurrentState.bits = 0;
 	mi->CurrentState.playlistLength = 0;
 	mi->CurrentState.error[0] = '\0';
 	/* search stuff */
 	mi->search_type = MPD_SEARCH_TYPE_NONE;
 	/* no need to initialize, but set it to anything anyway*/
-	mi->search_field = MPD_TAG_ITEM_ARTIST;
+	mi->search_field = MPD_TAG_ARTIST;
 	/* outputs */
 	mi->num_outputs = 0;
 	if(mi->output_states)
@@ -602,7 +604,7 @@ int mpd_connect(MpdObj *mi)
 {
 	return mpd_connect_real(mi,NULL);
 }
-int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
+int mpd_connect_real(MpdObj *mi,struct mpd_connection *connection)
 {
     int retv;
     if(mi == NULL)
@@ -644,7 +646,7 @@ int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
 		mi->connection = connection;
 	} else {
 		/* make timeout configurable */
-		mi->connection = mpd_newConnection(mi->hostname,mi->port,mi->connection_timeout);
+		mi->connection = mpd_connection_new(mi->hostname,mi->port,mi->connection_timeout);
 	}
 	if(mi->connection == NULL)
 	{
@@ -673,7 +675,7 @@ int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
 	/* Trying to send password, this is needed to get right outputs and tag_types */
 	if(mi->password && strlen(mi->password) > 0)
 	{
-		mpd_send_password(mi);
+		libmpd_send_password(mi);
 	}
 	else
 	{
@@ -681,21 +683,18 @@ int mpd_connect_real(MpdObj *mi,mpd_Connection *connection)
 		 * mpd_send_password() does this.
 		 * So only do it when no password is send.
 		 */
-		int i;
 		char **retv = mpd_server_get_tag_types(mi);
 		if(retv){
-			for(i=0;i<MPD_TAG_ITEM_ANY;i++)
+			for(unsigned i=0;i<MPD_TAG_COUNT;i++)
+				mi->supported_tags[i] = FALSE;
+			for(unsigned j=0;retv[j]; j++)
 			{
-				int j=0;
-				for(j=0;retv[j] && strcasecmp(retv[j],mpdTagItemKeys[i]); j++);
-				if(retv[j]) mi->supported_tags[i] = TRUE;
-				else mi->supported_tags[i] = FALSE;
+				enum mpd_tag_type t = mpd_tag_name_iparse(retv[j]);
+				if (t != MPD_TAG_UNKNOWN && (unsigned)t < MPD_TAG_COUNT)
+					mi->supported_tags[t] = TRUE;
 			}
 			g_strfreev(retv);
 		}
-		/* also always true */
-		mi->supported_tags[MPD_TAG_ITEM_FILENAME] = TRUE;
-		mi->supported_tags[MPD_TAG_ITEM_ANY] = TRUE;
 	}
 
 	/*
@@ -936,13 +935,13 @@ void mpd_data_free(MpdData *data)
 	while(data_real){
 		temp = data_real;
 		if (data_real->type == MPD_DATA_TYPE_SONG) {
-			if(data_real->song) mpd_freeSong(data_real->song);
+			if(data_real->song) mpd_song_free(data_real->song);
 		} else if (data_real->type == MPD_DATA_TYPE_OUTPUT_DEV) {
-			mpd_freeOutputElement(data_real->output_dev);
+			mpd_output_free(data_real->output_dev);
 		} else if(data_real->type == MPD_DATA_TYPE_DIRECTORY) {
 			if(data_real->directory)free(data_real->directory);
 		} else if(data_real->type == MPD_DATA_TYPE_PLAYLIST) {
-			if(data_real->playlist) mpd_freePlaylistFile(data_real->playlist);
+			if(data_real->playlist) mpd_playlist_free(data_real->playlist);
 		} else {
 			free((void*)(data_real->tag));
 		}
@@ -1018,13 +1017,12 @@ long unsigned mpd_server_get_database_update_time(MpdObj *mi)
 		debug_printf(DEBUG_WARNING,"Failed grabbing status\n");
 		return MPD_STATS_FAILED;
 	}
-	return mi->stats->dbUpdateTime;
+	return mpd_stats_get_db_update_time(mi->stats);
 }
 
 
 MpdData * mpd_server_get_output_devices(MpdObj *mi)
 {
-	mpd_OutputEntity *output = NULL;
 	MpdData *data = NULL;
 	if(!mpd_check_connected(mi))
 	{
@@ -1038,14 +1036,15 @@ MpdData * mpd_server_get_output_devices(MpdObj *mi)
 		return NULL;
 	}
 
-	mpd_sendOutputsCommand(mi->connection);
-	while (( output = mpd_getNextOutput(mi->connection)) != NULL)
+	mpd_send_outputs(mi->connection);
+	struct mpd_output *output;
+	while ((output = mpd_recv_output(mi->connection)) != NULL)
 	{
 		data = mpd_new_data_struct_append(data);
 		data->type = MPD_DATA_TYPE_OUTPUT_DEV;
 		data->output_dev = output;
 	}
-	mpd_finishCommand(mi->connection);
+	mpd_response_finish(mi->connection);
 
 	/* unlock */
 	if(mpd_unlock_conn(mi) != MPD_OK)
@@ -1074,13 +1073,12 @@ int mpd_server_set_output_device(MpdObj *mi,int device_id,int state)
 	}
 	if(state)
 	{
-		mpd_sendEnableOutputCommand(mi->connection, device_id);
+		mpd_run_enable_output(mi->connection, device_id);
 	}
 	else
 	{
-		mpd_sendDisableOutputCommand(mi->connection, device_id);
+		mpd_run_disable_output(mi->connection, device_id);
 	}
-	mpd_finishCommand(mi->connection);
 
 	mpd_unlock_conn(mi);
 	mpd_status_queue_update(mi);
@@ -1094,13 +1092,7 @@ int mpd_server_check_version(MpdObj *mi, int major, int minor, int micro)
 		debug_printf(DEBUG_WARNING,"not connected\n");
 		return FALSE;
 	}
-	if(major > mi->connection->version[0]) return FALSE;
-	if(mi->connection->version[0] > major) return TRUE;
-	if(minor > mi->connection->version[1]) return FALSE;
-	if(mi->connection->version[1] > minor) return TRUE;
-	if(micro > mi->connection->version[2]) return FALSE;
-	if(mi->connection->version[2] > micro) return TRUE;
-	return TRUE;
+	return mpd_connection_cmp_server_version(mi->connection, major, minor, micro) >= 0;
 }
 
 int mpd_server_check_command_allowed(MpdObj *mi, const char *command)
@@ -1128,7 +1120,7 @@ int mpd_server_check_command_allowed(MpdObj *mi, const char *command)
 
 char ** mpd_server_get_url_handlers(MpdObj *mi)
 {
-	char *temp = NULL;
+	struct mpd_pair *pair;
 	int i=0;
 	if(!mpd_check_connected(mi))
 	{
@@ -1146,15 +1138,16 @@ char ** mpd_server_get_url_handlers(MpdObj *mi)
 	/**
 	 * Fetch url handlers and store them
 	 */
-	mpd_sendUrlHandlersCommand(mi->connection);
-	while((temp = mpd_getNextHandler(mi->connection)) != NULL)
+	mpd_send_list_url_schemes(mi->connection);
+	while((pair = mpd_recv_url_scheme_pair(mi->connection)) != NULL)
 	{
 		mi->url_handlers = realloc(mi->url_handlers,(i+2)*sizeof(*mi->url_handlers));
-		mi->url_handlers[i]   = temp;
+		mi->url_handlers[i]   = strdup(pair->value);
 		mi->url_handlers[i+1] = NULL;
 		i++;
+		mpd_return_pair(mi->connection, pair);
 	}
-	mpd_finishCommand(mi->connection);
+	mpd_response_finish(mi->connection);
 
 
 	mpd_unlock_conn(mi);
@@ -1163,7 +1156,7 @@ char ** mpd_server_get_url_handlers(MpdObj *mi)
 }
 char ** mpd_server_get_tag_types(MpdObj *mi)
 {
-	char *temp = NULL;
+	struct mpd_pair *pair;
 	int i=0;
 	char **retv = NULL;
 	if(!mpd_check_connected(mi))
@@ -1176,16 +1169,16 @@ char ** mpd_server_get_tag_types(MpdObj *mi)
 		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return NULL;
 	}
-	mpd_sendTagTypesCommand(mi->connection);
-	while((temp = mpd_getNextTagType(mi->connection)) != NULL)
+	mpd_send_list_tag_types(mi->connection);
+	while((pair = mpd_recv_tag_type_pair(mi->connection)) != NULL)
 	{
 		retv = realloc(retv,(i+2)*sizeof(*retv));
-		retv[i]   = temp;
+		retv[i]   = strdup(pair->value);
 		retv[i+1] = NULL;
 		i++;
+		mpd_return_pair(mi->connection, pair);
 	}
-	mpd_finishCommand(mi->connection);
-
+	mpd_response_finish(mi->connection);
 
 	mpd_unlock_conn(mi);
 	return retv;
@@ -1193,24 +1186,12 @@ char ** mpd_server_get_tag_types(MpdObj *mi)
 
 int mpd_misc_get_tag_by_name(char *name)
 {
-	int i;
-	if(name == NULL)
-	{
-		return MPD_ARGS_ERROR;
-	}
-	for(i=0; i < MPD_TAG_NUM_OF_ITEM_TYPES; i++)
-	{
-		if(!strcasecmp(mpdTagItemKeys[i], name))
-		{
-			return i;
-		}
-	}
-	return MPD_TAG_NOT_FOUND;
+	return mpd_tag_name_iparse(name);
 }
 
 int mpd_server_update_outputs(MpdObj *mi)
 {
-	mpd_OutputEntity *output = NULL;
+	struct mpd_output *output = NULL;
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"not connected\n");
@@ -1221,15 +1202,15 @@ int mpd_server_update_outputs(MpdObj *mi)
 		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
-	mpd_sendOutputsCommand(mi->connection);
-	while (( output = mpd_getNextOutput(mi->connection)) != NULL)
+	mpd_send_outputs(mi->connection);
+	while (( output = mpd_recv_output(mi->connection)) != NULL)
 	{
 		mi->num_outputs++;
 		mi->output_states = realloc(mi->output_states,mi->num_outputs*sizeof(int));
 		mi->output_states[mi->num_outputs-1] = FALSE;/*output->enabled;*/
-		mpd_freeOutputElement(output);
+		mpd_output_free(output);
 	}
-	mpd_finishCommand(mi->connection);
+	mpd_response_finish(mi->connection);
 	return mpd_unlock_conn(mi);
 }
 
@@ -1241,13 +1222,13 @@ int mpd_server_has_idle(MpdObj *mi)
 int mpd_server_tag_supported(MpdObj *mi, int tag)
 {
 	if(!mi) return FALSE;
-	if(tag < 0 || tag >= MPD_TAG_NUM_OF_ITEM_TYPES) {
+	if(tag < 0 || tag >= MPD_TAG_COUNT) {
 		return FALSE;
 	}
 	return mi->supported_tags[tag];
 }
 
-int mpd_server_set_replaygain_mode(MpdObj *mi, MpdServerReplaygainMode mode)
+int mpd_server_set_replaygain_mode(MpdObj *mi, enum mpd_replay_gain_mode mode)
 {
 	if(!mpd_check_connected(mi))
 	{
@@ -1259,54 +1240,24 @@ int mpd_server_set_replaygain_mode(MpdObj *mi, MpdServerReplaygainMode mode)
 		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
-	switch(mode){
-	case MPD_SERVER_REPLAYGAIN_MODE_AUTO:
-		mpd_sendSetReplayGainMode(mi->connection, "auto");
-		break;
-	case MPD_SERVER_REPLAYGAIN_MODE_TRACK:
-		mpd_sendSetReplayGainMode(mi->connection, "track");
-		break;
-	case MPD_SERVER_REPLAYGAIN_MODE_ALBUM:
-		mpd_sendSetReplayGainMode(mi->connection, "album");
-		break;
-	default:
-		mpd_sendSetReplayGainMode(mi->connection, "off");
-		break;
-	}
-	mpd_finishCommand(mi->connection);
+	mpd_run_replay_gain_mode(mi->connection, mode);
 	return mpd_unlock_conn(mi);
 }
 
-MpdServerReplaygainMode mpd_server_get_replaygain_mode(MpdObj *mi)
+enum mpd_replay_gain_mode mpd_server_get_replaygain_mode(MpdObj *mi)
 {
-	char *var;
-	MpdServerReplaygainMode retv = MPD_SERVER_REPLAYGAIN_MODE_OFF;
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_ERROR, "Not Connected\n");
-		return retv;
+		return MPD_REPLAY_UNKNOWN;
 	}
 
 	if(mpd_lock_conn(mi))
 	{
-		return retv;
+		return MPD_REPLAY_UNKNOWN;
 	}
 
-	mpd_sendReplayGainModeCommand(mi->connection);
-
-	var = mpd_getReplayGainMode(mi->connection);
-	if(var)
-	{
-		if(strcmp(var, "track")==0) {
-			retv = MPD_SERVER_REPLAYGAIN_MODE_TRACK;
-		}else if(strcmp(var, "album")==0) {
-			retv = MPD_SERVER_REPLAYGAIN_MODE_ALBUM;
-		}else if (strcmp(var, "auto") == 0) {
-			retv = MPD_SERVER_REPLAYGAIN_MODE_AUTO;
-		}
-		free(var);
-	}
-	mpd_finishCommand(mi->connection);
+	enum mpd_replay_gain_mode retv = mpd_run_replay_gain_status(mi->connection);
 
 	mpd_unlock_conn(mi);
 

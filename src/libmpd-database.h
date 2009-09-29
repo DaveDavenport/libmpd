@@ -78,7 +78,7 @@ int 	mpd_database_update_dir		(MpdObj *mi,const char *path);
  * WARNING: This function is deprecated, use mpd_database_search_start 
  * @returns a #MpdData list
  */
-MpdData * mpd_database_find(MpdObj *mi, int table,const char *string, int exact);
+MpdData * mpd_database_find(MpdObj *mi, enum mpd_tag_type table,const char *string, int exact);
 
 /**
  * @param mi a #MpdObj
@@ -109,7 +109,7 @@ MpdData * mpd_database_get_directory_recursive(MpdObj *mi, const char *path);
  *
  * @returns a #mpd_Song
  */
-mpd_Song * mpd_database_get_fileinfo(MpdObj *mi,const char *path);
+struct mpd_song * mpd_database_get_fileinfo(MpdObj *mi,const char *path);
 
 /*@}*/
 
@@ -122,12 +122,12 @@ mpd_Song * mpd_database_get_fileinfo(MpdObj *mi,const char *path);
 
 /**
  * @param mi A #MpdObj
- * @param field A #mpd_TagItems
+ * @param field A #mpd_tag_type
  * @param value a string that %field needs to match
  *
  * Adds a constraint to the search 
  */
-void mpd_database_search_add_constraint(MpdObj *mi, mpd_TagItems field, const char *value);
+void mpd_database_search_add_constraint(MpdObj *mi, enum mpd_tag_type field, const char *value);
 
 /**
  * @param mi A #MpdObj
@@ -138,7 +138,7 @@ void mpd_database_search_add_constraint(MpdObj *mi, mpd_TagItems field, const ch
  *
  * @code
  * mpd_database_search_start(mi, TRUE);
- * mpd_database_search_add_constraint(mi, MPD_TAG_ITEM_ARTIST, "Eric Clapton");
+ * mpd_database_search_add_constraint(mi, MPD_TAG_ARTIST, "Eric Clapton");
  * data= mpd_database_search_commit(mi);
  * @endcode
  *
@@ -146,8 +146,8 @@ void mpd_database_search_add_constraint(MpdObj *mi, mpd_TagItems field, const ch
  *
  * @code
  * mpd_database_search_start(mi, TRUE);
- * mpd_database_search_add_constraint(mi, MPD_TAG_ITEM_ARTIST, "Eric Clapton");
- * mpd_database_search_add_constraint(mi, MPD_TAG_ITEM_ALBUM, "Unplugged");
+ * mpd_database_search_add_constraint(mi, MPD_TAG_ARTIST, "Eric Clapton");
+ * mpd_database_search_add_constraint(mi, MPD_TAG_ALBUM, "Unplugged");
  * data= mpd_database_search_commit(mi);
  * @endcode
  *
@@ -163,7 +163,7 @@ void mpd_database_search_start(MpdObj *mi, int exact);
  * Starts a field search, eg. if you want a list of all albums, you do;
  * 
  * @code 
- * mpd_database_search_field_start(mi, MPD_TAG_ITEM_ALBUM);
+ * mpd_database_search_field_start(mi, MPD_TAG_ALBUM);
  * data = mpd_database_search_commit(mi);
  * @endcode
  * 
@@ -171,12 +171,12 @@ void mpd_database_search_start(MpdObj *mi, int exact);
  * all albums by eric clapton:
  * 
  * @code
- * mpd_database_search_field_start(mi, MPD_TAG_ITEM_ALBUM);
- * mpd_database_search_add_constraint(mi, MPD_TAG_ITEM_ARTIST, "Eric Clapton");
+ * mpd_database_search_field_start(mi, MPD_TAG_ALBUM);
+ * mpd_database_search_add_constraint(mi, MPD_TAG_ARTIST, "Eric Clapton");
  * data = mpd_database_search_commit(mi);
  * @endcode
  */
-void mpd_database_search_field_start(MpdObj *mi, mpd_TagItems field);
+void mpd_database_search_field_start(MpdObj *mi, enum mpd_tag_type field);
 
 /**
  * @param mi A #MpdObj
@@ -201,10 +201,10 @@ MpdData * mpd_database_search_commit(MpdObj *mi);
 /*! \var typedef mpd_SearchStat MpdDBStats 
     \brief A Structure containing numberOfSongs and playTime 
     
-    see #mpd_SearchStats
+    see #mpd_stats
 */
 
-typedef mpd_SearchStats MpdDBStats;
+typedef struct mpd_stats MpdDBStats;
 
 /**
  * @param mi A #MpdObj

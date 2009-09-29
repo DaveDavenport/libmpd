@@ -23,7 +23,6 @@ int mpd_sticker_supported ( MpdObj *mi)
 
 char * mpd_sticker_song_get(MpdObj *mi, const char *path, const char *tag)
 {
-	char *retv_value = NULL;
 	char *retv = NULL;
 	if(!mpd_check_connected(mi))
 	{
@@ -40,16 +39,16 @@ char * mpd_sticker_song_get(MpdObj *mi, const char *path, const char *tag)
 		return NULL;
 	}
 
-	mpd_sendGetSongSticker(mi->connection,path, tag);
-	retv_value = mpd_getNextSticker(mi->connection);
-	mpd_finishCommand(mi->connection);
-	if(retv_value && strlen(retv_value) > strlen(tag)){
-		retv = g_strdup(&retv_value[strlen(tag)]+1);
+	mpd_send_sticker_get(mi->connection, "song", path, tag);
+	struct mpd_pair *pair = mpd_recv_sticker(mi->connection);
+	if (pair != NULL) {
+		if (strlen(pair->value) > strlen(tag))
+			retv = g_strdup(&pair->value[strlen(tag)]+1);
+		mpd_return_pair(mi->connection, pair);
 	}
-	free(retv_value);
-	if(mi->connection->error == MPD_ERROR_ACK && mi->connection->errorCode == MPD_ACK_ERROR_NO_EXIST)
+	if(mpd_connection_get_error(mi->connection) == MPD_ERROR_SERVER && mpd_connection_get_server_error(mi->connection) == MPD_SERVER_ERROR_NO_EXIST)
 	{
-		mpd_clearError(mi->connection);
+		mpd_run_clearerror(mi->connection);
 		g_free(retv);
 		retv = NULL;
 	}
@@ -79,8 +78,7 @@ int mpd_sticker_song_set(MpdObj *mi, const char *path, const char *tag, const ch
 		return MPD_LOCK_FAILED;
 	}
 
-	mpd_sendSetSongSticker(mi->connection,path, tag,value);
-	mpd_finishCommand(mi->connection);
+	mpd_run_sticker_set(mi->connection, "song", path, tag, value);
 	if(mpd_unlock_conn(mi))
 	{
 		debug_printf(DEBUG_ERROR, "Failed to unlock");

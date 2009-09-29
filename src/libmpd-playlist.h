@@ -55,7 +55,7 @@ long long	mpd_playlist_get_old_playlist_id         (MpdObj *mi);
  *
  * @returns a mpd_Song
  */
-mpd_Song *	mpd_playlist_get_song			(MpdObj *mi, int songid);
+struct mpd_song *	mpd_playlist_get_song			(MpdObj *mi, int songid);
 
 
 /**
@@ -67,7 +67,7 @@ mpd_Song *	mpd_playlist_get_song			(MpdObj *mi, int songid);
  * @returns a mpd_Song
  */
 
-mpd_Song * mpd_playlist_get_song_from_pos(MpdObj *mi, int songpos);
+struct mpd_song * mpd_playlist_get_song_from_pos(MpdObj *mi, int songpos);
 
 
 /**
@@ -91,7 +91,7 @@ MpdData * mpd_playlist_get_song_from_pos_range(MpdObj *mi, int start, int stop);
  * @returns a mpd_Song, this is an internally cached version, and should not be freed. It's also not guaranteed to stay valid (it will be inside the same function if no other mpd_* function gets called.)
  * if you need to keep it around, make a copy.
  */
-mpd_Song *	mpd_playlist_get_current_song		(MpdObj *mi);
+struct mpd_song *	mpd_playlist_get_current_song		(MpdObj *mi);
 
 
 /**
@@ -309,7 +309,7 @@ MpdData * mpd_playlist_search_commit(MpdObj *mi);
  *
  * Adds a constraint to the playlist search.
  */
-void mpd_playlist_search_add_constraint(MpdObj *mi, mpd_TagItems field, const char *value);
+void mpd_playlist_search_add_constraint(MpdObj *mi, enum mpd_tag_type field, const char *value);
 
 /*@}*/
 

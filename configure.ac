@@ -44,6 +44,10 @@ PKG_CHECK_MODULES([glib], glib-2.0 >= 2.16)
 AC_SUBST(glib_LIBS)
 AC_SUBST(glib_CFLAGS)
 
+dnl Check for libmpdclient 2.0
+PKG_CHECK_MODULES([LIBMPDCLIENT], [libmpdclient >= 2.16],,
+	[AC_MSG_ERROR([libmpdclient2 is required])])
+
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdlib.h string.h unistd.h])

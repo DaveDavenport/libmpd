@@ -41,7 +41,7 @@ int mpd_status_queue_update(MpdObj *mi)
 	}
 	if(mi->status != NULL)
 	{
-		mpd_freeStatus(mi->status);
+		mpd_status_free(mi->status);
 		mi->status = NULL;
 	}
 	return MPD_OK;
@@ -66,11 +66,10 @@ int mpd_status_update(MpdObj *mi)
 
 	if(mi->status != NULL)
 	{
-		mpd_freeStatus(mi->status);
+		mpd_status_free(mi->status);
 		mi->status = NULL;
 	}
-	mpd_sendStatusCommand(mi->connection);
-	mi->status = mpd_getStatus(mi->connection);
+	mi->status = mpd_run_status(mi->connection);
 	if(mi->status == NULL)
 	{
 		debug_printf(DEBUG_ERROR,"Failed to grab status from mpd\n");
@@ -89,7 +88,7 @@ int mpd_status_update(MpdObj *mi)
 	memcpy(&(mi->OldState), &(mi->CurrentState), sizeof(MpdServerState));
 
 	/* playlist change */
-	if(mi->CurrentState.playlistid != mi->status->playlist)
+	if(mi->CurrentState.playlistid != mpd_status_get_queue_version(mi->status))
 	{
 		/* print debug message */
 		debug_printf(DEBUG_INFO, "Playlist has changed!");
@@ -98,132 +97,137 @@ int mpd_status_update(MpdObj *mi)
 		/* tags might have been updated */
 		if(mi->CurrentSong != NULL)
 		{
-			mpd_freeSong(mi->CurrentSong);
+			mpd_song_free(mi->CurrentSong);
 			mi->CurrentSong = NULL;
 		}
 
 		/* set MPD_CST_PLAYLIST to be changed */
 		what_changed |= MPD_CST_PLAYLIST;
 
-		if(mi->CurrentState.playlistLength == mi->status->playlistLength)
+		if(mi->CurrentState.playlistLength == mpd_status_get_queue_length(mi->status))
 		{
 			// what_changed |= MPD_CST_SONGID;
 		}
 		/* save new id */
-		mi->CurrentState.playlistid = mi->status->playlist;
+		mi->CurrentState.playlistid = mpd_status_get_queue_version(mi->status);
 	}
 
 	/* state change */
-	if(mi->CurrentState.state != mi->status->state)
+	if(mi->CurrentState.state != mpd_status_get_state(mi->status))
 	{
 		what_changed |= MPD_CST_STATE;
-		mi->CurrentState.state = mi->status->state;
+		mi->CurrentState.state = mpd_status_get_state(mi->status);
 	}
 
-	if(mi->CurrentState.songid != mi->status->songid)
+	if(mi->CurrentState.songid != mpd_status_get_song_id(mi->status))
 	{
 		/* print debug message */
-		debug_printf(DEBUG_INFO, "Songid has changed %i %i!", mi->OldState.songid, mi->status->songid);
+		debug_printf(DEBUG_INFO, "Songid has changed %i %i!", mi->OldState.songid, mpd_status_get_song_id(mi->status));
 
 		what_changed |= MPD_CST_SONGID;
 		/* save new songid */
-		mi->CurrentState.songid = mi->status->songid;
+		mi->CurrentState.songid = mpd_status_get_song_id(mi->status);
 
 	}
-	if(mi->CurrentState.songpos != mi->status->song)
+	if(mi->CurrentState.songpos != mpd_status_get_song_pos(mi->status))
 	{
 		/* print debug message */
-		debug_printf(DEBUG_INFO, "Songpos has changed %i %i!", mi->OldState.songpos, mi->status->song);
+		debug_printf(DEBUG_INFO, "Songpos has changed %i %i!", mi->OldState.songpos, mpd_status_get_song_pos(mi->status));
 
 		what_changed |= MPD_CST_SONGPOS;
 		/* save new songid */
-		mi->CurrentState.songpos = mi->status->song;
+		mi->CurrentState.songpos = mpd_status_get_song_pos(mi->status);
 
 	}
-	if(mi->CurrentState.nextsongid != mi->status->nextsongid || mi->CurrentState.nextsongpos != mi->status->nextsong)
+	if(mi->CurrentState.nextsongid != mpd_status_get_next_song_id(mi->status) || mi->CurrentState.nextsongpos != mpd_status_get_next_song_pos(mi->status))
 	{
 		what_changed |= MPD_CST_NEXTSONG;
 		/* save new songid */
-		mi->CurrentState.nextsongpos = mi->status->nextsong;
-		mi->CurrentState.nextsongid = mi->status->nextsongid;
+		mi->CurrentState.nextsongpos = mpd_status_get_next_song_pos(mi->status);
+		mi->CurrentState.nextsongid = mpd_status_get_next_song_id(mi->status);
 	}
 
-	if(mi->CurrentState.single != mi->status->single)
+	if(mi->CurrentState.single != mpd_status_get_single(mi->status))
 	{
 		what_changed |= MPD_CST_SINGLE_MODE;
-		mi->CurrentState.single = mi->status->single;
+		mi->CurrentState.single = mpd_status_get_single(mi->status);
 	}
-	if(mi->CurrentState.consume != mi->status->consume)
+	if(mi->CurrentState.consume != mpd_status_get_consume(mi->status))
 	{
 		what_changed |= MPD_CST_CONSUME_MODE;
-		mi->CurrentState.consume = mi->status->consume;
+		mi->CurrentState.consume = mpd_status_get_consume(mi->status);
 	}
-	if(mi->CurrentState.repeat != mi->status->repeat)
+	if(mi->CurrentState.repeat != mpd_status_get_repeat(mi->status))
 	{
 		what_changed |= MPD_CST_REPEAT;
-		mi->CurrentState.repeat = mi->status->repeat;
+		mi->CurrentState.repeat = mpd_status_get_repeat(mi->status);
 	}
-	if(mi->CurrentState.random != mi->status->random)
+	if(mi->CurrentState.random != mpd_status_get_random(mi->status))
 	{
 		what_changed |= MPD_CST_RANDOM;
-		mi->CurrentState.random = mi->status->random;
+		mi->CurrentState.random = mpd_status_get_random(mi->status);
 	}
-	if(mi->CurrentState.volume != mi->status->volume)
+	if(mi->CurrentState.volume != mpd_status_get_volume(mi->status))
 	{
 		what_changed |= MPD_CST_VOLUME;
-		mi->CurrentState.volume = mi->status->volume;
+		mi->CurrentState.volume = mpd_status_get_volume(mi->status);
 	}
-	if(mi->CurrentState.xfade != mi->status->crossfade)
+	if(mi->CurrentState.xfade != mpd_status_get_crossfade(mi->status))
 	{
 		what_changed |= MPD_CST_CROSSFADE;
-		mi->CurrentState.xfade = mi->status->crossfade;
+		mi->CurrentState.xfade = mpd_status_get_crossfade(mi->status);
 	}
-	if(mi->CurrentState.totaltime != mi->status->totalTime)
+	if(mi->CurrentState.totaltime != mpd_status_get_total_time(mi->status))
 	{
 		what_changed |= MPD_CST_TOTAL_TIME;
-		mi->CurrentState.totaltime = mi->status->totalTime;
+		mi->CurrentState.totaltime = mpd_status_get_total_time(mi->status);
 	}
-	if(mi->CurrentState.elapsedtime != mi->status->elapsedTime)
+	if(mi->CurrentState.elapsedtime != mpd_status_get_elapsed_time(mi->status))
 	{
 		what_changed |= MPD_CST_ELAPSED_TIME;
-		mi->CurrentState.elapsedtime = mi->status->elapsedTime;
+		mi->CurrentState.elapsedtime = mpd_status_get_elapsed_time(mi->status);
 	}
 
 	/* Check if bitrate changed, happens with vbr encodings. */
-	if(mi->CurrentState.bitrate != mi->status->bitRate)
+	if(mi->CurrentState.bitrate != mpd_status_get_kbit_rate(mi->status))
 	{
 		what_changed |= MPD_CST_BITRATE;
-		mi->CurrentState.bitrate = mi->status->bitRate;
+		mi->CurrentState.bitrate = mpd_status_get_kbit_rate(mi->status);
 	}
 
 	/* The following 3 probly only happen on a song change, or is it possible in one song/stream? */
+
+	struct mpd_audio_format format = { .bits = MPD_SAMPLE_FORMAT_UNDEFINED };
+	const struct mpd_audio_format *f = mpd_status_get_audio_format(mi->status);
+	if (f != NULL)
+		format = *f;
+
 	/* Check if the sample rate changed */
-	if(mi->CurrentState.samplerate != mi->status->sampleRate)
+	if(mi->CurrentState.samplerate != format.sample_rate)
 	{
 		what_changed |= MPD_CST_AUDIOFORMAT;
-		mi->CurrentState.samplerate = mi->status->sampleRate;
+		mi->CurrentState.samplerate = format.sample_rate;
 	}
 
 	/* check if the sampling depth changed */
-	if(mi->CurrentState.bits != mi->status->bits)
+	if(mi->CurrentState.bits != format.bits)
 	{
 		what_changed |= MPD_CST_AUDIOFORMAT;
-		mi->CurrentState.bits = mi->status->bits;
+		mi->CurrentState.bits = format.bits;
 	}
 
 	/* Check if the amount of audio channels changed */
-	if(mi->CurrentState.channels != mi->status->channels)
+	if(mi->CurrentState.channels != format.channels)
 	{
 		what_changed |= MPD_CST_AUDIOFORMAT;
-		mi->CurrentState.channels = mi->status->channels;
+		mi->CurrentState.channels = format.channels;
 	}
 
-	if(mi->status->error)
+	if(mpd_status_get_error(mi->status) != NULL)
 	{
 		what_changed |= MPD_CST_SERVER_ERROR;
-		strcpy(mi->CurrentState.error,mi->status->error);
-		mpd_sendClearErrorCommand(mi->connection);
-		mpd_finishCommand(mi->connection);
+		strcpy(mi->CurrentState.error, mpd_status_get_error(mi->status));
+		mpd_run_clearerror(mi->connection);
 	}
 	else
 	{
@@ -233,18 +237,18 @@ int mpd_status_update(MpdObj *mi)
 	/* Check if the updating changed,
 	 * If it stopped, also update the stats for the new db-time.
 	 */
-	if(mi->CurrentState.updatingDb != mi->status->updatingDb )
+	if(mi->CurrentState.updatingDb != mpd_status_get_update_id(mi->status))
 	{
 		what_changed |= MPD_CST_UPDATING;
-		if(!mi->status->updatingDb)
+		if(mpd_status_get_update_id(mi->status) == 0)
 		{
 			mpd_stats_update_real(mi, &what_changed);
 		}
-		mi->CurrentState.updatingDb = mi->status->updatingDb;
+		mi->CurrentState.updatingDb = mpd_status_get_update_id(mi->status);
 	}
 
 
-	mi->CurrentState.playlistLength = mi->status->playlistLength;
+	mi->CurrentState.playlistLength = mpd_status_get_queue_length(mi->status);
 
 
 	/* Detect changed outputs */
@@ -252,25 +256,26 @@ int mpd_status_update(MpdObj *mi)
 	{
 		if(mi->num_outputs >0 )
 		{
-			mpd_OutputEntity *output = NULL;
-			mpd_sendOutputsCommand(mi->connection);
-			while (( output = mpd_getNextOutput(mi->connection)) != NULL)
+			struct mpd_output *output = NULL;
+			mpd_send_outputs(mi->connection);
+			while (( output = mpd_recv_output(mi->connection)) != NULL)
 			{
-				if(mi->num_outputs < output->id)
+				const unsigned id = mpd_output_get_id(output);
+				if(mi->num_outputs < id)
 				{
 					mi->num_outputs++;
 					mi->output_states = realloc(mi->output_states,mi->num_outputs*sizeof(int));
-					mi->output_states[mi->num_outputs] = output->enabled;
+					mi->output_states[mi->num_outputs] = mpd_output_get_enabled(output);
 					what_changed |= MPD_CST_OUTPUT;
 				}
-				if(mi->output_states[output->id] != output->enabled)
+				if(mi->output_states[id] != mpd_output_get_enabled(output))
 				{
-					mi->output_states[output->id] = output->enabled;
+					mi->output_states[id] = mpd_output_get_enabled(output);
 					what_changed |= MPD_CST_OUTPUT;
 				}
-				mpd_freeOutputElement(output);
+				mpd_output_free(output);
 			}
-			mpd_finishCommand(mi->connection);
+			mpd_response_finish(mi->connection);
 		}
 		else
 		{
@@ -283,32 +288,34 @@ int mpd_status_update(MpdObj *mi)
 			what_changed |= MPD_CST_OUTPUT;
 		}
 	}else {
-		char *name;
 		int update_stats = 0;
-		mpd_sendGetEventsCommand(mi->connection);
-		while((name = mpd_getNextEvent(mi->connection))){
-			if(strcmp(name, "output") == 0){
-				what_changed |= MPD_CST_OUTPUT;
-			}else if (strcmp(name, "database") == 0) {
-				if((what_changed&MPD_CST_DATABASE) == 0)
-				{
-					update_stats = 1;
-				}
-				what_changed |= MPD_CST_DATABASE;
-			}else if (strcmp(name, "stored_playlist")==0) {
-				what_changed |= MPD_CST_STORED_PLAYLIST;
-			}else if (strcmp(name, "playlist") == 0) {
-				what_changed |= MPD_CST_PLAYLIST;
-			}else if (strcmp (name, "sticker") == 0) {
-				what_changed |= MPD_CST_STICKER;
-				/* This means repeat,random, replaygain or crossface changed */
-			}else if (strcmp (name, "options") == 0) {
-				what_changed |= MPD_CST_REPLAYGAIN;
-			}
+		mpd_send_idle(mi->connection);
+		enum mpd_idle idle = mpd_run_noidle(mi->connection);
 
-			free(name);
+		if (idle & MPD_IDLE_OUTPUT)
+			what_changed |= MPD_CST_OUTPUT;
+
+		if (idle & MPD_IDLE_DATABASE) {
+			if ((what_changed & MPD_CST_DATABASE) == 0)
+			{
+				update_stats = 1;
+			}
+			what_changed |= MPD_CST_DATABASE;
 		}
-		mpd_finishCommand(mi->connection);
+
+		if (idle & MPD_IDLE_STORED_PLAYLIST)
+			what_changed |= MPD_CST_STORED_PLAYLIST;
+
+		if (idle & MPD_IDLE_PLAYLIST)
+			what_changed |= MPD_CST_PLAYLIST;
+
+		if (idle & MPD_IDLE_STICKER)
+			what_changed |= MPD_CST_STICKER;
+
+		/* This means repeat,random, replaygain or crossface changed */
+		if (idle & MPD_IDLE_OPTIONS)
+			what_changed |= MPD_CST_REPLAYGAIN;
+
 		if(update_stats) {
 			mpd_stats_update_real(mi, &what_changed);
 		}
@@ -361,7 +368,7 @@ int mpd_stats_get_total_songs(MpdObj *mi)
 		debug_printf(DEBUG_ERROR,"Failed to get status\n");
 		return MPD_STATUS_FAILED;
 	}
-	return mi->stats->numberOfSongs;
+	return mpd_stats_get_number_of_songs(mi->stats);
 }
 
 int mpd_stats_get_total_artists(MpdObj *mi)
@@ -376,7 +383,7 @@ int mpd_stats_get_total_artists(MpdObj *mi)
 		debug_printf(DEBUG_ERROR,"Failed to get status\n");
 		return MPD_STATS_FAILED;
 	}
-	return mi->stats->numberOfArtists;
+	return mpd_stats_get_number_of_artists(mi->stats);
 }
 
 int mpd_stats_get_total_albums(MpdObj *mi)
@@ -391,11 +398,11 @@ int mpd_stats_get_total_albums(MpdObj *mi)
 		debug_printf(DEBUG_WARNING,"Failed to get status\n");
 		return MPD_STATS_FAILED;
 	}
-	return mi->stats->numberOfAlbums;
+	return mpd_stats_get_number_of_albums(mi->stats);
 }
 
 
-int mpd_stats_get_uptime(MpdObj *mi)
+int libmpd_stats_get_uptime(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
@@ -407,7 +414,7 @@ int mpd_stats_get_uptime(MpdObj *mi)
 		debug_printf(DEBUG_WARNING,"Failed to get status\n");
 		return MPD_STATS_FAILED;
 	}
-	return mi->stats->uptime;
+	return mpd_stats_get_uptime(mi->stats);
 }
 
 int mpd_stats_get_playtime(MpdObj *mi)
@@ -422,7 +429,7 @@ int mpd_stats_get_playtime(MpdObj *mi)
 		debug_printf(DEBUG_WARNING,"Failed to get status\n");
 		return MPD_STATS_FAILED;
 	}
-	return mi->stats->playTime;
+	return mpd_stats_get_play_time(mi->stats);
 }
 
 int mpd_stats_get_db_playtime(MpdObj *mi)
@@ -437,7 +444,7 @@ int mpd_stats_get_db_playtime(MpdObj *mi)
 		debug_printf(DEBUG_WARNING,"Failed to get stats\n");
 		return MPD_STATS_FAILED;
 	}
-	return mi->stats->dbPlayTime;
+	return mpd_stats_get_db_play_time(mi->stats);
 }
 
 
@@ -456,7 +463,7 @@ int mpd_stats_get_db_playtime(MpdObj *mi)
 
 
 
-int mpd_status_get_volume(MpdObj *mi)
+int libmpd_status_get_volume(MpdObj *mi)
 {
 	if(mi == NULL)
 	{
@@ -468,7 +475,7 @@ int mpd_status_get_volume(MpdObj *mi)
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
 		return MPD_STATUS_FAILED;
 	}
-	return mi->status->volume;
+	return mpd_status_get_volume(mi->status);
 }
 
 
@@ -564,7 +571,7 @@ int mpd_status_get_total_song_time(MpdObj *mi)
 		debug_printf(DEBUG_WARNING, "Failed to get status\n");
 		return MPD_STATUS_FAILED;
 	}
-	return mi->status->totalTime;
+	return mpd_status_get_total_time(mi->status);
 }
 
 
@@ -580,7 +587,7 @@ int mpd_status_get_elapsed_song_time(MpdObj *mi)
 		debug_printf(DEBUG_WARNING,"Failed to get status\n");
 		return MPD_STATUS_FAILED;
 	}
-	return mi->status->elapsedTime;
+	return mpd_status_get_elapsed_time(mi->status);
 }
 
 int mpd_status_set_volume(MpdObj *mi,int volume)
@@ -600,18 +607,17 @@ int mpd_status_set_volume(MpdObj *mi,int volume)
 	}
 
 	/* send the command */
-	mpd_sendSetvolCommand(mi->connection , volume);
-	mpd_finishCommand(mi->connection);
+	mpd_run_set_volume(mi->connection, volume);
 	/* check for errors */
 
 	mpd_unlock_conn(mi);
 	/* update status, because we changed it */
 	mpd_status_queue_update(mi);
 	/* return current volume */
-	return mpd_status_get_volume(mi);
+	return libmpd_status_get_volume(mi);
 }
 
-int mpd_status_get_crossfade(MpdObj *mi)
+int libmpd_status_get_crossfade(MpdObj *mi)
 {
 	if(!mpd_check_connected(mi))
 	{
@@ -623,7 +629,7 @@ int mpd_status_get_crossfade(MpdObj *mi)
 		debug_printf(DEBUG_WARNING,"Failed grabbing status\n");
 		return MPD_NOT_CONNECTED;
 	}
-	return mi->status->crossfade;
+	return mpd_status_get_crossfade(mi->status);
 }
 
 int mpd_status_set_crossfade(MpdObj *mi,int crossfade_time)
@@ -638,8 +644,7 @@ int mpd_status_set_crossfade(MpdObj *mi,int crossfade_time)
 		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
-	mpd_sendCrossfadeCommand(mi->connection, crossfade_time);
-	mpd_finishCommand(mi->connection);
+	mpd_run_crossfade(mi->connection, crossfade_time);
 
 	mpd_unlock_conn(mi);
 	mpd_status_queue_update(mi);
@@ -683,20 +688,19 @@ int mpd_stats_update_real(MpdObj *mi, ChangedStatusType* what_changed)
 
 	if(mi->stats != NULL)
 	{
-		mpd_freeStats(mi->stats);
+		mpd_stats_free(mi->stats);
 	}
-	mpd_sendStatsCommand(mi->connection);
-	mi->stats = mpd_getStats(mi->connection);
+	mi->stats = mpd_run_stats(mi->connection);
 	if(mi->stats == NULL)
 	{
 		debug_printf(DEBUG_ERROR,"Failed to grab stats from mpd\n");
 	}
-	else if(mi->stats->dbUpdateTime != mi->OldState.dbUpdateTime)  
+	else if(mpd_stats_get_db_update_time(mi->stats) != mi->OldState.dbUpdateTime)
 	{
 		debug_printf(DEBUG_INFO, "database updated\n");
 		what_changed_here |= MPD_CST_DATABASE;
 
-		mi->CurrentState.dbUpdateTime = mi->stats->dbUpdateTime;
+		mi->CurrentState.dbUpdateTime = mpd_stats_get_db_update_time(mi->stats);
 	}
 
 	if (what_changed) {

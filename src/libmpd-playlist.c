@@ -41,7 +41,7 @@ int mpd_playlist_get_playlist_length(MpdObj *mi)
 		debug_printf(DEBUG_ERROR,"Failed grabbing status\n");
 		return MPD_STATUS_FAILED;
 	}
-	return mi->status->playlistLength;
+	return mpd_status_get_queue_length(mi->status);
 }
 
 long long mpd_playlist_get_old_playlist_id(MpdObj *mi)
@@ -61,7 +61,7 @@ long long mpd_playlist_get_playlist_id(MpdObj *mi)
 		debug_printf(DEBUG_WARNING,"Failed grabbing status\n");
 		return MPD_STATUS_FAILED;
 	}
-	return mi->status->playlist;
+	return mpd_status_get_queue_version(mi->status);
 }
 int mpd_playlist_add(MpdObj *mi,const char *path)
 {
@@ -86,10 +86,8 @@ int mpd_playlist_delete_pos(MpdObj *mi, int songpos)
 /*******************************************************************************
  * PLAYLIST
  */
-mpd_Song * mpd_playlist_get_song(MpdObj *mi, int songid)
+struct mpd_song * mpd_playlist_get_song(MpdObj *mi, int songid)
 {
-	mpd_Song *song = NULL;
-	mpd_InfoEntity *ent = NULL;
 	if(songid < 0){
 		debug_printf(DEBUG_ERROR, "songid < 0 Failed");
 		return NULL;
@@ -105,40 +103,24 @@ mpd_Song * mpd_playlist_get_song(MpdObj *mi, int songid)
 		return NULL;
 	}
 	debug_printf(DEBUG_INFO, "Trying to grab song with id: %i\n", songid);
-	mpd_sendPlaylistIdCommand(mi->connection, songid);
-	ent = mpd_getNextInfoEntity(mi->connection);
-	mpd_finishCommand(mi->connection);
+	struct mpd_song *song = mpd_run_get_queue_song_id(mi->connection, songid);
 
 	if(mpd_unlock_conn(mi))
 	{
-		if(ent) mpd_freeInfoEntity(ent);
+		if(song) mpd_song_free(song);
 		return NULL;
 	}
 
-	if(ent == NULL)
+	if(song == NULL)
 	{
 		debug_printf(DEBUG_ERROR, "Failed to grab song from mpd\n");
-		return NULL;
 	}
-
-	if(ent->type != MPD_INFO_ENTITY_TYPE_SONG)
-	{
-		mpd_freeInfoEntity(ent);
-		debug_printf(DEBUG_ERROR, "Failed to grab correct song type from mpd\n");
-		return NULL;
-	}
-	song = ent->info.song;
-	ent->info.song = NULL;
-
-	mpd_freeInfoEntity(ent);
 
 	return song;
 }
 
-mpd_Song * mpd_playlist_get_song_from_pos(MpdObj *mi, int songpos)
+struct mpd_song * mpd_playlist_get_song_from_pos(MpdObj *mi, int songpos)
 {
-	mpd_Song *song = NULL;
-	mpd_InfoEntity *ent = NULL;
 	if(songpos < 0){
 		debug_printf(DEBUG_ERROR, "songpos < 0 Failed");
 		return NULL;
@@ -154,9 +136,7 @@ mpd_Song * mpd_playlist_get_song_from_pos(MpdObj *mi, int songpos)
 		return NULL;
 	}
 	debug_printf(DEBUG_INFO, "Trying to grab song with id: %i\n", songpos);
-	mpd_sendPlaylistInfoCommand(mi->connection, songpos);
-	ent = mpd_getNextInfoEntity(mi->connection);
-	mpd_finishCommand(mi->connection);
+	struct mpd_song *song = mpd_run_get_queue_song_pos(mi->connection, songpos);
 
 	if(mpd_unlock_conn(mi))
 	{
@@ -164,22 +144,10 @@ mpd_Song * mpd_playlist_get_song_from_pos(MpdObj *mi, int songpos)
 		return NULL;
 	}
 
-	if(ent == NULL)
+	if(song == NULL)
 	{
 		debug_printf(DEBUG_ERROR, "Failed to grab song from mpd\n");
-		return NULL;
 	}
-
-	if(ent->type != MPD_INFO_ENTITY_TYPE_SONG)
-	{
-		mpd_freeInfoEntity(ent);
-		debug_printf(DEBUG_ERROR, "Failed to grab corect song type from mpd\n");
-		return NULL;
-	}
-	song = ent->info.song;
-	ent->info.song = NULL;
-
-	mpd_freeInfoEntity(ent);
 
 	return song;
 }
@@ -188,7 +156,6 @@ MpdData * mpd_playlist_get_song_from_pos_range(MpdObj *mi, int start, int stop)
 {
 	MpdData *data = NULL;
 	int i;
-	mpd_InfoEntity *ent = NULL;
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_ERROR, "Not Connected\n");
@@ -205,26 +172,22 @@ MpdData * mpd_playlist_get_song_from_pos_range(MpdObj *mi, int start, int stop)
 		return NULL;
 	}
 	/* Don't check outside playlist length */
-	if(!(stop < mi->status->playlistLength)) {
-		stop = mi->status->playlistLength -1;
+	if(!(stop < mpd_status_get_queue_length(mi->status))) {
+		stop = mpd_status_get_queue_length(mi->status) -1;
 	}
-	mpd_sendCommandListBegin(mi->connection);
+	mpd_command_list_begin(mi->connection, false);
 	for(i=start; i <= stop; i++){
-		mpd_sendPlaylistInfoCommand(mi->connection, i);
+		mpd_send_get_queue_song_pos(mi->connection, i);
 	}
-	mpd_sendCommandListEnd(mi->connection);
-	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
+	mpd_command_list_end(mi->connection);
+	struct mpd_song *song;
+	while (( song = mpd_recv_song(mi->connection)) != NULL)
 	{
-		if(ent->type == MPD_INFO_ENTITY_TYPE_SONG)
-		{
-			data = mpd_new_data_struct_append(data);
-			data->type = MPD_DATA_TYPE_SONG;
-			data->song = ent->info.song;
-			ent->info.song = NULL;
-		}
-		mpd_freeInfoEntity(ent);
+		data = mpd_new_data_struct_append(data);
+		data->type = MPD_DATA_TYPE_SONG;
+		data->song = song;
 	}
-	mpd_finishCommand(mi->connection);
+	mpd_response_finish(mi->connection);
 
 	if(mpd_unlock_conn(mi))
 	{
@@ -234,7 +197,7 @@ MpdData * mpd_playlist_get_song_from_pos_range(MpdObj *mi, int start, int stop)
 	return data;
 }
 
-mpd_Song * mpd_playlist_get_current_song(MpdObj *mi)
+struct mpd_song * mpd_playlist_get_current_song(MpdObj *mi)
 {
 	if(!mpd_check_connected(mi))
 	{
@@ -248,15 +211,15 @@ mpd_Song * mpd_playlist_get_current_song(MpdObj *mi)
 		return NULL;
 	}
 
-	if(mi->CurrentSong != NULL && mi->CurrentSong->id != mi->status->songid)
+	if(mi->CurrentSong != NULL && mpd_song_get_id(mi->CurrentSong) != mpd_status_get_song_id(mi->status))
 	{
 		debug_printf(DEBUG_WARNING, "Current song not up2date, updating\n");
-		mpd_freeSong(mi->CurrentSong);
+		mpd_song_free(mi->CurrentSong);
 		mi->CurrentSong = NULL;
 	}
 	/* only update song when playing/pasing */
 	if(mi->CurrentSong == NULL && 
-			(mpd_player_get_state(mi) != MPD_PLAYER_STOP && mpd_player_get_state(mi) != MPD_PLAYER_UNKNOWN))
+			(mpd_player_get_state(mi) != MPD_STATE_STOP && mpd_player_get_state(mi) != MPD_STATE_UNKNOWN))
 	{
 		/* TODO: this to use the geT_current_song_id function */
 		mi->CurrentSong = mpd_playlist_get_song(mi, mpd_player_get_current_song_id(mi));
@@ -282,8 +245,7 @@ int mpd_playlist_clear(MpdObj *mi)
 		return MPD_LOCK_FAILED;
 	}
 
-	mpd_sendClearCommand(mi->connection);
-	mpd_finishCommand(mi->connection);
+	mpd_run_clear(mi->connection);
 	/* hack to make it update correctly when replacing 1 song */
 	mi->CurrentState.songid = -1;
 	/* unlock */
@@ -305,8 +267,7 @@ int mpd_playlist_shuffle(MpdObj *mi)
 		return MPD_LOCK_FAILED;
 	}
 
-	mpd_sendShuffleCommand(mi->connection);
-	mpd_finishCommand(mi->connection);
+	mpd_run_shuffle(mi->connection);
 
 	/* unlock */
 	mpd_unlock_conn(mi);
@@ -328,8 +289,7 @@ int mpd_playlist_move_id(MpdObj *mi, int old_id, int new_id)
 		return MPD_LOCK_FAILED;
 	}
 
-	mpd_sendMoveIdCommand(mi->connection,old_id, new_id);
-	mpd_finishCommand(mi->connection);
+	mpd_run_move_id(mi->connection,old_id, new_id);
 
 	/* unlock */
 	mpd_unlock_conn(mi);
@@ -353,8 +313,7 @@ int mpd_playlist_set_priority(MpdObj *mi, int song_id, int priority)
 		return MPD_LOCK_FAILED;
 	}
 
-	mpd_sendSetPrioId(mi->connection,priority, song_id);
-	mpd_finishCommand(mi->connection);
+	mpd_run_prio_id(mi->connection, priority, song_id);
 
 	/* unlock */
 	mpd_unlock_conn(mi);
@@ -374,8 +333,7 @@ int mpd_playlist_move_pos(MpdObj *mi, int old_pos, int new_pos)
 		return MPD_LOCK_FAILED;
 	}
 
-	mpd_sendMoveCommand(mi->connection,old_pos, new_pos);
-	mpd_finishCommand(mi->connection);
+	mpd_run_move(mi->connection, old_pos, new_pos);
 
 	/* unlock */
 	mpd_unlock_conn(mi);
@@ -385,7 +343,6 @@ int mpd_playlist_move_pos(MpdObj *mi, int old_pos, int new_pos)
 MpdData * mpd_playlist_get_changes(MpdObj *mi,int old_playlist_id)
 {
 	MpdData *data = NULL;
-	mpd_InfoEntity *ent = NULL;
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"not connected\n");
@@ -400,26 +357,22 @@ MpdData * mpd_playlist_get_changes(MpdObj *mi,int old_playlist_id)
 	if(old_playlist_id == -1)
 	{
 		debug_printf(DEBUG_INFO,"get fresh playlist\n");
-		mpd_sendPlChangesCommand (mi->connection, 0);
+		mpd_send_queue_changes_meta(mi->connection, 0);
 /*		mpd_sendPlaylistIdCommand(mi->connection, -1); */
 	}
 	else
 	{
-		mpd_sendPlChangesCommand (mi->connection, old_playlist_id);
+		mpd_send_queue_changes_meta(mi->connection, old_playlist_id);
 	}
 
-	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
+	struct mpd_song *song;
+	while (( song = mpd_recv_song(mi->connection)) != NULL)
 	{
-		if(ent->type == MPD_INFO_ENTITY_TYPE_SONG)
-		{
-			data = mpd_new_data_struct_append(data);
-			data->type = MPD_DATA_TYPE_SONG;
-			data->song = ent->info.song;
-			ent->info.song = NULL;
-		}
-		mpd_freeInfoEntity(ent);
+		data = mpd_new_data_struct_append(data);
+		data->type = MPD_DATA_TYPE_SONG;
+		data->song = song;
 	}
-	mpd_finishCommand(mi->connection);
+	mpd_response_finish(mi->connection);
 
 	/* unlock */
 	if(mpd_unlock_conn(mi))
@@ -440,7 +393,6 @@ MpdData * mpd_playlist_get_changes(MpdObj *mi,int old_playlist_id)
 MpdData * mpd_playlist_get_changes_posid(MpdObj *mi,int old_playlist_id)
 {
 	MpdData *data = NULL;
-	mpd_InfoEntity *ent = NULL;
 	debug_printf(DEBUG_INFO, "Fetching using new plchangesposid command");
 	if(!mpd_check_connected(mi))
 	{
@@ -456,26 +408,22 @@ MpdData * mpd_playlist_get_changes_posid(MpdObj *mi,int old_playlist_id)
 	if(old_playlist_id == -1)
 	{
 		debug_printf(DEBUG_INFO,"get fresh playlist\n");
-		mpd_sendPlChangesPosIdCommand (mi->connection, 0);
+		mpd_send_queue_changes_brief(mi->connection, 0);
 /*		mpd_sendPlaylistIdCommand(mi->connection, -1); */
 	}
 	else
 	{
-		mpd_sendPlChangesPosIdCommand (mi->connection, old_playlist_id);
+		mpd_send_queue_changes_brief(mi->connection, old_playlist_id);
 	}
 
-	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
+	struct mpd_song *song;
+	while (( song = mpd_recv_song(mi->connection)) != NULL)
 	{
-		if(ent->type == MPD_INFO_ENTITY_TYPE_SONG)
-		{
-			data = mpd_new_data_struct_append(data);
-			data->type = MPD_DATA_TYPE_SONG;
-			data->song = ent->info.song;
-			ent->info.song = NULL;
-		}
-		mpd_freeInfoEntity(ent);
+		data = mpd_new_data_struct_append(data);
+		data->type = MPD_DATA_TYPE_SONG;
+		data->song = song;
 	}
-	mpd_finishCommand(mi->connection);
+	mpd_response_finish(mi->connection);
 
 	/* unlock */
 	if(mpd_unlock_conn(mi))
@@ -575,7 +523,7 @@ int mpd_playlist_queue_commit(MpdObj *mi)
 		debug_printf(DEBUG_WARNING,"lock failed\n");
 		return  MPD_LOCK_FAILED;
 	}
-	mpd_sendCommandListBegin(mi->connection);
+	mpd_command_list_begin(mi->connection, false);
 	/* get first item */
 	mi->queue = mi->queue->first;
 	while(mi->queue != NULL)
@@ -584,35 +532,35 @@ int mpd_playlist_queue_commit(MpdObj *mi)
 		{
 			if(mi->queue->path != NULL)
 			{
-				mpd_sendAddCommand(mi->connection, mi->queue->path);
+				mpd_send_add(mi->connection, mi->queue->path);
 			}
 		}
 		else if(mi->queue->type == MPD_QUEUE_LOAD)
 		{
 			if(mi->queue->path != NULL)
 			{
-				mpd_sendLoadCommand(mi->connection, mi->queue->path);
+				mpd_send_load(mi->connection, mi->queue->path);
 			}
 		}
 		else if (mi->queue->type == MPD_QUEUE_DELETE_ID)
 		{
 			if(mi->queue->id >= 0)
 			{
-				mpd_sendDeleteIdCommand(mi->connection, mi->queue->id);
+				mpd_send_delete_id(mi->connection, mi->queue->id);
 			}
 		}
 		else if (mi->queue->type == MPD_QUEUE_DELETE_POS)
 		{                                                                      		
 			if(mi->queue->id >= 0)
 			{
-				mpd_sendDeleteCommand(mi->connection, mi->queue->id);
+				mpd_send_delete(mi->connection, mi->queue->id);
 			}
 		}
 
 		mpd_queue_get_next(mi);
 	}
-	mpd_sendCommandListEnd(mi->connection);
-	mpd_finishCommand(mi->connection);
+	mpd_command_list_end(mi->connection);
+	mpd_response_finish(mi->connection);
 
     
     
@@ -696,8 +644,7 @@ int mpd_playlist_add_get_id(MpdObj *mi,const char *path)
 		debug_printf(DEBUG_WARNING,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
-	songid = mpd_sendAddIdCommand(mi->connection, path);
-	mpd_finishCommand(mi->connection);
+	songid = mpd_run_add_id(mi->connection, path);
 
 	mpd_unlock_conn(mi);
 	return songid; 
@@ -729,7 +676,7 @@ void mpd_playlist_search_start(MpdObj *mi, int exact)
 		debug_printf(DEBUG_ERROR, "Failed to lock connection");
 		return ;
 	}
-	mpd_startPlaylistSearch(mi->connection, exact);
+	mpd_search_queue_songs(mi->connection, exact);
 	/* Set search type */
 	mi->search_type = (exact)? MPD_SEARCH_TYPE_PLAYLIST_FIND:MPD_SEARCH_TYPE_PLAYLIST_SEARCH;
 	/* unlock, let the error handler handle any possible error.
@@ -738,13 +685,12 @@ void mpd_playlist_search_start(MpdObj *mi, int exact)
 	return;
 }
 
-void mpd_playlist_search_add_constraint(MpdObj *mi, mpd_TagItems field,const char *value)
+void mpd_playlist_search_add_constraint(MpdObj *mi, enum mpd_tag_type field,const char *value)
 {
 	mpd_database_search_add_constraint(mi, field, value);
 }
 MpdData * mpd_playlist_search_commit(MpdObj *mi)
 {
-	mpd_InfoEntity *ent = NULL;
 	MpdData *data = NULL;
 	if(!mpd_check_connected(mi))
 	{
@@ -761,24 +707,21 @@ MpdData * mpd_playlist_search_commit(MpdObj *mi)
 		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return NULL;
 	}
-	mpd_commitSearch(mi->connection);
-	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
+	mpd_search_commit(mi->connection);
+
+	struct mpd_song *song;
+	while (( song = mpd_recv_song(mi->connection)) != NULL)
 	{
-		if(ent->type == MPD_INFO_ENTITY_TYPE_SONG)
-		{
-			data = mpd_new_data_struct_append(data);
-			data->type = MPD_DATA_TYPE_SONG;
-			data->song = ent->info.song;
-			ent->info.song = NULL;
-		}
-		mpd_freeInfoEntity(ent);
+		data = mpd_new_data_struct_append(data);
+		data->type = MPD_DATA_TYPE_SONG;
+		data->song = song;
 	}
-	mpd_finishCommand(mi->connection);
+	mpd_response_finish(mi->connection);
 	/*
 	 * reset search type
 	 */
 	mi->search_type = MPD_SEARCH_TYPE_NONE;
-	mi->search_field = MPD_TAG_ITEM_ARTIST;
+	mi->search_field = MPD_TAG_ARTIST;
 	/* unlock */
 	if(mpd_unlock_conn(mi))
 	{
@@ -807,12 +750,11 @@ int mpd_playlist_load(MpdObj *mi, const char *path)
 		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
-	mpd_sendLoadCommand(mi->connection,path);
-	mpd_finishCommand(mi->connection);
-	if(mi->connection->errorCode == MPD_ACK_ERROR_NO_EXIST)
+	mpd_run_load(mi->connection, path);
+	if (mpd_connection_get_server_error(mi->connection))
 	{
 		debug_printf(DEBUG_WARNING, "mpd_playlist_load: failed to load playlist\n");
-		mpd_clearError(mi->connection);
+		mpd_run_clearerror(mi->connection);
 		retv = MPD_PLAYLIST_LOAD_FAILED;
 	}
 

@@ -39,6 +39,6 @@
  * @returns The length of the new formatted string
  */
 
-unsigned int mpd_song_markup(char *s, unsigned int max, const char *format, mpd_Song * song);
+unsigned int mpd_song_markup(char *s, unsigned int max, const char *format, struct mpd_song * song);
 
 #endif
