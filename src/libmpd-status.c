@@ -312,7 +312,11 @@ int mpd_status_update(MpdObj *mi)
                 what_changed |= MPD_CST_PLAYLIST;
             }else if (strcmp (name, "sticker") == 0) {
                 what_changed |= MPD_CST_STICKER;
+                /* This means repeat,random, replaygain or crossface changed */
+            }else if (strcmp (name, "options") == 0) {
+                what_changed |= MPD_CST_REPLAYGAIN;
             }
+
             free(name);
        }
        mpd_finishCommand(mi->connection);

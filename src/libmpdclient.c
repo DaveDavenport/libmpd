@@ -2105,3 +2105,22 @@ void mpd_sendSetSongSticker(mpd_Connection *connection, const char *song_path, c
     free(sSticker);
     free(sValue);
 }
+
+void mpd_sendSetReplayGainMode(mpd_Connection *connection, const char *mode)
+{
+    char *smode= mpd_sanitizeArg(mode); 
+    int len = strlen("replay_gain_mode ")+strlen(smode)+4;
+    char *string = malloc(len);
+    snprintf(string, len, "replay_gain_mode \"%s\"\n", smode);
+    mpd_sendInfoCommand(connection, string);
+    free(smode);
+    free(string);
+}
+void mpd_sendReplayGainModeCommand(mpd_Connection *connection)
+{
+	mpd_executeCommand(connection, "replay_gain_status\n");
+}
+char *mpd_getReplayGainMode(mpd_Connection *connection)
+{
+    return mpd_getNextReturnElementNamed(connection, "replay_gain_mode");
+}

@@ -1248,3 +1248,64 @@ int mpd_server_tag_supported(MpdObj *mi, int tag)
     }
     return mi->supported_tags[tag];
 }
+
+int mpd_server_set_replaygain_mode(MpdObj *mi, MpdServerReplaygainMode mode)
+{
+    if(!mpd_check_connected(mi))
+    {
+        debug_printf(DEBUG_WARNING,"not connected\n");
+        return MPD_NOT_CONNECTED;
+    }
+    if(mpd_lock_conn(mi))
+    {
+        debug_printf(DEBUG_ERROR,"lock failed\n");
+        return MPD_LOCK_FAILED;
+    }        
+    switch(mode){
+        case MPD_SERVER_REPLAYGAIN_MODE_TRACK:
+            mpd_sendSetReplayGainMode(mi->connection, "track");
+            break;
+        case MPD_SERVER_REPLAYGAIN_MODE_ALBUM:
+            mpd_sendSetReplayGainMode(mi->connection, "album");
+            break;
+        default:
+            mpd_sendSetReplayGainMode(mi->connection, "off");
+            break;
+    }
+    mpd_finishCommand(mi->connection);
+    return mpd_unlock_conn(mi);
+}
+
+MpdServerReplaygainMode mpd_server_get_replaygain_mode(MpdObj *mi)
+{
+    char *var;
+    MpdServerReplaygainMode retv = MPD_SERVER_REPLAYGAIN_MODE_OFF;
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_ERROR, "Not Connected\n");
+		return retv;
+	}
+
+	if(mpd_lock_conn(mi))
+	{
+		return retv;
+	}
+
+    mpd_sendReplayGainModeCommand(mi->connection);
+
+    var = mpd_getReplayGainMode(mi->connection);
+    if(var)
+    {
+        if(strcmp(var, "track")==0) {
+            retv = MPD_SERVER_REPLAYGAIN_MODE_TRACK;
+        }else if(strcmp(var, "album")==0) {
+            retv = MPD_SERVER_REPLAYGAIN_MODE_ALBUM;
+        }
+        free(var);
+    }
+    mpd_finishCommand(mi->connection);
+
+	mpd_unlock_conn(mi);
+
+    return retv;
+}

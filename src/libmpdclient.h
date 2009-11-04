@@ -692,6 +692,10 @@ char * mpd_getNextSticker (mpd_Connection * connection);
 void mpd_sendSetSongSticker(mpd_Connection *connection, const char *song, const char *sticker, const char *value);
 void  mpd_sendGetSongSticker(mpd_Connection *connection, const char *song, const char *sticker);
 
+void mpd_sendSetReplayGainMode(mpd_Connection *connection, const char *mode);
+
+void mpd_sendReplayGainModeCommand(mpd_Connection *connection);
+char *mpd_getReplayGainMode(mpd_Connection *connection);
 #ifdef __cplusplus
 }
 #endif

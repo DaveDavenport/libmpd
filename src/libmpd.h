@@ -389,7 +389,9 @@ typedef enum {
     /** Single mode changed */
     MPD_CST_SINGLE_MODE         = 0x400000,
     /** Consume mode changed */
-    MPD_CST_CONSUME_MODE        = 0x800000
+    MPD_CST_CONSUME_MODE        = 0x800000,
+    /** Replaygain mode changed */
+    MPD_CST_REPLAYGAIN          = 0x1000000
 } ChangedStatusType;
 
 
@@ -654,6 +656,17 @@ int mpd_server_has_idle(MpdObj *mi);
  * return 1 if support 0 if not
  */
 int mpd_server_tag_supported(MpdObj *mi, int tag);
+
+
+typedef enum {
+    MPD_SERVER_REPLAYGAIN_MODE_OFF = 0,
+    MPD_SERVER_REPLAYGAIN_MODE_TRACK = 1,
+    MPD_SERVER_REPLAYGAIN_MODE_ALBUM = 2
+}MpdServerReplaygainMode;
+
+MpdServerReplaygainMode mpd_server_get_replaygain_mode(MpdObj *mi);
+
+int mpd_server_set_replaygain_mode(MpdObj *mi, MpdServerReplaygainMode mode);
 
 #endif
 
