@@ -84,6 +84,9 @@ typedef enum {
 
 	/** Tag Item not found */
 	MPD_TAG_NOT_FOUND = -90,
+
+    /* MPD_PLALIST_LOAD_FAILED */
+    MPD_PLAYLIST_LOAD_FAILED = -100,
 	
 	/** Fatal error, something I am not sure what todo with */
 	MPD_FATAL_ERROR = -1000

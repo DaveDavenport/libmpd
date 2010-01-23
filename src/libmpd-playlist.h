@@ -341,6 +341,15 @@ int mpd_playlist_mpd_queue_add(MpdObj *mi, int songid);
  */
 int mpd_playlist_mpd_queue_remove(MpdObj *mi, int songpos);
 
+/**
+ * @param mi a #MpdObj
+ * @param path The path to a playlist to load
+ *
+ * This queues a load command. The actual load isn't done until #mpd_playlist_queue_commit is called
+ *
+ * @returns a #MpdError
+ */
+int	mpd_playlist_load		(MpdObj *mi,const char *path);
 /*@}*/
 
 #endif

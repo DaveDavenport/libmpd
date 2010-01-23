@@ -588,6 +588,9 @@ int mpd_playlist_queue_commit(MpdObj *mi)
 	}
 	mpd_sendCommandListEnd(mi->connection);
 	mpd_finishCommand(mi->connection);
+
+    
+    
 	mpd_unlock_conn(mi);
 	mpd_status_update(mi);
 	return MPD_OK;
@@ -765,3 +768,34 @@ MpdData * mpd_playlist_search_commit(MpdObj *mi)
 	return mpd_data_get_first(data);
 }
 
+
+int mpd_playlist_load(MpdObj *mi, const char *path)
+{
+    int retv = MPD_OK;
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"mpd_playlist_load: not connected\n");
+		return MPD_NOT_CONNECTED;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		debug_printf(DEBUG_ERROR,"lock failed\n");
+		return NULL;
+	}
+    mpd_sendLoadCommand(mi->connection,path);
+	mpd_finishCommand(mi->connection);
+    printf("mi->connection->errorCode: %i\n", mi->connection->errorCode);
+    if(mi->connection->errorCode == MPD_ACK_ERROR_NO_EXIST) 
+    {
+        debug_printf(DEBUG_WARNING, "mpd_playlist_load: failed to load playlist\n");
+		mpd_clearError(mi->connection);
+        retv = MPD_PLAYLIST_LOAD_FAILED;
+    }
+
+	if(mpd_unlock_conn(mi))
+	{
+		debug_printf(DEBUG_ERROR, "Failed to unlock connection");
+		return MPD_LOCK_FAILED;
+	}
+    return retv;
+}
