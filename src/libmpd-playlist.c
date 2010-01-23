@@ -784,7 +784,6 @@ int mpd_playlist_load(MpdObj *mi, const char *path)
 	}
     mpd_sendLoadCommand(mi->connection,path);
 	mpd_finishCommand(mi->connection);
-    printf("mi->connection->errorCode: %i\n", mi->connection->errorCode);
     if(mi->connection->errorCode == MPD_ACK_ERROR_NO_EXIST) 
     {
         debug_printf(DEBUG_WARNING, "mpd_playlist_load: failed to load playlist\n");
