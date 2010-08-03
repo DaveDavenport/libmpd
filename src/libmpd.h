@@ -664,7 +664,8 @@ int mpd_server_tag_supported(MpdObj *mi, int tag);
 typedef enum {
     MPD_SERVER_REPLAYGAIN_MODE_OFF = 0,
     MPD_SERVER_REPLAYGAIN_MODE_TRACK = 1,
-    MPD_SERVER_REPLAYGAIN_MODE_ALBUM = 2
+    MPD_SERVER_REPLAYGAIN_MODE_ALBUM = 2,
+    MPD_SERVER_REPLAYGAIN_MODE_AUTO = 3
 }MpdServerReplaygainMode;
 
 MpdServerReplaygainMode mpd_server_get_replaygain_mode(MpdObj *mi);

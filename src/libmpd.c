@@ -1262,6 +1262,9 @@ int mpd_server_set_replaygain_mode(MpdObj *mi, MpdServerReplaygainMode mode)
         return MPD_LOCK_FAILED;
     }        
     switch(mode){
+        case MPD_SERVER_REPLAYGAIN_MODE_AUTO:
+            mpd_sendSetReplayGainMode(mi->connection, "auto");
+            break;
         case MPD_SERVER_REPLAYGAIN_MODE_TRACK:
             mpd_sendSetReplayGainMode(mi->connection, "track");
             break;
@@ -1300,6 +1303,8 @@ MpdServerReplaygainMode mpd_server_get_replaygain_mode(MpdObj *mi)
             retv = MPD_SERVER_REPLAYGAIN_MODE_TRACK;
         }else if(strcmp(var, "album")==0) {
             retv = MPD_SERVER_REPLAYGAIN_MODE_ALBUM;
+        }else if (strcmp(var, "auto") == 0) {
+            retv = MPD_SERVER_REPLAYGAIN_MODE_AUTO;
         }
         free(var);
     }
