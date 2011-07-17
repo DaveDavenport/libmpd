@@ -436,7 +436,7 @@ static int mpd_connect_un(mpd_Connection * connection,
 		close(connection->sock);
 		connection->sock = 0;
 
-		snprintf(connection->errorStr,MPD_BUFFER_MAX_LENGTH,
+		snprintf(connection->errorStr,MPD_ERRORSTR_MAX_LENGTH,
 			 "problems connecting to \"%s\": %s",
 			 host, strerror(errno));
 		connection->error = MPD_ERROR_CONNPORT;
