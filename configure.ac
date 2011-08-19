@@ -1,8 +1,8 @@
-AC_INIT([libmpd], [11.8.17], [qball@sarine.nl])
+AC_INIT([libmpd], [11.8.18], [qball@sarine.nl])
 AM_CONFIG_HEADER(config.h)
 m4_define([package_major_version], [11])
 m4_define([package_minor_version], [8])
-m4_define([package_micro_version], [17])
+m4_define([package_micro_version], [18])
 m4_define([package_version], [package_major_version.package_minor_version.package_micro_version])
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
