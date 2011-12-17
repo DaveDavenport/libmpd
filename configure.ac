@@ -33,7 +33,7 @@ EXTRA_CFLAGS=
 EXTRA_LDFLAGS=
 case $host in
   *-*-mingw32* | *-*-windows)
-    EXTRA_CFLAGS="-mno-cygwin -mwindows -mms-bitfields -fno-strict-aliasing -DMPD_NO_GAI"
+    EXTRA_CFLAGS="-mwindows -mms-bitfields -fno-strict-aliasing -DMPD_NO_GAI"
     EXTRA_LDFLAGS="-export-all-symbols -mwindows -no-undefined -lws2_32 -mms-bitfields" ;;
   *-*-cygwin*)
     EXTRA_CFLAGS="-fno-strict-aliasing"
