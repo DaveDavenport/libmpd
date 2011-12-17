@@ -1,4 +1,4 @@
-AC_INIT([libmpd], [11.8.18], [qball@sarine.nl])
+AC_INIT([libmpd],[11.8.18],[qball@sarine.nl])
 AM_CONFIG_HEADER(config.h)
 m4_define([package_major_version], [11])
 m4_define([package_minor_version], [8])
@@ -50,7 +50,7 @@ AC_SUBST(glib_CFLAGS)
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdlib.h string.h unistd.h])
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 src/Makefile
 doc/Makefile
@@ -60,3 +60,4 @@ libmpd.pc
 src/libmpd-version.h
 doc/libmpd.doxy
 ])
+AC_OUTPUT
