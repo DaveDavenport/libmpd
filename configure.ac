@@ -1,5 +1,5 @@
 AC_INIT([libmpd], [11.8.18], [qball@sarine.nl])
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS(config.h)
 m4_define([package_major_version], [11])
 m4_define([package_minor_version], [8])
 m4_define([package_micro_version], [18])
