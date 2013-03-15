@@ -60,3 +60,4 @@ libmpd.pc
 src/libmpd-version.h
 doc/libmpd.doxy
 ])
+AC_OUTPUT
