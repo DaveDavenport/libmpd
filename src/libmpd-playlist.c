@@ -343,6 +343,10 @@ int mpd_playlist_set_priority(MpdObj *mi, int song_id, int priority)
         debug_printf(DEBUG_WARNING,"not connected\n");
         return MPD_NOT_CONNECTED;
     }
+    if(mpd_server_check_command_allowed(mi, "prioid") != MPD_SERVER_COMMAND_ALLOWED) 
+    {
+        return MPD_SERVER_NOT_SUPPORTED;
+    }
     if(mpd_lock_conn(mi))
     {
         debug_printf(DEBUG_ERROR,"lock failed\n");
