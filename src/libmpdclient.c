@@ -1023,6 +1023,7 @@ mpd_Song * mpd_newSong(void) {
 	ret->time = MPD_SONG_NO_TIME;
 	ret->pos = MPD_SONG_NO_NUM;
 	ret->id = MPD_SONG_NO_ID;
+    ret->priority = MPD_SONG_NO_PRIORITY;;
 	return ret;
 }
 
@@ -1050,6 +1051,7 @@ mpd_Song * mpd_songDup(const mpd_Song * song) {
 	ret->time = song->time;
 	ret->pos = song->pos;
 	ret->id = song->id;
+    ret->priority = song->priority;
 
 	return ret;
 }
@@ -1225,6 +1227,10 @@ mpd_InfoEntity * mpd_getNextInfoEntity(mpd_Connection * connection) {
 					strcmp(re->name,"Id")==0) {
 				entity->info.song->id = atoi(re->value);
 			}
+            else if (!(entity->info.song->priority >= 0) &&
+                    strcmp(re->name, "Prio") == 0) {
+                    entity->info.song->priority = atoi(re->value);
+            }
 			else if(!entity->info.song->date &&
 					strcmp(re->name, "Date") == 0) {
 				entity->info.song->date = strdup(re->value);
@@ -2123,4 +2129,21 @@ void mpd_sendReplayGainModeCommand(mpd_Connection *connection)
 char *mpd_getReplayGainMode(mpd_Connection *connection)
 {
     return mpd_getNextReturnElementNamed(connection, "replay_gain_mode");
+}
+
+void mpd_sendSetPrioId(mpd_Connection *connection, int id, int priority)
+{
+	int len = strlen("prioid ")+1+INTLEN+3+INTLEN+3;
+    char *str = malloc(len);
+    snprintf(str, len, "prioid \"%d\" \"%d\"\n", priority, id);
+    mpd_sendInfoCommand(connection, str);
+    free(str);
+}
+void mpd_sendSetPrio(mpd_Connection *connection, int pos, int priority)
+{
+	int len = strlen("prioid ")+1+INTLEN+3+INTLEN+3;
+    char *str = malloc(len);
+    snprintf(str, len, "prio \"%d\" \"%d\"\n", priority, pos);
+    mpd_sendInfoCommand(connection, str);
+    free(str);
 }

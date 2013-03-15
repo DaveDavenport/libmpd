@@ -320,26 +320,6 @@ void mpd_playlist_search_add_constraint(MpdObj *mi, mpd_TagItems field, const ch
 /*@{*/
 
 
-/**
- * @param mi a #MpdObj
- * @param songid the id of the song to add
- *
- * Add the song from the playlist with id songid.
- *
- * @returns a #MpdError
- */
-int mpd_playlist_mpd_queue_add(MpdObj *mi, int songid);
-
-
-/**
- * @param mi a #MpdObj
- * @param songpos the pos of the song to remove
- *
- * Removes the song from the queue at position songpos
- * 
- * @returns a #MpdError
- */
-int mpd_playlist_mpd_queue_remove(MpdObj *mi, int songpos);
 
 /**
  * @param mi a #MpdObj
@@ -350,6 +330,8 @@ int mpd_playlist_mpd_queue_remove(MpdObj *mi, int songpos);
  * @returns a #MpdError
  */
 int	mpd_playlist_load		(MpdObj *mi,const char *path);
+
+int mpd_playlist_set_priority(MpdObj *mi, int song_id, int priority);
 /*@}*/
 
 #endif

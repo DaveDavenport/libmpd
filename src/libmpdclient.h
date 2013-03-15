@@ -260,6 +260,7 @@ void mpd_freeSearchStats(mpd_SearchStats * stats);
 #define MPD_SONG_NO_TIME	-1
 #define MPD_SONG_NO_NUM		-1
 #define MPD_SONG_NO_ID		-1
+#define MPD_SONG_NO_PRIORITY		-1
 
 /* mpd_Song
  * for storing song info returned by mpd
@@ -302,6 +303,8 @@ typedef struct _mpd_Song {
 	int pos;
 	/* song id for a song in the playlist */
 	int id;
+    /* Priority  */
+    int priority;
 } mpd_Song;
 
 /* mpd_newSong
@@ -696,6 +699,10 @@ void mpd_sendSetReplayGainMode(mpd_Connection *connection, const char *mode);
 
 void mpd_sendReplayGainModeCommand(mpd_Connection *connection);
 char *mpd_getReplayGainMode(mpd_Connection *connection);
+
+
+void mpd_sendSetPrioId(mpd_Connection *connection, int id, int priority);
+void mpd_sendSetPrio(mpd_Connection *connection, int pos, int priority);
 #ifdef __cplusplus
 }
 #endif

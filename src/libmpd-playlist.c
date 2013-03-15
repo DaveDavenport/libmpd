@@ -336,6 +336,27 @@ int mpd_playlist_move_id(MpdObj *mi, int old_id, int new_id)
 	return MPD_OK;
 }
 
+int mpd_playlist_set_priority(MpdObj *mi, int song_id, int priority)
+{
+    if(!mpd_check_connected(mi))
+    {
+        debug_printf(DEBUG_WARNING,"not connected\n");
+        return MPD_NOT_CONNECTED;
+    }
+    if(mpd_lock_conn(mi))
+    {
+        debug_printf(DEBUG_ERROR,"lock failed\n");
+        return MPD_LOCK_FAILED;
+    }
+
+    mpd_sendSetPrioId(mi->connection,priority, song_id);
+    mpd_finishCommand(mi->connection);
+
+    /* unlock */
+    mpd_unlock_conn(mi);
+    return MPD_OK;
+}
+
 int mpd_playlist_move_pos(MpdObj *mi, int old_pos, int new_pos)
 {
 	if(!mpd_check_connected(mi))
@@ -780,7 +801,7 @@ int mpd_playlist_load(MpdObj *mi, const char *path)
 	if(mpd_lock_conn(mi))
 	{
 		debug_printf(DEBUG_ERROR,"lock failed\n");
-		return NULL;
+		return MPD_LOCK_FAILED;
 	}
     mpd_sendLoadCommand(mi->connection,path);
 	mpd_finishCommand(mi->connection);
