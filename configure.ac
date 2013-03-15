@@ -50,7 +50,7 @@ AC_SUBST(glib_CFLAGS)
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdlib.h string.h unistd.h])
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 src/Makefile
 doc/Makefile
