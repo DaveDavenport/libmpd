@@ -2135,7 +2135,7 @@ void mpd_sendSetPrioId(mpd_Connection *connection, int id, int priority)
 {
 	int len = strlen("prioid ")+1+INTLEN+3+INTLEN+3;
     char *str = malloc(len);
-    snprintf(str, len, "prioid \"%d\" \"%d\"\n", priority, id);
+    snprintf(str, len, "prioid \"%d\" \"%d\"\n", id, priority);
     mpd_sendInfoCommand(connection, str);
     free(str);
 }
@@ -2143,7 +2143,7 @@ void mpd_sendSetPrio(mpd_Connection *connection, int pos, int priority)
 {
 	int len = strlen("prioid ")+1+INTLEN+3+INTLEN+3;
     char *str = malloc(len);
-    snprintf(str, len, "prio \"%d\" \"%d\"\n", priority, pos);
+    snprintf(str, len, "prio \"%d\" \"%d\"\n", pos, priority);
     mpd_sendInfoCommand(connection, str);
     free(str);
 }
