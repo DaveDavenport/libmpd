@@ -1227,8 +1227,7 @@ mpd_InfoEntity * mpd_getNextInfoEntity(mpd_Connection * connection) {
 					strcmp(re->name,"Id")==0) {
 				entity->info.song->id = atoi(re->value);
 			}
-            else if (!(entity->info.song->priority >= 0) &&
-                    strcmp(re->name, "Prio") == 0) {
+            else if (strcmp(re->name, "Prio") == 0) {
                     entity->info.song->priority = atoi(re->value);
             }
 			else if(!entity->info.song->date &&
