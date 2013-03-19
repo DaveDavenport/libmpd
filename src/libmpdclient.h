@@ -260,7 +260,7 @@ void mpd_freeSearchStats(mpd_SearchStats * stats);
 #define MPD_SONG_NO_TIME	-1
 #define MPD_SONG_NO_NUM		-1
 #define MPD_SONG_NO_ID		-1
-#define MPD_SONG_NO_PRIORITY		-1
+#define MPD_SONG_NO_PRIORITY		0
 
 /* mpd_Song
  * for storing song info returned by mpd
