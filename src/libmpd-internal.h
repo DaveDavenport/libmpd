@@ -21,6 +21,7 @@
 #define __MPD_INTERNAL_LIB_
 
 #include "libmpdclient.h"
+#include <config.h>
 struct _MpdData_real;
 
 typedef struct _MpdData_real {
