@@ -1024,6 +1024,7 @@ mpd_Song * mpd_newSong(void) {
 	ret->pos = MPD_SONG_NO_NUM;
 	ret->id = MPD_SONG_NO_ID;
     ret->priority = MPD_SONG_NO_PRIORITY;;
+    ret->rating = MPD_SONG_NO_RATING;
 	return ret;
 }
 
@@ -1052,6 +1053,7 @@ mpd_Song * mpd_songDup(const mpd_Song * song) {
 	ret->pos = song->pos;
 	ret->id = song->id;
     ret->priority = song->priority;
+    ret->rating = song->rating;
 
 	return ret;
 }

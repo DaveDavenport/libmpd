@@ -260,6 +260,7 @@ void mpd_freeSearchStats(mpd_SearchStats * stats);
 #define MPD_SONG_NO_TIME	-1
 #define MPD_SONG_NO_NUM		-1
 #define MPD_SONG_NO_ID		-1
+#define MPD_SONG_NO_RATING  -1
 #define MPD_SONG_NO_PRIORITY		0
 
 /* mpd_Song
@@ -305,6 +306,8 @@ typedef struct _mpd_Song {
 	int id;
     /* Priority  */
     int priority;
+    /* rating */
+    int rating;
 } mpd_Song;
 
 /* mpd_newSong
