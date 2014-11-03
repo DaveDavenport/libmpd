@@ -30,9 +30,9 @@
 
 int mpd_database_update_dir(MpdObj *mi,const char *path)
 {
-	if(path == NULL || !strlen(path))
+	if(path == NULL)
 	{
-		debug_printf(DEBUG_ERROR, "path != NULL  and strlen(path) > 0 failed");
+		debug_printf(DEBUG_ERROR, "path != NULL failed");
 		return MPD_ARGS_ERROR;
 	}
 	if(!mpd_check_connected(mi))
