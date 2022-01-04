@@ -202,7 +202,7 @@ int mpd_check_error(MpdObj *mi)
 	if(mi->error == MPD_ERROR_ACK)
 	{
 
-		debug_printf(DEBUG_ERROR,"clearing errors in mpd_Connection: %i-%s", mi->connection->errorCode, mi->connection->errorStr);
+		debug_printf(DEBUG_ERROR,"clearing errors in mpd_Connection: %i-%s", mi->error_mpd_code, mi->error_msg);
 		mpd_clearError(mi->connection);
 		if (mi->the_error_callback)
 		{
@@ -224,7 +224,7 @@ int mpd_check_error(MpdObj *mi)
 	if(mi->error)
 	{
 
-		debug_printf(DEBUG_ERROR, "Following error occurred: %i: code: %i msg: %s", mi->error,mi->connection->errorCode, mi->error_msg);
+		debug_printf(DEBUG_ERROR, "Following error occurred: %i: code: %i msg: %s", mi->error,mi->error_mpd_code, mi->error_msg);
 
 		if (mi->the_error_callback)
 		{
