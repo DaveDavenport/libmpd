@@ -774,7 +774,6 @@ mpd_Status * mpd_getStatus(mpd_Connection * connection) {
 	mpd_Status* status = g_slice_new0(mpd_Status);
 	status->volume = -1;
 	status->playlist = -1;
-	status->storedplaylist = -1;
 	status->playlistLength = -1;
 	status->state = -1;
 	status->nextsong = -1;

@@ -186,8 +186,8 @@ mpd_Song * mpd_playlist_get_song_from_pos(MpdObj *mi, int songpos)
 
 MpdData * mpd_playlist_get_song_from_pos_range(MpdObj *mi, int start, int stop)
 {
-    MpdData *data = NULL;
-    int i;
+	MpdData *data = NULL;
+	int i;
 	mpd_InfoEntity *ent = NULL;
 	if(!mpd_check_connected(mi))
 	{
@@ -204,14 +204,14 @@ MpdData * mpd_playlist_get_song_from_pos_range(MpdObj *mi, int start, int stop)
 	{
 		return NULL;
 	}
-    /* Don't check outside playlist length */
-    if(!(stop < mi->status->playlistLength)) {
-        stop = mi->status->playlistLength -1;
-    }
-    mpd_sendCommandListBegin(mi->connection);
-    for(i=start; i <= stop; i++){
-        mpd_sendPlaylistInfoCommand(mi->connection, i);
-    }
+	/* Don't check outside playlist length */
+	if(!(stop < mi->status->playlistLength)) {
+		stop = mi->status->playlistLength -1;
+	}
+	mpd_sendCommandListBegin(mi->connection);
+	for(i=start; i <= stop; i++){
+		mpd_sendPlaylistInfoCommand(mi->connection, i);
+	}
 	mpd_sendCommandListEnd(mi->connection);
 	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
 	{
@@ -231,7 +231,7 @@ MpdData * mpd_playlist_get_song_from_pos_range(MpdObj *mi, int start, int stop)
 		/*TODO free entity. for now this can never happen */
 		return NULL;
 	}
-    return data;
+	return data;
 }
 
 mpd_Song * mpd_playlist_get_current_song(MpdObj *mi)
@@ -338,27 +338,27 @@ int mpd_playlist_move_id(MpdObj *mi, int old_id, int new_id)
 
 int mpd_playlist_set_priority(MpdObj *mi, int song_id, int priority)
 {
-    if(!mpd_check_connected(mi))
-    {
-        debug_printf(DEBUG_WARNING,"not connected\n");
-        return MPD_NOT_CONNECTED;
-    }
-    if(mpd_server_check_command_allowed(mi, "prioid") != MPD_SERVER_COMMAND_ALLOWED) 
-    {
-        return MPD_SERVER_NOT_SUPPORTED;
-    }
-    if(mpd_lock_conn(mi))
-    {
-        debug_printf(DEBUG_ERROR,"lock failed\n");
-        return MPD_LOCK_FAILED;
-    }
+	if(!mpd_check_connected(mi))
+	{
+		debug_printf(DEBUG_WARNING,"not connected\n");
+		return MPD_NOT_CONNECTED;
+	}
+	if(mpd_server_check_command_allowed(mi, "prioid") != MPD_SERVER_COMMAND_ALLOWED)
+	{
+		return MPD_SERVER_NOT_SUPPORTED;
+	}
+	if(mpd_lock_conn(mi))
+	{
+		debug_printf(DEBUG_ERROR,"lock failed\n");
+		return MPD_LOCK_FAILED;
+	}
 
-    mpd_sendSetPrioId(mi->connection,priority, song_id);
-    mpd_finishCommand(mi->connection);
+	mpd_sendSetPrioId(mi->connection,priority, song_id);
+	mpd_finishCommand(mi->connection);
 
-    /* unlock */
-    mpd_unlock_conn(mi);
-    return MPD_OK;
+	/* unlock */
+	mpd_unlock_conn(mi);
+	return MPD_OK;
 }
 
 int mpd_playlist_move_pos(MpdObj *mi, int old_pos, int new_pos)
@@ -796,7 +796,7 @@ MpdData * mpd_playlist_search_commit(MpdObj *mi)
 
 int mpd_playlist_load(MpdObj *mi, const char *path)
 {
-    int retv = MPD_OK;
+	int retv = MPD_OK;
 	if(!mpd_check_connected(mi))
 	{
 		debug_printf(DEBUG_WARNING,"mpd_playlist_load: not connected\n");
@@ -807,19 +807,19 @@ int mpd_playlist_load(MpdObj *mi, const char *path)
 		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return MPD_LOCK_FAILED;
 	}
-    mpd_sendLoadCommand(mi->connection,path);
+	mpd_sendLoadCommand(mi->connection,path);
 	mpd_finishCommand(mi->connection);
-    if(mi->connection->errorCode == MPD_ACK_ERROR_NO_EXIST) 
-    {
-        debug_printf(DEBUG_WARNING, "mpd_playlist_load: failed to load playlist\n");
+	if(mi->connection->errorCode == MPD_ACK_ERROR_NO_EXIST)
+	{
+		debug_printf(DEBUG_WARNING, "mpd_playlist_load: failed to load playlist\n");
 		mpd_clearError(mi->connection);
-        retv = MPD_PLAYLIST_LOAD_FAILED;
-    }
+		retv = MPD_PLAYLIST_LOAD_FAILED;
+	}
 
 	if(mpd_unlock_conn(mi))
 	{
 		debug_printf(DEBUG_ERROR, "Failed to unlock connection");
 		return MPD_LOCK_FAILED;
 	}
-    return retv;
+	return retv;
 }

@@ -105,24 +105,13 @@ int mpd_status_update(MpdObj *mi)
 		/* set MPD_CST_PLAYLIST to be changed */
 		what_changed |= MPD_CST_PLAYLIST;
 
-        if(mi->CurrentState.playlistLength == mi->status->playlistLength)
-        {
-//            what_changed |= MPD_CST_SONGID; 
-        }
+		if(mi->CurrentState.playlistLength == mi->status->playlistLength)
+		{
+			// what_changed |= MPD_CST_SONGID;
+		}
 		/* save new id */
 		mi->CurrentState.playlistid = mi->status->playlist;
 	}
-	
-	if(mi->CurrentState.storedplaylistid != mi->status->storedplaylist)
-	{
-		/* set MPD_CST_QUEUE to be changed */
-		what_changed |= MPD_CST_STORED_PLAYLIST;
-
-
-		/* save new id */
-		mi->CurrentState.storedplaylistid = mi->status->storedplaylist;
-	}
-
 
 	/* state change */
 	if(mi->CurrentState.state != mi->status->state)
@@ -151,14 +140,14 @@ int mpd_status_update(MpdObj *mi)
 		mi->CurrentState.songpos = mi->status->song;
 
 	}
-    if(mi->CurrentState.nextsongid != mi->status->nextsongid || mi->CurrentState.nextsongpos != mi->status->nextsong)
-    {
+	if(mi->CurrentState.nextsongid != mi->status->nextsongid || mi->CurrentState.nextsongpos != mi->status->nextsong)
+	{
 		what_changed |= MPD_CST_NEXTSONG;
 		/* save new songid */
 		mi->CurrentState.nextsongpos = mi->status->nextsong;
-        mi->CurrentState.nextsongid = mi->status->nextsongid;
-    }
-	
+		mi->CurrentState.nextsongid = mi->status->nextsongid;
+	}
+
 	if(mi->CurrentState.single != mi->status->single)
 	{
 		what_changed |= MPD_CST_SINGLE_MODE;
@@ -214,14 +203,14 @@ int mpd_status_update(MpdObj *mi)
 		what_changed |= MPD_CST_AUDIOFORMAT;
 		mi->CurrentState.samplerate = mi->status->sampleRate;
 	}
-	
+
 	/* check if the sampling depth changed */
 	if(mi->CurrentState.bits != mi->status->bits)
 	{
 		what_changed |= MPD_CST_AUDIOFORMAT;
 		mi->CurrentState.bits = mi->status->bits;
 	}
-	
+
 	/* Check if the amount of audio channels changed */
 	if(mi->CurrentState.channels != mi->status->channels)
 	{
@@ -229,17 +218,17 @@ int mpd_status_update(MpdObj *mi)
 		mi->CurrentState.channels = mi->status->channels;
 	}
 
-    if(mi->status->error)
-    {
-        what_changed |= MPD_CST_SERVER_ERROR;
-        strcpy(mi->CurrentState.error,mi->status->error);
-        mpd_sendClearErrorCommand(mi->connection);
-        mpd_finishCommand(mi->connection);
-    }
-    else
-    {
-        mi->CurrentState.error[0] ='\0';
-    }
+	if(mi->status->error)
+	{
+		what_changed |= MPD_CST_SERVER_ERROR;
+		strcpy(mi->CurrentState.error,mi->status->error);
+		mpd_sendClearErrorCommand(mi->connection);
+		mpd_finishCommand(mi->connection);
+	}
+	else
+	{
+		mi->CurrentState.error[0] ='\0';
+	}
 
 	/* Check if the updating changed,
 	 * If it stopped, also update the stats for the new db-time.
@@ -255,84 +244,83 @@ int mpd_status_update(MpdObj *mi)
 	}
 
 
-    mi->CurrentState.playlistLength = mi->status->playlistLength;
+	mi->CurrentState.playlistLength = mi->status->playlistLength;
 
 
-    /* Detect changed outputs */
-    if(!mi->has_idle)
-    {
-        if(mi->num_outputs >0 )
-        {
-            mpd_OutputEntity *output = NULL;
-            mpd_sendOutputsCommand(mi->connection);
-            while (( output = mpd_getNextOutput(mi->connection)) != NULL)
-            {   
-                if(mi->num_outputs < output->id)
-                {
-                    mi->num_outputs++;
-                    mi->output_states = realloc(mi->output_states,mi->num_outputs*sizeof(int));
-                    mi->output_states[mi->num_outputs] = output->enabled;
-                    what_changed |= MPD_CST_OUTPUT;
-                }
-                if(mi->output_states[output->id] != output->enabled)
-                {
-                    mi->output_states[output->id] = output->enabled;
-                    what_changed |= MPD_CST_OUTPUT;
-                }
-                mpd_freeOutputElement(output);
-            }
-            mpd_finishCommand(mi->connection);
-        }
-        else
-        {
-            /* if no outputs, lets fetch them */
-            mpd_server_update_outputs(mi);
-            if(mi->num_outputs == 0)
-            {
-                assert("No outputs defined? that cannot be\n");
-            }
-            what_changed |= MPD_CST_OUTPUT;
-        }
-    }else {
-        char *name;
-        int update_stats = 0;
-        mpd_sendGetEventsCommand(mi->connection);    
-        while((name = mpd_getNextEvent(mi->connection))){
-            if(strcmp(name, "output") == 0){
-                what_changed |= MPD_CST_OUTPUT;
-            }else if (strcmp(name, "database") == 0) {
-                if((what_changed&MPD_CST_DATABASE) == 0)
-                {
-                    update_stats = 1;
-                }
-                what_changed |= MPD_CST_DATABASE;
-            }else if (strcmp(name, "stored_playlist")==0) {
-                what_changed |= MPD_CST_STORED_PLAYLIST;
-            }else if (strcmp(name, "tag") == 0) {
-                what_changed |= MPD_CST_PLAYLIST;
-            }else if (strcmp (name, "sticker") == 0) {
-                what_changed |= MPD_CST_STICKER;
-                /* This means repeat,random, replaygain or crossface changed */
-            }else if (strcmp (name, "options") == 0) {
-                what_changed |= MPD_CST_REPLAYGAIN;
-            }
+	/* Detect changed outputs */
+	if(!mi->has_idle)
+	{
+		if(mi->num_outputs >0 )
+		{
+			mpd_OutputEntity *output = NULL;
+			mpd_sendOutputsCommand(mi->connection);
+			while (( output = mpd_getNextOutput(mi->connection)) != NULL)
+			{
+				if(mi->num_outputs < output->id)
+				{
+					mi->num_outputs++;
+					mi->output_states = realloc(mi->output_states,mi->num_outputs*sizeof(int));
+					mi->output_states[mi->num_outputs] = output->enabled;
+					what_changed |= MPD_CST_OUTPUT;
+				}
+				if(mi->output_states[output->id] != output->enabled)
+				{
+					mi->output_states[output->id] = output->enabled;
+					what_changed |= MPD_CST_OUTPUT;
+				}
+				mpd_freeOutputElement(output);
+			}
+			mpd_finishCommand(mi->connection);
+		}
+		else
+		{
+			/* if no outputs, lets fetch them */
+			mpd_server_update_outputs(mi);
+			if(mi->num_outputs == 0)
+			{
+				assert("No outputs defined? that cannot be\n");
+			}
+			what_changed |= MPD_CST_OUTPUT;
+		}
+	}else {
+		char *name;
+		int update_stats = 0;
+		mpd_sendGetEventsCommand(mi->connection);
+		while((name = mpd_getNextEvent(mi->connection))){
+			if(strcmp(name, "output") == 0){
+				what_changed |= MPD_CST_OUTPUT;
+			}else if (strcmp(name, "database") == 0) {
+				if((what_changed&MPD_CST_DATABASE) == 0)
+				{
+					update_stats = 1;
+				}
+				what_changed |= MPD_CST_DATABASE;
+			}else if (strcmp(name, "stored_playlist")==0) {
+				what_changed |= MPD_CST_STORED_PLAYLIST;
+			}else if (strcmp(name, "playlist") == 0) {
+				what_changed |= MPD_CST_PLAYLIST;
+			}else if (strcmp (name, "sticker") == 0) {
+				what_changed |= MPD_CST_STICKER;
+				/* This means repeat,random, replaygain or crossface changed */
+			}else if (strcmp (name, "options") == 0) {
+				what_changed |= MPD_CST_REPLAYGAIN;
+			}
 
-            free(name);
-       }
-       mpd_finishCommand(mi->connection);
-       if(update_stats) {
-           mpd_stats_update_real(mi, &what_changed);
-       }
-    }
+			free(name);
+		}
+		mpd_finishCommand(mi->connection);
+		if(update_stats) {
+			mpd_stats_update_real(mi, &what_changed);
+		}
+	}
 
-  
 	/* Run the callback */
 	if((mi->the_status_changed_callback != NULL) && what_changed)
 	{
 		mi->the_status_changed_callback( mi, what_changed, mi->the_status_changed_signal_userdata );
 	}
 
-        /* We could have lost connection again during signal handling... so before we return check again if we are connected */
+	/* We could have lost connection again during signal handling... so before we return check again if we are connected */
 	if(!mpd_check_connected(mi))
 	{
 		return MPD_NOT_CONNECTED;

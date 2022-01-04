@@ -178,8 +178,6 @@ typedef struct mpd_Status {
 	int playlistLength;
 	/* playlist, use this to determine when the playlist has changed */
 	long long playlist;
-	/* The id, used to determine is one of the playlists are changed */
-	long long storedplaylist;
 	/* use with MPD_STATUS_STATE_* to determine state of player */
 	int state;
 	/* crossfade setting in seconds */

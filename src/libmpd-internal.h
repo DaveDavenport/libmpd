@@ -53,7 +53,6 @@ typedef struct _MpdQueue MpdQueue;
 typedef struct _MpdServerState {
 	/* information needed to detect changes on mpd's side */
 	long long 	    playlistid;
-	long long	    storedplaylistid;
 	int 		    songid;
 	int 		    songpos;
     int             nextsongpos;
