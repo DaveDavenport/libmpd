@@ -961,7 +961,7 @@ MpdData * mpd_database_get_directory_recursive(MpdObj *mi, const char *path)
 		debug_printf(DEBUG_WARNING,"not connected\n");
 		return NULL;
 	}
-	if(path == '\0' || path[0] == '\0')
+	if(path == NULL || path[0] == '\0')
 	{
 		debug_printf(DEBUG_ERROR, "argumant invalid\n");
 		return NULL;
