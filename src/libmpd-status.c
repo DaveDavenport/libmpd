@@ -113,17 +113,6 @@ int mpd_status_update(MpdObj *mi)
 		mi->CurrentState.playlistid = mi->status->playlist;
 	}
 
-	if(mi->CurrentState.storedplaylistid != mi->status->storedplaylist)
-	{
-		/* set MPD_CST_QUEUE to be changed */
-		what_changed |= MPD_CST_STORED_PLAYLIST;
-
-
-		/* save new id */
-		mi->CurrentState.storedplaylistid = mi->status->storedplaylist;
-	}
-
-
 	/* state change */
 	if(mi->CurrentState.state != mi->status->state)
 	{
