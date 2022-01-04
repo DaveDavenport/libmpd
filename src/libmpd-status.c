@@ -297,7 +297,7 @@ int mpd_status_update(MpdObj *mi)
 				what_changed |= MPD_CST_DATABASE;
 			}else if (strcmp(name, "stored_playlist")==0) {
 				what_changed |= MPD_CST_STORED_PLAYLIST;
-			}else if (strcmp(name, "tag") == 0) {
+			}else if (strcmp(name, "playlist") == 0) {
 				what_changed |= MPD_CST_PLAYLIST;
 			}else if (strcmp (name, "sticker") == 0) {
 				what_changed |= MPD_CST_STICKER;
