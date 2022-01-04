@@ -484,7 +484,7 @@ MpdData * mpd_database_get_directory(MpdObj *mi,const char *path)
 
 MpdData *mpd_database_get_playlist_content(MpdObj *mi,const char *playlist)
 {
-    int i=0;
+	int i=0;
 	MpdData *data = NULL;
 	mpd_InfoEntity *ent = NULL;
 	if(!mpd_check_connected(mi))
@@ -512,13 +512,13 @@ MpdData *mpd_database_get_playlist_content(MpdObj *mi,const char *playlist)
 	{
 		if (ent->type == MPD_INFO_ENTITY_TYPE_SONG)
 		{
-            data = mpd_new_data_struct_append( data );
-            data->type = MPD_DATA_TYPE_SONG;
+			data = mpd_new_data_struct_append( data );
+			data->type = MPD_DATA_TYPE_SONG;
 			data->song = ent->info.song;
-            data->song->pos = i;
+			data->song->pos = i;
 			ent->info.song = NULL;
-            i++;
-        }
+			i++;
+		}
 		mpd_freeInfoEntity(ent);
 	}
 	mpd_finishCommand(mi->connection);
@@ -526,8 +526,8 @@ MpdData *mpd_database_get_playlist_content(MpdObj *mi,const char *playlist)
 	if(mi->connection->error == MPD_ERROR_ACK && mi->connection->errorCode == MPD_ACK_ERROR_NO_EXIST)
 	{
 		mpd_clearError(mi->connection);
-    }
-    /* unlock */
+	}
+	/* unlock */
 	mpd_unlock_conn(mi);
 	if(data == NULL)
 	{
@@ -1056,27 +1056,27 @@ MpdData * mpd_database_playlist_list(MpdObj *mi)
 		debug_printf(DEBUG_ERROR,"lock failed\n");
 		return NULL;
 	}
-    if(mpd_server_check_command_allowed(mi, "listplaylists") == MPD_SERVER_COMMAND_ALLOWED)
-    {
-        mpd_sendListPlaylistsCommand(mi->connection); 
-    }
-    else
-    {
-        mpd_sendLsInfoCommand (mi->connection ,"/");
-    }
-    while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
-    {
+	if(mpd_server_check_command_allowed(mi, "listplaylists") == MPD_SERVER_COMMAND_ALLOWED)
+	{
+		mpd_sendListPlaylistsCommand(mi->connection);
+	}
+	else
+	{
+		mpd_sendLsInfoCommand (mi->connection ,"/");
+	}
+	while (( ent = mpd_getNextInfoEntity(mi->connection)) != NULL)
+	{
 
-        if (ent->type == MPD_INFO_ENTITY_TYPE_PLAYLISTFILE)
-        {
-            data = mpd_new_data_struct_append(data);
-            data->type = MPD_DATA_TYPE_PLAYLIST;
-            data->playlist= ent->info.playlistFile;
-            ent->info.playlistFile = NULL;
-        }
-        mpd_freeInfoEntity(ent);
-    }
-    mpd_finishCommand(mi->connection);
+		if (ent->type == MPD_INFO_ENTITY_TYPE_PLAYLISTFILE)
+		{
+			data = mpd_new_data_struct_append(data);
+			data->type = MPD_DATA_TYPE_PLAYLIST;
+			data->playlist= ent->info.playlistFile;
+			ent->info.playlistFile = NULL;
+		}
+		mpd_freeInfoEntity(ent);
+	}
+	mpd_finishCommand(mi->connection);
 
 	/* unlock */
 	mpd_unlock_conn(mi);

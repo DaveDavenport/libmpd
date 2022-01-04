@@ -173,13 +173,13 @@ static unsigned int _strfsong(char *s,
 		else if (memcmp("%name%", p, n) == 0)
 			temp = song->name ? g_strdup(song->name) : NULL;
 		else if (memcmp("%date%", p, n) == 0)
-			temp = song->date ? g_strdup(song->date) : NULL;		
+			temp = song->date ? g_strdup(song->date) : NULL;
 		else if (memcmp("%genre%", p, n) == 0)
-			temp = song->genre ? g_strdup(song->genre) : NULL;		
+			temp = song->genre ? g_strdup(song->genre) : NULL;
 		else if (memcmp("%performer%", p, n) == 0)
-			temp = song->performer ? g_strdup(song->performer) : NULL;		
+			temp = song->performer ? g_strdup(song->performer) : NULL;
 		else if (memcmp("%composer%", p, n) == 0)
-			temp = song->composer ? g_strdup(song->composer) : NULL;		
+			temp = song->composer ? g_strdup(song->composer) : NULL;
 		else if (memcmp("%track%",p,n) == 0)
 			temp = song->track? g_strdup(song->track): NULL;
 		else if (memcmp("%comment%", p, n) == 0)
@@ -191,28 +191,28 @@ static unsigned int _strfsong(char *s,
 				int length;
 				if((length = snprintf(str,32, "%i", song->pos)) >=0)
 				{
-					temp = g_strndup(str,length);				
+					temp = g_strndup(str,length);
 				}
 			}
 		}
 		else if (memcmp("%shortfile%", p, n) == 0)
 		{
 			/*if( strstr(song->file, "://") )
-				temp = g_strdup(song->file);
-			else */{
+			  temp = g_strdup(song->file);
+			  else */{
 				int i=strlen(song->file);
 				int ext =i;
-                int found = 0;
+				int found = 0;
 				char *temp2 = NULL;
 				for(;i>=0 && (song->file[i] != '/' && song->file[i] != '\\');i--){
 					if(song->file[i] == '.' && !found) {
-                        ext = i;	
-                        found = 1;
-                    }
+						ext = i;
+						found = 1;
+					}
 				}
 				temp2 = g_strndup(&(song->file)[i+1],(gsize)(ext-i-1));
 				temp = g_uri_unescape_string(temp2, "");
-				g_free(temp2);	
+				g_free(temp2);
 			}
 		}
 		else if (memcmp("%time%", p, n) == 0)
@@ -227,32 +227,32 @@ static unsigned int _strfsong(char *s,
 				}
 			}
 		}
-        else if (memcmp("%disc%", p, n) == 0)
-        {
-			temp = song->disc? g_strdup(song->disc) : NULL;		
-        }
-        if(temp != NULL) {
-            unsigned int templen = strlen(temp);
-            found = TRUE;
-            if( length+templen > max )
-                templen = max-length;
-            strncat(s, temp, templen);
-            length+=templen;
-            g_free(temp);
-        }
+		else if (memcmp("%disc%", p, n) == 0)
+		{
+			temp = song->disc? g_strdup(song->disc) : NULL;
+		}
+		if(temp != NULL) {
+			unsigned int templen = strlen(temp);
+			found = TRUE;
+			if( length+templen > max )
+				templen = max-length;
+			strncat(s, temp, templen);
+			length+=templen;
+			g_free(temp);
+		}
 
-        /* advance past the specifier */
-        p += n;
-    }
+		/* advance past the specifier */
+		p += n;
+	}
 
-    for(i=0; i < length;i++)
-    {
-        if(s[i] == '_') s[i] = ' ';
-    }	
+	for(i=0; i < length;i++)
+	{
+		if(s[i] == '_') s[i] = ' ';
+	}
 
-    if(last) *last = p;
+	if(last) *last = p;
 
-    return length;
+	return length;
 }
 
 unsigned int mpd_song_markup(char *s, unsigned int max,const char *format, mpd_Song *song)
