@@ -28,21 +28,6 @@
 #define __MPD_LIB_PLAYER__
 
 /**
- * Enum representing the possible states of the player
- */
-
-typedef enum {
-	/** The player is paused */
-	MPD_PLAYER_PAUSE = MPD_STATUS_STATE_PAUSE, 	
-	/** The player is playing */
-	MPD_PLAYER_PLAY =  MPD_STATUS_STATE_PLAY,
-	/** The player is stopped */
-	MPD_PLAYER_STOP =  MPD_STATUS_STATE_STOP,
-	/** The player is in an unknown state */
-	MPD_PLAYER_UNKNOWN = MPD_STATUS_STATE_UNKNOWN
-} MpdState;
-
-/**
  * \param mi a #MpdObj
  *
  * Sends mpd the play command.
@@ -116,7 +101,7 @@ int mpd_player_pause(MpdObj * mi);
  *
  * @returns a #MpdState
  */
-int mpd_player_get_state(MpdObj * mi);
+enum mpd_state mpd_player_get_state(MpdObj * mi);
 
 /**
  * \param mi a #MpdObj

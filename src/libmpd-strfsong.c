@@ -58,7 +58,7 @@ static char * skip(char * p)
 static unsigned int _strfsong(char *s, 
 		unsigned int max, 
 		const char *format, 
-		mpd_Song *song, 
+		struct mpd_song *song, 
 		char **last)
 {
 	char *p, *end;
@@ -161,33 +161,33 @@ static unsigned int _strfsong(char *s,
 		if(*end != '%')
 			n--;
 		else if (memcmp("%file%", p, n) == 0)
-			temp = g_strdup(song->file);
+			temp = g_strdup(mpd_song_get_uri(song));
 		else if (memcmp("%artist%", p, n) == 0)
-			temp = song->artist ? g_strdup(song->artist) : NULL;
+			temp = g_strdup(mpd_song_get_tag(song, MPD_TAG_ARTIST, 0));
 		else if (memcmp("%title%", p, n) == 0)
-			temp = song->title ? g_strdup(song->title) : NULL;
+			temp = g_strdup(mpd_song_get_tag(song, MPD_TAG_TITLE, 0));
 		else if (memcmp("%album%", p, n) == 0)
-			temp = song->album ? g_strdup(song->album) : NULL;
+			temp = g_strdup(mpd_song_get_tag(song, MPD_TAG_ALBUM, 0));
 		else if (memcmp("%track%", p, n) == 0)
-			temp = song->track ? g_strdup(song->track) : NULL;
+			temp = g_strdup(mpd_song_get_tag(song, MPD_TAG_TRACK, 0));
 		else if (memcmp("%name%", p, n) == 0)
-			temp = song->name ? g_strdup(song->name) : NULL;
+			temp = g_strdup(mpd_song_get_tag(song, MPD_TAG_NAME, 0));
 		else if (memcmp("%date%", p, n) == 0)
-			temp = song->date ? g_strdup(song->date) : NULL;
+			temp = g_strdup(mpd_song_get_tag(song, MPD_TAG_DATE, 0));
 		else if (memcmp("%genre%", p, n) == 0)
-			temp = song->genre ? g_strdup(song->genre) : NULL;
+			temp = g_strdup(mpd_song_get_tag(song, MPD_TAG_GENRE, 0));
 		else if (memcmp("%performer%", p, n) == 0)
-			temp = song->performer ? g_strdup(song->performer) : NULL;
+			temp = g_strdup(mpd_song_get_tag(song, MPD_TAG_PERFORMER, 0));
 		else if (memcmp("%composer%", p, n) == 0)
-			temp = song->composer ? g_strdup(song->composer) : NULL;
+			temp = g_strdup(mpd_song_get_tag(song, MPD_TAG_COMPOSER, 0));
 		else if (memcmp("%comment%", p, n) == 0)
-			temp = song->comment? g_strdup(song->comment): NULL;
+			temp = g_strdup(mpd_song_get_tag(song, MPD_TAG_COMMENT, 0));
 		else if (memcmp("%plpos%", p, n) == 0 || memcmp("%songpos%",p,n) == 0){
 			temp = NULL;
-			if(song->pos >= 0){
+			if(mpd_song_get_pos(song) >= 0){
 				char str[32];
 				int length;
-				if((length = snprintf(str,32, "%i", song->pos)) >=0)
+				if((length = snprintf(str,32, "%i", mpd_song_get_pos(song))) >=0)
 				{
 					temp = g_strndup(str,length);
 				}
@@ -198,17 +198,18 @@ static unsigned int _strfsong(char *s,
 			/*if( strstr(song->file, "://") )
 			  temp = g_strdup(song->file);
 			  else */{
-				int i=strlen(song->file);
+				const char *uri = mpd_song_get_uri(song);
+				int i=strlen(uri);
 				int ext =i;
 				int found = 0;
 				char *temp2 = NULL;
-				for(;i>=0 && (song->file[i] != '/' && song->file[i] != '\\');i--){
-					if(song->file[i] == '.' && !found) {
+				for(;i>=0 && (uri[i] != '/' && uri[i] != '\\');i--){
+					if(uri[i] == '.' && !found) {
 						ext = i;
 						found = 1;
 					}
 				}
-				temp2 = g_strndup(&(song->file)[i+1],(gsize)(ext-i-1));
+				temp2 = g_strndup(&(uri)[i+1],(gsize)(ext-i-1));
 				temp = g_uri_unescape_string(temp2, "");
 				g_free(temp2);
 			}
@@ -216,10 +217,11 @@ static unsigned int _strfsong(char *s,
 		else if (memcmp("%time%", p, n) == 0)
 		{
 			temp = NULL;
-			if (song->time != MPD_SONG_NO_TIME) {
+			const unsigned duration = mpd_song_get_duration(song);
+			if (duration > 0) {
 				char str[32];
 				int length;
-				if((length = snprintf(str,32, "%02d:%02d", song->time/60, song->time%60))>=0)
+				if((length = snprintf(str,32, "%02d:%02d", duration/60, duration%60))>=0)
 				{
 					temp = g_strndup(str,length);
 				}
@@ -227,7 +229,7 @@ static unsigned int _strfsong(char *s,
 		}
 		else if (memcmp("%disc%", p, n) == 0)
 		{
-			temp = song->disc? g_strdup(song->disc) : NULL;
+			temp = g_strdup(mpd_song_get_tag(song, MPD_TAG_DISC, 0));
 		}
 		if(temp != NULL) {
 			unsigned int templen = strlen(temp);
@@ -253,7 +255,7 @@ static unsigned int _strfsong(char *s,
 	return length;
 }
 
-unsigned int mpd_song_markup(char *s, unsigned int max,const char *format, mpd_Song *song)
+unsigned int mpd_song_markup(char *s, unsigned int max,const char *format, struct mpd_song *song)
 {
     return _strfsong(s, max, format, song, NULL);
 }

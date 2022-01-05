@@ -1,8 +1,8 @@
-AC_INIT([libmpd], [11.8.90], [qball@gmpclient.org])
+AC_INIT([libmpd], [12.0.0], [qball@gmpclient.org])
 AC_CONFIG_HEADER(config.h)
-m4_define([package_major_version], [11])
-m4_define([package_minor_version], [8])
-m4_define([package_micro_version], [90])
+m4_define([package_major_version], [12])
+m4_define([package_minor_version], [0])
+m4_define([package_micro_version], [0])
 m4_define([package_version], [package_major_version.package_minor_version.package_micro_version])
 AM_INIT_AUTOMAKE
 
@@ -18,7 +18,7 @@ AC_SUBST([LIBMPD_MICRO_VERSION])
 #  R is on changed source code.
 #  A is age (added interfaces)
 #
-LIBMPD_LIBTOOL_VERSION=5:0:4
+LIBMPD_LIBTOOL_VERSION=6:0:0
 AC_SUBST(LIBMPD_LIBTOOL_VERSION)
 
 AC_PROG_CC
@@ -43,6 +43,10 @@ AC_SUBST(EXTRA_LDFLAGS)
 PKG_CHECK_MODULES([glib], glib-2.0 >= 2.16)
 AC_SUBST(glib_LIBS)
 AC_SUBST(glib_CFLAGS)
+
+dnl Check for libmpdclient 2.0
+PKG_CHECK_MODULES([LIBMPDCLIENT], [libmpdclient >= 2.16],,
+	[AC_MSG_ERROR([libmpdclient2 is required])])
 
 # Checks for header files.
 AC_HEADER_STDC

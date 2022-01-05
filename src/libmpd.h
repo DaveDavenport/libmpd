@@ -37,7 +37,7 @@ extern "C" {
 #define __W32API_USE_DLLIMPORT__ 1
 #endif
 
-#include "libmpdclient.h"
+#include <mpd/client.h>
 
 #ifndef TRUE
 /** Defined for readability: True is 1. */
@@ -143,18 +143,18 @@ typedef struct _MpdData {
 	union {
 		struct {
 			/** a #mpd_TagItems defining what #tag contains */
-			int tag_type;
+			enum mpd_tag_type tag_type;
 			/** a string containing the tag*/
 			char *tag;
 		};
 		/** a directory */
 		char *directory;
 		/** a path to a playlist */
-		mpd_PlaylistFile *playlist;
+		struct mpd_playlist *playlist;
 		/** a  mpd_Song */
-		mpd_Song *song;
+		struct mpd_song *song;
 		/** an output device entity */
-		mpd_OutputEntity *output_dev;
+		struct mpd_output *output_dev;
 	};
 
     void *userdata;
@@ -259,7 +259,7 @@ int mpd_set_port(MpdObj * mi, int port);
 int mpd_set_connection_timeout(MpdObj * mi, float timeout);
 
 
-int mpd_connect_real(MpdObj *mi,mpd_Connection *connection);
+int mpd_connect_real(MpdObj *mi,struct mpd_connection *connection);
 /**
  * @param mi a #MpdObj
  *
@@ -319,7 +319,7 @@ void mpd_free(MpdObj * mi);
  *
  * @returns: a #MpdError
  */
-int mpd_send_password(MpdObj * mi);
+int libmpd_send_password(MpdObj * mi);
 
 	
 
@@ -660,17 +660,9 @@ int mpd_server_has_idle(MpdObj *mi);
  */
 int mpd_server_tag_supported(MpdObj *mi, int tag);
 
+enum mpd_replay_gain_mode mpd_server_get_replaygain_mode(MpdObj *mi);
 
-typedef enum {
-    MPD_SERVER_REPLAYGAIN_MODE_OFF = 0,
-    MPD_SERVER_REPLAYGAIN_MODE_TRACK = 1,
-    MPD_SERVER_REPLAYGAIN_MODE_ALBUM = 2,
-    MPD_SERVER_REPLAYGAIN_MODE_AUTO = 3
-}MpdServerReplaygainMode;
-
-MpdServerReplaygainMode mpd_server_get_replaygain_mode(MpdObj *mi);
-
-int mpd_server_set_replaygain_mode(MpdObj *mi, MpdServerReplaygainMode mode);
+int mpd_server_set_replaygain_mode(MpdObj *mi, enum mpd_replay_gain_mode mode);
 
 #endif
 

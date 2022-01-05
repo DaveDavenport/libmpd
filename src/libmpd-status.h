@@ -62,6 +62,19 @@ int 		mpd_status_update			(MpdObj *mi);
 
 /**
  * @param mi a #MpdObj
+ *
+ * Obtain the #mpd_status instance held by the #MpdObj.  The caller
+ * can then invoke libmpdclient functions to inspect it.  The pointer
+ * may be invalidated any following libmpd call.
+ *
+ * @returns 0 when successful
+ */
+const struct mpd_status *mpd_status_get			(MpdObj *mi);
+
+
+
+/**
+ * @param mi a #MpdObj
  * @param fvol a float between 0.0 and 1.0
  *
  * Set the output volume
@@ -89,7 +102,7 @@ int 		mpd_status_set_volume			(MpdObj *mi,int volume);
  *
  * @returns the audio output volume between 0 and 100 or < 0 when failed
  */
-int 		mpd_status_get_volume			(MpdObj *mi);
+int 		libmpd_status_get_volume			(MpdObj *mi);
 
 
 
@@ -164,7 +177,7 @@ int		mpd_status_get_elapsed_song_time	(MpdObj *mi);
  *
  * @returns The crossfade time in seconds
  */
-int		mpd_status_get_crossfade		(MpdObj *mi);
+int		libmpd_status_get_crossfade		(MpdObj *mi);
 
 
 
@@ -218,6 +231,18 @@ int		mpd_stats_update			(MpdObj *mi);
 /**
  * @param mi a #MpdObj
  *
+ * Obtain the #mpd_stats instance held by the #MpdObj.  The caller
+ * can then invoke libmpdclient functions to inspect it.  The pointer
+ * may be invalidated any following libmpd call.
+ *
+ * @returns 0 when successful
+ */
+const struct mpd_stats *mpd_stats_get			(MpdObj *mi);
+
+
+/**
+ * @param mi a #MpdObj
+ *
  * Gets the total number of songs in the database
  *
  * @returns The total number of songs
@@ -254,7 +279,7 @@ int		mpd_stats_get_total_albums		(MpdObj *mi);
  * 
  * @returns time since mpd has been running in seconds
  */
-int		mpd_stats_get_uptime			(MpdObj *mi);
+int		libmpd_stats_get_uptime			(MpdObj *mi);
 /**
  * @param mi a #MpdObj
  *

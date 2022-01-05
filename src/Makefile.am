@@ -2,8 +2,8 @@ INCLUDES = 				\
 	-I.				\
 	-I$(top_srcdir)			\
 	@EXTRA_CFLAGS@ -Wall -Wmissing-declarations 
-AM_CFLAGS=@glib_CFLAGS@
-LIBS=@glib_LIBS@
+AM_CFLAGS=@glib_CFLAGS@ $(LIBMPDCLIENT_CFLAGS)
+LIBS=@glib_LIBS@ $(LIBMPDCLIENT_LIBS)
 
 lib_LTLIBRARIES = libmpd.la
 
@@ -12,7 +12,6 @@ libmpd_la_SOURCES =			\
 		libmpd-player.c		\
 		libmpd-status.c		\
 		libmpd-playlist.c	\
-		libmpdclient.c		\
 		libmpd-strfsong.c	\
 		libmpd-database.c	\
 		libmpd-sticker.c	\
@@ -27,7 +26,6 @@ libmpdinclude_HEADERS = 		\
 		libmpd-database.h	\
 		libmpd-internal.h	\
 		libmpd-sticker.h	\
-		libmpdclient.h		\
 		libmpd-strfsong.h	\
 		libmpd-version.h	\
 		debug_printf.h
